@@ -73,13 +73,88 @@ def names():
     print("\nNo firstpub: ", nothing, "\n")
     pprint(nothingL)
 
+def countAll():
+    rootdir = "data"
+
+    firstpub = 0
+    Nofirstpub = 0
+    Type = 0
+    NoType = 0
+    title = 0
+    Notitle = 0
+    year = 0
+    Noyear = 0
+    booktitle = 0
+    Nobooktitle = 0
+    publisher = 0
+    Nopublisher = 0
+    pages = 0
+    Nopages = 0
+    series = 0
+    Noseries = 0
+
+    for subdir, dirs, files in os.walk(rootdir):
+        for file in files:
+            if file.endswith('.json'):
+                config = json.loads(open(os.path.join(subdir, file)).read())
+                if "firstpub" in config:
+                    firstpub += 1
+                if "firstpub" not in config:
+                    Nofirstpub += 1
+                if "type" in config:
+                    Type += 1
+                if "type" not in config:
+                    NoType += 1
+                if "title" in config:
+                    title += 1
+                if "title" not in config:
+                    Notitle += 1
+                if "year" in config:
+                    year += 1
+                if "year" not in config:
+                    Noyear += 1
+                if "booktitle" in config:
+                    booktitle += 1
+                if "booktitle" not in config:
+                    Nobooktitle += 1
+                if "publisher" in config:
+                    publisher += 1
+                if "publisher" not in config:
+                    Nopublisher += 1
+                if "pages" in config:
+                    pages += 1
+                if "pages" not in config:
+                    Nopages += 1
+                if "series" in config:
+                    series += 1
+                if "series" not in config:
+                    Noseries += 1
+
+    print("\nfirstpub: ", firstpub, "\n")
+    print("Nofirstpub: ", Nofirstpub, "\n")
+    print("type: ", Type, "\n")
+    print("Notype: ", NoType, "\n")
+    print("title: ", title, "\n")
+    print("Notitle: ", Notitle, "\n")
+    print("year: ", year, "\n")
+    print("Noyear: ", Noyear, "\n")
+    print("booktitle: ", booktitle, "\n")
+    print("Nobooktitle: ", Nobooktitle, "\n")
+    print("publisher: ", publisher, "\n")
+    print("Nopublisher: ", Nopublisher, "\n")
+    print("pages: ", pages, "\n")
+    print("Nopages: ", Nopages, "\n")
+    print("series: ", series, "\n")
+    print("Noseries: ", Noseries, "\n")
 
 #Main
 
     
 #allAtributes()
 
-names()
+#names()
+
+countAll()
 
 
 
