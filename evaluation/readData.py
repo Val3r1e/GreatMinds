@@ -35,7 +35,7 @@ def readData():
     no_publisher = []
     pagesDict = {}
     no_pages = []
-
+    
     count = {}
 
     for subdir, dirs, files in os.walk(rootdir):
@@ -45,11 +45,11 @@ def readData():
 
                 if "firstpub" in config:
                     firstPub += 1
-                    count["Date"] = firstPub
+                    count["FirstPublished"] = firstPub
                     firstPubDict.update({subdir.replace('-',' ').replace('../data/',''): config["firstpub"]})
                 else:
                     noFirstPub += 1
-                    count["No Date"] = noFirstPub
+                    count["No FirstPublished"] = noFirstPub
                     no_firstPub.append(subdir.replace('-',' ').replace('../data/',''))
                 if "type" in config:
                     type += 1
