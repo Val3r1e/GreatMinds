@@ -51,7 +51,7 @@ def intoHtml(date, number, body):
 
 
     filename = date + "  " + number + '.html'
-    f = open(filename, 'w')
+    f = open("ignore/letters/"+filename, 'w')
 
     #the %s is a placeholder for a variable --> they are defined below
     wrapper= """<html>
@@ -66,7 +66,7 @@ def intoHtml(date, number, body):
     f.write(whole)
     f.close()
 
-    filename = "ignore/letters/" + filename       #Should put it in directory Letters but it doesn't... don't know why
+    #filename = "ignore/letters/" + filename       #Should put it in directory Letters but it doesn't... don't know why
 
     open_new_tab(filename)
 
