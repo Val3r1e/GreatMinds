@@ -28,6 +28,8 @@ def extract():
             with open(filename, "r") as openfile:
                 soup = BeautifulSoup(openfile, 'html.parser')
 
+            #vielleicht mit ner if h3 vorhanden, tue das hier, if not
+            #fang mit der Suche nach h4 an oder so?
             for date in soup.find_all("h3"):
                 for number in soup.find_all("h4"):
                     letter = soup.find('p')
@@ -43,7 +45,7 @@ def extract():
                             letter = letter.nextSibling
 
 
-                    intoHtml("ignore/letters/"+date.text, number.text, body)
+                    intoHtml(date.text, number.text, body)
 
 def intoHtml(date, number, body):
 
@@ -64,7 +66,7 @@ def intoHtml(date, number, body):
     f.write(whole)
     f.close()
 
-    filename = "/Letters/" + filename       #Should put it in directory Letters but it doesn't... don't know why
+    filename = "ignore/letters/" + filename       #Should put it in directory Letters but it doesn't... don't know why
 
     open_new_tab(filename)
 
