@@ -42,6 +42,31 @@ def extract():
                         else:
                             letter = letter.nextSibling
 
+
                     intoHtml("ignore/letters/"+date.text, number.text, body)
+
+def intoHtml(date, number, body):
+
+
+    filename = date + "  " + number + '.html'
+    f = open(filename, 'w')
+
+    #the %s is a placeholder for a variable --> they are defined below
+    wrapper= """<html>
+    <head>
+    <title>%s, %s </title>
+    </head>
+    <body><p>%s</p></body>
+    </html>"""
+
+    #definition for %s
+    whole = wrapper % (date, number, body)      #depending on the order e.g. date goes in place of first %s and so on
+    f.write(whole)
+    f.close()
+
+    filename = "/Letters/" + filename       #Should put it in directory Letters but it doesn't... don't know why
+
+    open_new_tab(filename)
+
 #findDate()
 extract()
