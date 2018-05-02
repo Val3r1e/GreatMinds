@@ -6,6 +6,7 @@ import os
 import datetime
 from webbrowser import open_new_tab
 import sys
+from pprint import pprint
 
 def extract(direc):
     """I left all the print-statements in it so it'll be easier 
@@ -27,32 +28,42 @@ def extract(direc):
                 number = "YYY"
                 date = ""
                 h4_counter = 0
-                document = soup.find_all(["h3","h4", "h5","p"])
-                #print(document)
-                #print (type(numbers))
+                #document = soup.find_all(["h3","h4", "h5","p"])
+                document = soup.find_all()
 
+                """to find out which tags exist in each document: """
+                tags = []
+                for tag in document:
+                    if tag.name not in tags:
+                        tags.append(tag.name)
+                print(tags)
+                
+                #print(document)
+                #print (type(document))
+
+                """decide what happens with each part and write the files: """
                 for element in document:
                     if element.name == "h3":
                         year = element.text
 
                     elif element.name == "h4":
                         if h4_counter != 0:
-                            #print("Jetzt schreibe ich Nummer ", number)
+                            #print("Writing number ", number, " right now")
                             intoHtml(year, number, date, body)
                             body = ""
                             #print("Counter: ", h4_counter)
-
                         number = element.text
                         h4_counter += 1
                         #print(number)
+
                     elif element.name == "h5":
                         date = element.text
 
-                    elif element.name == "p":
+                    elif element.name == ("p" or "table" or "i"):
                         body += "<br>"+element.text
 
                 if h4_counter != 0:
-                    #print("Jetzt schreibe ich Nummer ", number)
+                    #print("Writing number ", number, " right now")
                     intoHtml(year, number, date, body)
                     body = ""
                     #print("Counter: ", h4_counter)
@@ -64,7 +75,7 @@ def intoHtml(year, number, date, body):
     """instead of 'Stein1' in the end put the folder where you want to 
     collect those bunch of letters :)"""
 
-    f = open("ignore/letters/Stein1"+filename, 'w') 
+    f = open("ignore/letters/Stein2/"+filename, 'w') 
 
     #the %s is a placeholder for a variable --> they are defined below
     wrapper= """<html>
