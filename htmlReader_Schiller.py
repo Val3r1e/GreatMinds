@@ -1,5 +1,5 @@
 '''Terminal: python3 htmlReader.py "path/to/directory" "path/to/extracted/html-letters'''
-'''eg: python3 htmlReader.py "data/briefwechsel-zwischen-schiller-und-goethe-band-1" "ignore/letters/html" '''
+'''eg: python3 htmlReader_Schiller.py "data/briefwechsel-zwischen-schiller-und-goethe-band-1" "ignore/letters/Schiller1/html" '''
 
 #  briefwechsel-zwischen-schiller-und-goethe-band-1
 
@@ -51,27 +51,28 @@ def extract(soup, destination):
         if element.name == "h3":
             year = (element.text).replace(".","")
 
-        elif element.name == "h2":
+        if element.name == "h2":
             if title_counter != 0:
                 into_html(year, number, date, html_body, destination)
                 into_txt(year, number, date, txt_body, destination)
                 txt_body = ""
-                html_body = []
+                del html_body [:]
+
             number = element.text
             title_counter += 1
 
         # elif element.name == "h5":
         #         date = element.text
 
-        elif element.name == "p" or "br" or "a" or "table" or "hr" or "ol" or "u" or "span" or "b" or "dl":
+        if element.name == "p" or "br" or "a" or "table" or "hr" or "ol" or "u" or "span" or "b" or "dl":
             txt_body += element.text
             html_body.append(element)
         
     if title_counter != 0:
         into_html(year, number, date, html_body, destination)
         into_txt(year, number, date, txt_body, destination)
-        body = ""
-        letter = []
+        txt_body = ""
+        del html_body [:]
 
 
 def into_html(year, number, date, body, destination):
@@ -170,8 +171,7 @@ def write_metadata(soup,filename, direc, source):
     else:
         metadata["Number"] = "none"
         title = split
-        metadata["Title"] = split
-    
+        metadata["Title"] = split  
 
     year = soup.find("h3")
     metadata["Year"] = year.text
@@ -189,12 +189,18 @@ def write_metadata(soup,filename, direc, source):
         metadata["signature"] = signature.text
 
     # author and recipient
-    if title == "An Schiller." or "An Schiller":
+    if "Schiller" in title:
         metadata["Author"] = "Goethe"
         metadata["Recipient"] = "Schiller"
-    if title == "An Goethe." or "An Goethe":
+
+    elif "Goethe" in title:
         metadata["Author"] = "Schiller"
         metadata["Recipient"] = "Goethe"
+    
+    else:
+        metadata["Author"] = "unknown"
+        metadata["Recipient"] = "unknown"
+        
         
     
     json.dump(metadata, open(name,'w'))
