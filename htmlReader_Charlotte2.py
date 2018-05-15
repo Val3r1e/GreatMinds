@@ -21,7 +21,7 @@ def extract(direc, destination):
 
                 txt_body = ""
                 html_body = ""
-                number = "YYY"
+                number = "YYYY"
                 date = ""
                 h4_counter = 0
                 document = soup.find_all()
@@ -59,7 +59,7 @@ def extract(direc, destination):
                     intoTxt(year, number, date, txt_body)
                     txt_body = ""
                     html_body = ""
-    #metadata(destination, direc)
+    metadata(destination, direc)
 
 def intoHtml(year, number, date, body):
 
@@ -125,11 +125,22 @@ def write_metadata(soup, filename, direc, source):
 
     metadata["Collection"] = source.replace("data/","")
 
-    number = soup.find("h4")
-    metadata["Number"] = number.text
+    #number and year
+    head = soup.find("h4")
+    headline = head.text
+    split = headline.split(" - ")
 
-    year = soup.find("h3")
-    metadata["Year"] = year.text
+    if len(split) > 1:
+        metadata["Year"] = split[0] 
+        metadata["Number"] = split[1]
+    else:
+        metadata["Number and Year"] = split
+
+    # year = soup.find("h3")
+    # if year == None:
+    #     metadata["Year"] = "None"
+    # else:
+    #     metadata["Year"] = year.text
 
     date = soup.find("h5")
     if date == None:
@@ -137,7 +148,7 @@ def write_metadata(soup, filename, direc, source):
     else:
          metadata["Date"] = date.text
 
-    signature = soup.find("p", class_="signature")
+    signature = soup.find("p", class_="signature")      #doesn't work yet because signature is no longer a tag in the new html documents
     if signature == None:
         metadata["signature"] = "None"
     else:
