@@ -46,33 +46,34 @@ def extract(soup, destination):
             tags.append(tag.name)
     print(tags)
 
+    body_tags = ["p", "br", "a", "table", "hr", "ol", "u", "span", "b", "dl"]
+
     """decide what happens with each part and write the files: """
     for element in document:
         if element.name == "h3":
             year = (element.text).replace(".","")
 
-        if element.name == "h2":
+        elif element.name == "h2":
             if title_counter != 0:
                 into_html(year, number, date, html_body, destination)
                 into_txt(year, number, date, txt_body, destination)
                 txt_body = ""
-                del html_body [:]
+                del html_body[:]
 
-            number = element.text
+            number = (element.text).lstrip()
             title_counter += 1
 
-        # elif element.name == "h5":
-        #         date = element.text
-
-        if element.name == "p" or "br" or "a" or "table" or "hr" or "ol" or "u" or "span" or "b" or "dl":
+        elif element.name in body_tags:
             txt_body += element.text
             html_body.append(element)
+        else:
+            pass
         
     if title_counter != 0:
         into_html(year, number, date, html_body, destination)
         into_txt(year, number, date, txt_body, destination)
         txt_body = ""
-        del html_body [:]
+        del html_body[:]
 
 
 def into_html(year, number, date, body, destination):
@@ -82,6 +83,7 @@ def into_html(year, number, date, body, destination):
     if year == "XXXX":
         year = "1794"
 
+    number = number.zfill(3)
     filename = year + " - " + number + '.html'
 
     f = open(destination+"/"+filename, 'w') 
@@ -120,6 +122,7 @@ def into_txt(year, number, date, body, destination):
     if year == "XXXX":
         year = "1794"
     
+    number = number.zfill(3)
     destination = destination.replace("html", "txt/")
     
     filename = year + " - " + number + '.txt'
