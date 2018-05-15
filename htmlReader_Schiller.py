@@ -1,8 +1,3 @@
-'''Terminal: python3 htmlReader.py "path/to/directory" "path/to/extracted/html-letters'''
-'''eg: python3 htmlReader_Schiller.py "data/briefwechsel-zwischen-schiller-und-goethe-band-1" "ignore/letters/Schiller1/html" '''
-
-#  briefwechsel-zwischen-schiller-und-goethe-band-1
-
 from bs4 import BeautifulSoup
 import bs4
 import os
@@ -11,6 +6,11 @@ from webbrowser import open_new_tab
 import sys
 from pprint import pprint
 import json
+
+'''Terminal: python3 htmlReader.py "path/to/directory" "path/to/extracted/html-letters'''
+'''eg: python3 htmlReader_Schiller.py "data/briefwechsel-zwischen-schiller-und-goethe-band-1" "ignore/letters/Schiller1/html" '''
+
+#  briefwechsel-zwischen-schiller-und-goethe-band-1
 
 def open_file(direc, destination):
 
@@ -203,8 +203,6 @@ def write_metadata(soup,filename, direc, source):
     else:
         metadata["Author"] = "unknown"
         metadata["Recipient"] = "unknown"
-        
-        
     
     json.dump(metadata, open(name,'w'))
 
