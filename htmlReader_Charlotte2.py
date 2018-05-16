@@ -20,11 +20,12 @@ def extract(direc, destination):
                 print(filename)
 
                 txt_body = ""
-                html_body = ""
+                html_body = []
                 number = "YYYY"
                 date = ""
                 h4_counter = 0
                 document = soup.find_all()
+                body_tags = ["p", "table", "i", "a", "sup", "br", "span", "h2", "big", "b", "ol", "hr", "tt"]
 
                 # """to find out which tags exist in each document: """
                 # tags = []
@@ -43,22 +44,34 @@ def extract(direc, destination):
                             intoHtml(year, number, date, html_body)
                             intoTxt(year, number, date, txt_body)
                             txt_body = ""
-                            html_body = ""
+                            #html_body = ""
+                            del html_body[:]
+
                         number = element.text
                         h4_counter += 1
 
                     elif element.name == "h5":
                         date = element.text
 
-                    elif element.name == ("p" or "table" or "i" or "a" or "sup" or "br" or "span" or "h2" or "big" or "b" or "ol" or "li" or "hr" or "tr" or "td" or "th" or "tt" or ""):
+                    # elif element.name == ("p" or "table" or "i" or "a" or "sup" or "br" or "span" or "h2" or "big" or "b" or "ol" or "li" or "hr" or "tr" or "td" or "th" or "tt" or ""):
+                    #     txt_body += "\n" + element.text
+                    #     #html_body += "<br>" + element.text
+                    #     html_body.append(element)
+
+                    elif element.name in body_tags:
                         txt_body += "\n" + element.text
-                        html_body += "<br>" + element.text
+                        html_body.append(element)
+                    
+                    else:
+                        pass
 
                 if h4_counter != 0:
                     intoHtml(year, number, date, html_body)
                     intoTxt(year, number, date, txt_body)
                     txt_body = ""
-                    html_body = ""
+                    #html_body = ""
+                    del html_body[:]
+
     metadata(destination, direc)
 
 def intoHtml(year, number, date, body):
@@ -67,6 +80,10 @@ def intoHtml(year, number, date, body):
 
     f = open("Letters/"+filename, 'w') 
 
+    letter = ""
+    for element in body:
+        letter += str(element)
+
     wrapper= """<!DOCTYPE HTML>
     <html lang="DE">
         <head>
@@ -74,13 +91,17 @@ def intoHtml(year, number, date, body):
             <title> %s, %s </title>
         </head>
         <body>
-            <h4> %s - %s </h4>
-            <h5> %s </h5>
-            <p> %s </p>
+            <header>
+                <h4> %s - %s </h4>
+                <h5> %s </h5>
+            </header>
+            <article>
+                <p> %s </p>
+            </article>
         </body>
     </html>"""
 
-    whole = wrapper % (year, number, year, number, date, body)    
+    whole = wrapper % (year, number, year, number, date, letter)    
     f.write(whole)
     f.close()
 
@@ -135,12 +156,6 @@ def write_metadata(soup, filename, direc, source):
         metadata["Number"] = split[1]
     else:
         metadata["Number and Year"] = split
-
-    # year = soup.find("h3")
-    # if year == None:
-    #     metadata["Year"] = "None"
-    # else:
-    #     metadata["Year"] = year.text
 
     date = soup.find("h5")
     if date == None:
