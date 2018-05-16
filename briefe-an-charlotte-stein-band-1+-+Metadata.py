@@ -1,7 +1,7 @@
 
 # coding: utf-8
 
-# In[111]:
+# In[1]:
 
 
 from bs4 import BeautifulSoup as bs
@@ -14,15 +14,27 @@ from pprint import pprint
 import json
 
 
-# In[112]:
+# In[10]:
 
 
-direc = "C:\\Users\\kokts\\Desktop\\CS4DM\\visualizing-great-minds\\data\\briefe-an-charlotte-stein-band-1"
-source = sys.argv[1]
-destination = sys.argv[2]
+#source = sys.argv[1]
+#destination = sys.argv[2]
 
 
-# In[132]:
+# In[116]:
+
+
+from bs4 import BeautifulSoup as bs
+import bs4
+import os
+import datetime
+from webbrowser import open_new_tab 
+import sys
+from pprint import pprint
+import json
+
+#source = sys.argv[1]
+#destination = sys.argv[2]
 
 
 direc = "C:\\Users\\kokts\\Desktop\\CS4DM\\visualizing-great-minds\\data\\briefe-an-charlotte-stein-band-1"
@@ -33,6 +45,7 @@ def extract():
 
     #direc = "../data/briefe-an-charlotte-stein-band-1"         #add your directory
    
+    direc = "C:\\Users\\kokts\\Desktop\\CS4DM\\visualizing-great-minds\\data\\briefe-an-charlotte-stein-band-1"
     fileindex = 1
     year = "XXXX"                                    #in case there is no date
    
@@ -43,7 +56,7 @@ def extract():
             filename = os.path.join(direc, str(fileindex)+".html") # this way he runs through the files in the right order (so we get the right year for each letter)
             fileindex += 1
             with open(filename, "r", encoding="utf8") as openfile:
-                soup = bs(openfile, 'lxml')
+                soup = bs(openfile, "html.parser")
                 print(filename+"\n")
                 
                 txt_body = ""
@@ -52,11 +65,13 @@ def extract():
                 date = ""
                 h4_counter = 0
                     
-                document = soup.find_all(["h3","h4","p"])
+                document = soup.find_all()
                 print(document)
-                print (type(number))
-                html = []
-                """to find out which tags exist in each document: """
+                #print (type(number))
+               
+               
+            
+                #to find out which tags exist in each document:
                 document = soup.find_all()
                 tags = []
                 for tag in document:
@@ -67,21 +82,21 @@ def extract():
                     
                 for element in document:
                     if element.name == "h3":
-                        year = (element.text).replace(".","")
+                        year = element.text
                     elif element.name == "h4":
                         if h4_counter != 0:
-                            print("Jetzt schreibe ich Nummer ", number)
+                            print(number)
                             intoHtml(year, number, date, html_body)
                             into_txt(year, number, date, txt_body)
                             txt_body = ""
                             html_body = []
                             print("Counter: ", h4_counter)
+                            
                             for tag in soup.find("h4").next_siblings:
                                 if tag.name == "h4":
                                     break
                                 else:
                                     if(tag.name == "p" or tag.name == "br" or tag.name == "a" or tag.name == "table" or tag.name == "hr" or tag.name == "ol" or tag.name == "u" or tag.name == "span" or tag.name == "b" or tag.name == "dl"):
-                                        #(str(tag)) != '\n'):
                                         txt_body += (str(tag))
                                         html_body.append(tag)
                             print("Inside h4: ")
@@ -91,17 +106,18 @@ def extract():
                             number = element.text
                             h4_counter += 1
                             print(number)
-                        elif element.name == "p":
-                            txt_body += "<br>"+element.text
-                            html_body.append(element)
+                        
+                        elif element.name == "p" or element.name == "table" or element.name == "i" or element.name == "a" or element.name == "sup" or element.name == "br" or element.name == "span" or element.name == "h2" or element.name == "big" or element.name == "b" or element.name == "ol" or element.name == "li" or element.name == "hr" or element.name == "tr" or element.name == "td" or element.name == "th" or element.name == "tt" or element.name == "":
+                            txt_body += "\n" + element.text
+                            html_body += "<br>" + element.text
                                 
                 if h4_counter != 0:
-                    print("Jetzt schreibe ich Nummer ", number)
+                    print(number)
                     intoHtml(year, number, date, html_body)
                     into_txt(year, number, date, txt_body)
                     txt_body = ""
                     html_body = []
-                    #letter = []
+                    
                     print("Counter: ", h4_counter)
                     
     
@@ -111,7 +127,7 @@ def extract():
                     
 
 
-# In[133]:
+# In[120]:
 
 
 def intoHtml(year, number, date, html_body):
@@ -140,12 +156,12 @@ def intoHtml(year, number, date, html_body):
     f.write(whole)
     f.close()
 
-    webbrowser.open_new_tab('file:///' + os.getcwd() + '/' + 'f')
+    #open_new_tab(filename)
     
     
 
 
-# In[134]:
+# In[121]:
 
 
 def into_txt(year, number, date, html_body):
@@ -153,11 +169,11 @@ def into_txt(year, number, date, html_body):
     
     filename = year + " - " + number + '.txt'
     
-    destination = "C:\\Users\\kokts\\Desktop\\CS4DM\\visualizing-great-minds\\data\\briefe-an-charlotte-stein-band-1\\letters\\"
+    destination = "C:\\Users\\kokts\\Desktop\\CS4DM\\visualizing-great-minds\\data\\briefe-an-charlotte-stein-band-1\\letters\\" + filename
     destination = destination.replace("html", "txt/")
     
 
-    f = open(destination+filename, 'w') 
+    f = open(destination+filename, 'w', encoding= "utf8") 
 
     html_body.encode('ascii', errors='ignore')
 
@@ -167,10 +183,16 @@ def into_txt(year, number, date, html_body):
     f.write(whole)
     f.close()
 
-    webbrowser.open_new_tab(filename)
+    #open_new_tab(filename)
 
 
-# In[135]:
+# In[122]:
+
+
+extract()
+
+
+# In[113]:
 
 
 def metadata(direc):
@@ -180,23 +202,23 @@ def metadata(direc):
         if file.endswith(".html"):
             filename = os.path.join(direc, file)
             with open(filename, "r") as openfile:
-                soup = bs(openfile, 'lxml')
+                soup = bs(openfile, "html.parser")
                 print("\n\n"+filename+"\n")
 
                 write_metadata(soup, filename, direc)
 
 
-# In[136]:
+# In[114]:
 
 
 def write_metadata(soup,filename, direc):
     '''metadata with collection, title, number, year, date, signature, author and recipient'''
 
     filename = filename.replace(".html",".json")
-    name = filename.replace("C:\\Users\\kokts\\Desktop\\CS4DM\\visualizing-great-minds\\data\\briefe-an-charlotte-stein-band-1\\letters\\html","C:\\Users\\kokts\\Desktop\\CS4DM\\visualizing-great-minds\\data\\briefe-an-charlotte-stein-band-1\\letters\\meta")
+    name = filename.replace("C:\\Users\\kokts\\Desktop\\CS4DM\\visualizing-great-minds\\data\\briefe-an-charlotte-stein-band-1\\letters","C:\\Users\\kokts\\Desktop\\CS4DM\\visualizing-great-minds\\data\\briefe-an-charlotte-stein-band-1\\letters")
     metadata = {}
 
-    metadata["Collection"] = source.replace("data/","")
+    metadata["Collection"] = name.replace("data/","")
 
     # title and number
     head = soup.find("h4")
@@ -232,26 +254,12 @@ def write_metadata(soup,filename, direc):
     else:
         metadata["signature"] = signature.text
 
-    """# author and recipient
-    if title == "An Schiller." or "An Schiller":
-        metadata["Author"] = "Goethe"
-        metadata["Recipient"] = "Schiller"
-    if title == "An Goethe." or "An Goethe":
-        metadata["Author"] = "Schiller"
-        metadata["Recipient"] = "Goethe"
-        
-    """
+   
     print(metadata)
     json.dump(metadata, open(name,'w'))
 
 
-# In[137]:
-
-
-extract()
-
-
-# In[138]:
+# In[115]:
 
 
 metadata("C:\\Users\\kokts\\Desktop\\CS4DM\\visualizing-great-minds\\data\\briefe-an-charlotte-stein-band-1\\letters")
