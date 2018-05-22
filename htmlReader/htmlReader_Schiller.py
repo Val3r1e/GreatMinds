@@ -6,9 +6,10 @@ from webbrowser import open_new_tab
 import sys
 from pprint import pprint
 import json
+from datetime import datetime
 
 '''Terminal: python3 htmlReader.py "path/to/directory" "path/to/extracted/html-letters'''
-'''eg: python3 htmlReader_Schiller.py "data/briefwechsel-zwischen-schiller-und-goethe-band-1" "ignore/letters/Schiller1/html" '''
+'''eg: python3 htmlReader_SchillerT.py "data/briefwechsel-zwischen-schiller-und-goethe-band-1" "ignore/letters/Schiller1/html" '''
 
 #  briefwechsel-zwischen-schiller-und-goethe-band-1
 
@@ -24,7 +25,7 @@ def open_file(direc, destination):
                 soup = BeautifulSoup(openfile, 'html.parser')
                 print("\n\n"+filename+"\n")
 
-                extract(soup, destination)
+                #extract(soup, destination)
     
     metadata(destination, direc)
 
@@ -40,11 +41,11 @@ def extract(soup, destination):
     document = soup.find_all()
 
     """to find out which tags exist in each document: """
-    tags = []
-    for tag in document:
-        if tag.name not in tags:
-            tags.append(tag.name)
-    print(tags)
+    # tags = []
+    # for tag in document:
+    #     if tag.name not in tags:
+    #         tags.append(tag.name)
+    #print(tags)
 
     body_tags = ["p", "br", "a", "table", "hr", "ol", "u", "span", "b", "dl"]
 
@@ -163,7 +164,8 @@ def write_metadata(soup,filename, direc, source):
 
     metadata["Collection"] = source.replace("data/","")
 
-    # title and number
+
+    #---------title and number--------
     head = soup.find("h4")
     headline = head.text
     split = headline.split('. ')
@@ -174,24 +176,63 @@ def write_metadata(soup,filename, direc, source):
     else:
         metadata["Number"] = "none"
         title = split
-        metadata["Title"] = split  
+        metadata["Title"] = split 
 
+
+    #-------------year--------------
     year = soup.find("h3")
     metadata["Year"] = year.text
 
+
+    #------------date---------------
     date = soup.find("p", class_ = "date")
+
+    months = {"Januar":"Jan", "Jänner":"Jan", "Jan":"Jan", "Februar":"Feb", "Febr":"Feb", "März":"Mar", 
+              "April":"Apr", "Mai":"May", "Juni":"Jun", "Juli":"Jul", "August":"Aug", "Aug":"Aug", 
+              "September":"Sep", "October":"Oct", "November":"Nov", "Novbr":"Nov", "Nov":"Nov", 
+              "December":"Dec", "Dezember":"Dec", "Dec":"Dec"}
+    
     if date == None:
          metadata["Date"] = "None"
-    else:
-         metadata["Date"] = date.text
 
+    # make it readable for computer (I hope)
+    else:
+        date = (date.text).replace(".", "")
+        date = date.split(" ")
+        day = "none"
+        jahr = "none"
+        written_on = date
+
+        for substring in date:
+            for k in months:
+                if k in substring:
+                    month = months[k]
+
+                    i = date.index(substring)
+
+                    # sometimes the day is missing, it's just "Juni 1798" or sth.
+                    if date[i-1].isdigit():
+                        day = date[i-1].replace(" ", "")
+                    
+                    # sometimes the year is missing
+                    if date[i] != date[-1]:
+                        if date[i+1].isdigit():
+                            jahr = date[i+1].replace(" ", "")
+
+                    written_on = day + " " + month + " " + jahr
+
+        #print(written_on)
+
+        metadata["Date"] = written_on
+
+    #-------------signature-----------------
     signature = soup.find("p", class_="signature")
     if signature == None:
         metadata["signature"] = "None"
     else:
         metadata["signature"] = signature.text
 
-    # author and recipient
+    #------- author and recipient------------
     if "Schiller" in title:
         metadata["Author"] = "Goethe"
         metadata["Recipient"] = "Schiller"
