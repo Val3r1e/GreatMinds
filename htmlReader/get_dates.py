@@ -61,7 +61,7 @@ def into_csv(liste):
     """writes csv file of the data"""
     
     
-    with open("SchillerYears.csv","w") as csvfile:
+    with open("../ignore/letters/SchillerYears.csv","w") as csvfile:
 
         writer = csv.writer(csvfile)
 
