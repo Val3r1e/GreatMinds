@@ -6,10 +6,10 @@ from webbrowser import open_new_tab
 import sys
 from pprint import pprint
 import json
-from datetime import datetime
+import re
 
 '''Terminal: python3 htmlReader.py "path/to/directory" "path/to/extracted/html-letters'''
-'''eg: python3 htmlReader_SchillerT.py "data/briefwechsel-zwischen-schiller-und-goethe-band-1" "ignore/letters/Schiller1/html" '''
+'''eg: python3 htmlReader_Schiller.py "../data/briefwechsel-zwischen-schiller-und-goethe-band-1" "../ignore/letters/Schiller1/html" '''
 
 #  briefwechsel-zwischen-schiller-und-goethe-band-1
 
@@ -159,7 +159,7 @@ def write_metadata(soup,filename, direc, source):
     '''metadata with collection, title, number, year, date, signature, author and recipient'''
 
     filename = filename.replace(".html",".json")
-    name = filename.replace("ignore/letters/Schiller1/html/","ignore/letters/Schiller1/meta/")
+    name = filename.replace("../ignore/letters/Schiller1/html/","../ignore/letters/Schiller1/meta/")
     metadata = {}
 
     metadata["Collection"] = source.replace("data/","")
@@ -184,26 +184,45 @@ def write_metadata(soup,filename, direc, source):
     metadata["Year"] = year.text
 
 
-    #------------date---------------
+    #------------date and place------------
     date = soup.find("p", class_ = "date")
+
+    string_date = date
 
     months = {"Januar":"Jan", "Jänner":"Jan", "Jan":"Jan", "Februar":"Feb", "Febr":"Feb", "März":"Mar", 
               "April":"Apr", "Mai":"May", "Juni":"Jun", "Juli":"Jul", "August":"Aug", "Aug":"Aug", 
-              "September":"Sep", "October":"Oct", "November":"Nov", "Novbr":"Nov", "Nov":"Nov", 
-              "December":"Dec", "Dezember":"Dec", "Dec":"Dec"}
+              "September":"Sep", "Sept":"Sep", "October":"Oct", "Oktober":"Oct", "November":"Nov", 
+              "Novbr":"Nov", "Nov":"Nov", "December":"Dec", "Dezember":"Dec", "Dec":"Dec"}
     
     if date == None:
-         metadata["Date"] = "None"
+        metadata["Date"] = "None"
+        metadata["Place"] = "None"
 
-    # make it readable for computer (I hope)
+    # make it readable for computers (I hope)
     else:
         date = (date.text).replace(".", "")
+        date = date.replace("{","")
+        date = date.replace("}","")
+        date = date.replace("\n","")
+        date = date.replace("(","")
+        date = date.replace(")","")
+        date = date.replace(",","")
+        #print(date)
+
         date = date.split(" ")
         day = "none"
         jahr = "none"
         written_on = date
 
-        for substring in date:
+        # remove all entries like "" or " ":
+        date = list(filter(None, date))
+        #print(date)
+
+        # not always correct bcs st the place is missing ... 
+        metadata["Place"] = date[0]
+        print(date[0])
+
+        for substring in date: 
             for k in months:
                 if k in substring:
                     month = months[k]
@@ -216,14 +235,22 @@ def write_metadata(soup,filename, direc, source):
                     
                     # sometimes the year is missing
                     if date[i] != date[-1]:
-                        if date[i+1].isdigit():
-                            jahr = date[i+1].replace(" ", "")
+                        jahr = str(re.findall(r'\d+', date[i+1])).replace("[","") #finds all digits
+                        jahr = jahr.replace("]","")
+                        jahr = jahr.replace("'","")
+                        # if date[i+1].isdigit():
+                        #     jahr = date[i+1].replace(" ", "")
 
                     written_on = day + " " + month + " " + jahr
 
-        #print(written_on)
+        print(written_on)
 
         metadata["Date"] = written_on
+
+    if string_date == None:
+        metadata["StringDate"] = "None"
+    else:
+        metadata["StringDate"] = string_date.text
 
     #-------------signature-----------------
     signature = soup.find("p", class_="signature")
