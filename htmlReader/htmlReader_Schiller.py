@@ -195,8 +195,8 @@ def write_metadata(soup,filename, direc, source):
               "Novbr":"Nov", "Nov":"Nov", "December":"Dec", "Dezember":"Dec", "Dec":"Dec"}
     
     if date == None:
-        metadata["Date"] = "None"
-        metadata["Place"] = "None"
+        metadata["Date"] = "none"
+        metadata["Place"] = "none"
 
     # make it readable for computers (I hope)
     else:
@@ -248,14 +248,14 @@ def write_metadata(soup,filename, direc, source):
         metadata["Date"] = written_on
 
     if string_date == None:
-        metadata["StringDate"] = "None"
+        metadata["StringDate"] = "none"
     else:
         metadata["StringDate"] = string_date.text
 
     #-------------signature-----------------
     signature = soup.find("p", class_="signature")
     if signature == None:
-        metadata["signature"] = "None"
+        metadata["signature"] = "none"
     else:
         metadata["signature"] = signature.text
 
