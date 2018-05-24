@@ -39,6 +39,9 @@ def extract(direc, destination):
                     if element.name == "h3":
                         year = element.text
 
+                    elif element.name == "h2":
+                        year = element.text
+
                     elif element.name == "h4":
                         if h4_counter != 0:
                             intoHtml(year, number, date, html_body)
@@ -78,7 +81,7 @@ def intoHtml(year, number, date, body):
 
     filename = year + " - " + number + '.html'
 
-    f = open("Letters/"+filename, 'w') 
+    f = open("Letter/"+filename, 'w') 
 
     letter = ""
     for element in body:
@@ -111,7 +114,7 @@ def intoTxt(year, number, date, body):
     
     filename = year + " - " + number + '.txt'
 
-    f = open("Letters/"+filename, 'w') 
+    f = open("Letter/"+filename, 'w') 
 
     body.encode('ascii', errors='ignore')
 
@@ -141,7 +144,7 @@ def write_metadata(soup, filename, direc, source):
     '''metadata with collection, title, number, year, date, signature, author and recipient'''
 
     filename = filename.replace(".html",".json")
-    name = filename.replace("Letters/","Metadata/")
+    name = filename.replace("Letter/","Metadata/")
     metadata = {}
 
     metadata["Collection"] = source.replace("data/","")
@@ -174,7 +177,7 @@ def write_metadata(soup, filename, direc, source):
 
 def main():
 
-    extract("data/briefe-an-charlotte-stein-band-2", "Letters/")
+    extract("data/briefe-an-charlotte-stein-band-2", "Letter/")
 
 
 if __name__ == '__main__':
