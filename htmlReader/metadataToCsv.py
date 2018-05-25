@@ -6,7 +6,7 @@ import csv
 from collections import Counter
 
 def countAll():
-    rootdir = "Letters/CharlotteStein2/NewMetadata"
+    rootdir = "C:\\Users\\kokts\\Desktop\\CS4DM\\Semester 2\\GreatMinds\\Letters\\CharlotteStein1\\Metadata"
 
     yearList = []
 
