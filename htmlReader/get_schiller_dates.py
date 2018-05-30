@@ -4,6 +4,7 @@ import json
 import csv
 from pprint import pprint
 from collections import Counter
+import collections 
 
 ''' python3 get_dates.py "../ignore/letters/" '''
 
@@ -37,24 +38,42 @@ def getData(rootdir):
     for x in counter:
         summe += counter[x]
         
-    print(len(years))
-    print(summe)
+    # print(len(years))
+    # print(summe)
 
-    pprint(counter)
+    #pprint(counter)
+
+    head = [tuple(["Year"] + ["NumberOfLetters"])]
+    #print(head)
+
+    ordered = collections.OrderedDict(sorted(counter.items()))
+    ordered = list(ordered.items())
+
+    for x in ordered:
+        head.append(x)
+
+    pprint(head)
+
+    into_csv(head)
+
 
     ''' in order to write it in the csv file - it writes lines not columns,
     so each year has to be "in line" with it's number '''
-    keys = ["Year"]
-    values = ["Number of Letters"]
-    for x in counter:
-        keys.append(x)
-        values.append(counter[x])
+    # col_1 = ["Year"]
+    # col_2 = ["NumberOfLetters"]
+
+    # keys=["Year"]
+    # values=["NumberOfLetters"]
+
+    # for x in counter:
+    #     keys.append(int(x))
+    #     values.append(counter[x])
     
-    csv_list = list(zip(keys, values))
+    # csv_list = list(zip(keys, values))
 
-    print(csv_list)
+    # pprint(csv_list)
 
-    into_csv(csv_list)
+    # into_csv(csv_list)
                 
 
 def into_csv(liste):
