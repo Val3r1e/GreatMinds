@@ -6,7 +6,7 @@ from pprint import pprint
 from collections import Counter
 import collections 
 
-''' python3 get_dates_all.py "../Letters/" '''
+''' python3 get_all_dates.py "../Letters/" '''
 
 def getData(rootdir):
     """gets the year and the date from the metadatafiles (.json files)"""
@@ -107,7 +107,7 @@ def into_csv(liste):
     """writes csv file of the data"""
     
     
-    with open("../ignore/letters/great_data.csv","w") as csvfile:
+    with open("great_data.csv","w") as csvfile:
 
         writer = csv.writer(csvfile)
 
