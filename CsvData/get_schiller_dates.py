@@ -32,19 +32,9 @@ def getData(rootdir):
 
                 else:
                     pass
-
-    summe = 0 #just to check if it got every letter
     counter = Counter(years)
-    for x in counter:
-        summe += counter[x]
-        
-    # print(len(years))
-    # print(summe)
-
-    #pprint(counter)
 
     head = [tuple(["Year"] + ["NumberOfLetters"])]
-    #print(head)
 
     ordered = collections.OrderedDict(sorted(counter.items()))
     ordered = list(ordered.items())
