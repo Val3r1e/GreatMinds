@@ -78,34 +78,11 @@ def getData(rootdir):
         Stein_c = next((d for c, d in orderedStein if c == x), 0)
         all_data.append(tuple([str(x)] + [str(Schiller_c)] + [str(Stein_c)]))
 
-
     pprint(all_data)
-
     into_csv(all_data)
-
-
-    ''' in order to write it in the csv file - it writes lines not columns,
-    so each year has to be "in line" with it's number '''
-    # col_1 = ["Year"]
-    # col_2 = ["NumberOfLetters"]
-
-    # keys=["Year"]
-    # values=["NumberOfLetters"]
-
-    # for x in counter:
-    #     keys.append(int(x))
-    #     values.append(counter[x])
-    
-    # csv_list = list(zip(keys, values))
-
-    # pprint(csv_list)
-
-    # into_csv(csv_list)
                 
-
 def into_csv(liste):
     """writes csv file of the data"""
-    
     
     with open("great_data.csv","w") as csvfile:
 
@@ -113,12 +90,6 @@ def into_csv(liste):
 
         for x in liste:
             writer.writerow(x)
-
-        # #write a dict in two rows like this:
-        # writer.writerow(dictionary.keys())
-        # writer.writerow(dictionary.values())
-
-    
 
 def main():
 
