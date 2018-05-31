@@ -1,0 +1,12 @@
+We've got:
+
+Letters to: - Charlotte Stein
+            - Christiane Goethe
+            - Friedrich Schiller
+            - Charlotte Schiller
+
+Letter from:    - Christiane Goethe
+                - August Goethe
+                - Friedrich Schiller
+
+distinguishable by the "Author" and the "Recipient" tags in the metadata
