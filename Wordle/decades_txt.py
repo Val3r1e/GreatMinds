@@ -96,11 +96,11 @@ def extract (direc):
                         txt_body = ""
                 
 
-    # intoTxt(txt_body, whole_1785, "1785") 
-    # intoTxt(txt_body, whole_1795, "1795")            
-    # intoTxt(txt_body, whole_1805, "1805")            
-    # intoTxt(txt_body, whole_1815, "1815")
-    # intoTxt(txt_body, whole_1830, "1830")
+    intoTxt(txt_body, whole_1785, "1785") 
+    intoTxt(txt_body, whole_1795, "1795")            
+    intoTxt(txt_body, whole_1805, "1805")            
+    intoTxt(txt_body, whole_1815, "1815")
+    intoTxt(txt_body, whole_1830, "1830")
 
 
 def intoTxt(body, whole, year):
