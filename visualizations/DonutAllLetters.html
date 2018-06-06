@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<canvas width="1500" height="1000"></canvas>
+<script src="//d3js.org/d3.v4.0.0-alpha.4.min.js"></script>
+<script src="d3-tip.js"></script>
+<script>
+
+var canvas = document.querySelector("canvas"),
+    context = canvas.getContext("2d");
+
+var width = canvas.width,
+    height = canvas.height,
+    radius = Math.min(width, height) / 2;
+
+//var colors = ["#6fa0e2", "#c267e0", "#e03ab4", "#dd277c", "#e01620", "#e07523", "#a5d81a"];
+var colors = [];
+colors.names = ["#ffffff", "#e6f2ff", "#cce6ff", "#b3d9ff", "#99ccff","#80bfff","#66b3ff", "#e6e6ff", "#ccccff", "#b3b3ff", "#9999ff","#aa80ff", "#9966ff", "#9933ff", "#8c1aff", "#8000ff", "#7300e6", "#884dff", "#7733ff", "#661aff", "#8080ff", "#6666ff", "#4d4dff", "#3333ff", "#1a1aff", "#0000ff", "#0000e6", "#0000cc", "#0000b3", "#000099", "#000080", "#000000"];
+
+var arc = d3.arc()
+    .outerRadius(radius)
+    .innerRadius(radius - 90)
+    .context(context);
+
+var labelArc = d3.arc()
+    .outerRadius(radius - 50)
+    .innerRadius(radius - 40)
+    .context(context);
+
+var pie = d3.pie()
+    .sort(null)
+    .value(function(d) { return d.Amount; });
+	
+var svg = d3.select("body").append("svg")
+    .attr("width", width)
+    .attr("height", height)
+    .append("g")
+    .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
+
+context.translate(width / 2, height / 2);
+
+var tip = d3.tip()
+  .attr('class', 'd3-tip')
+  .offset([0, 0])
+  .html(function(d) {
+    return d.data.Year + ": <span style='color:orangered'>" + d.data.Amount + "</span>";
+  });
+  
+svg.call(tip);
+
+d3.requestTsv("allLetters.tsv", function(d) {
+  d.Amount = +d.Amount;
+  return d;
+}, function(error, data) {
+  if (error) throw error;
+
+  var arcs = pie(data);
+
+  arcs.forEach(function(d, i) {
+    context.beginPath();
+    arc(d)
+    context.fillStyle = colors.names[i];
+    context.fill();
+  });
+
+  context.beginPath();
+  arcs.forEach(arc);
+  context.strokeStyle = "#fff";
+  context.stroke();
+  
+  var path = svg.selectAll(".solidArc")
+      .data(pie(data))
+    .enter().append("path")
+      .on('mouseover', tip.show)
+      .on('mouseout', tip.hide);
+
+  context.textAlign = "center";
+  context.textBaseline = "middle";
+  arcs.forEach(function(d) {
+    var c = labelArc.centroid(d);
+	context.font = "bold 10px Arial";
+    context.fillText(d.data.Year + "\t" + d.data.Amount, c[0], c[1]);
+  });  
+});
+
+
+</script>
