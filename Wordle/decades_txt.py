@@ -34,7 +34,7 @@ def extract (direc):
                 year = (config["Year"]).lstrip()
                 for number in decade_ends:
                     if year.isdigit():
-                        if int(year) < number:
+                        if int(year) <= number:
                             f_name = f_name.replace("../Letters/","").replace(".json","")
                             (decade_ends[number]).append(f_name)
                             break
@@ -90,15 +90,17 @@ def extract (direc):
                         elif filename in letters_til_1830:
                             wrapper= "%s \n"
                             whole_1830 += wrapper % (txt_body)
+                        else:
+                            pass
 
                         txt_body = ""
                 
 
-    intoTxt(txt_body, whole_1785, "1785") 
-    intoTxt(txt_body, whole_1795, "1795")            
-    intoTxt(txt_body, whole_1805, "1805")            
-    intoTxt(txt_body, whole_1815, "1815")
-    intoTxt(txt_body, whole_1830, "1830")
+    # intoTxt(txt_body, whole_1785, "1785") 
+    # intoTxt(txt_body, whole_1795, "1795")            
+    # intoTxt(txt_body, whole_1805, "1805")            
+    # intoTxt(txt_body, whole_1815, "1815")
+    # intoTxt(txt_body, whole_1830, "1830")
 
 
 def intoTxt(body, whole, year):
