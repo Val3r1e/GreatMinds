@@ -107,7 +107,7 @@ def intoTxt(body, whole, year):
     
     filename = "til_" + year + ".txt"
 
-    f = open("../Wordle/"+filename, 'w') 
+    f = open("../Wordle/txt/"+filename, 'w') 
     f.write(whole)
     f.close()
 

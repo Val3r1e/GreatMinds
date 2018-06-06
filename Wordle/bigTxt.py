@@ -52,7 +52,7 @@ def intoTxt(body, whole, name):
     
     filename = name + '.txt'
 
-    f = open("../Wordle/"+ filename, 'w') 
+    f = open("../Wordle/txt/"+ filename, 'w') 
     f.write(whole)
     f.close()
 
