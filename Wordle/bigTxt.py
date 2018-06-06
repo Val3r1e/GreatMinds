@@ -1,3 +1,7 @@
+'''
+Terminal: python3 bigTxt.py "../Letters/<name>/html"
+                         eg "../Letters/Schiller2/html"
+'''
 from bs4 import BeautifulSoup
 import bs4
 import os
@@ -11,13 +15,14 @@ import json
 def extract (direc):
                                 
     whole = ""
+    name = direc.replace("../Letters/","").replace("/html","")
 
     for file in os.listdir(direc):
         if file.endswith(".html"):
             filename = os.path.join(direc, file)
             with open(filename, "r") as openfile:
                 soup = BeautifulSoup(openfile, 'html.parser')
-                print(filename)
+                #print(filename)
 
                 txt_body = ""
                 p_counter = 0
@@ -40,14 +45,14 @@ def extract (direc):
 
                     txt_body = ""
 
-    intoTxt(txt_body, whole)
+    intoTxt(txt_body, whole, name)
 
 
-def intoTxt(body, whole):
+def intoTxt(body, whole, name):
     
-    filename = 'Schiller2.txt'
+    filename = name + '.txt'
 
-    f = open("BigTxt/"+filename, 'w') 
+    f = open("../Wordle/"+ filename, 'w') 
     f.write(whole)
     f.close()
 
@@ -56,4 +61,11 @@ def intoTxt(body, whole):
 
 #---------Main-----------
 
-extract("Letters/Schiller2/html")
+def main():
+    
+    root = sys.argv[1]
+    
+    extract(root)
+
+if __name__ == '__main__':
+    main()
