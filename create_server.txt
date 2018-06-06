@@ -1,0 +1,4 @@
+Create a server (on mac at least):
+go to the file with the .html
+type "python3 -m http.server 8000"
+in the browser, go to http://localhost:8000 - all the files are listed there
