@@ -1,8 +1,7 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
-<canvas width="1500" height="1000"></canvas>
-<script src="//d3js.org/d3.v4.0.0-alpha.4.min.js"></script>
-<script src="d3-tip.js"></script>
+<canvas width="2000" height="400"></canvas>
+<script src="https://d3js.org/d3.v4.min.js"></script>
 <script>
 
 var canvas = document.querySelector("canvas"),
@@ -14,7 +13,8 @@ var width = canvas.width,
 
 //var colors = ["#6fa0e2", "#c267e0", "#e03ab4", "#dd277c", "#e01620", "#e07523", "#a5d81a"];
 var colors = [];
-colors.names = ["#ffffff", "#e6f2ff", "#cce6ff", "#b3d9ff", "#99ccff","#80bfff","#66b3ff", "#e6e6ff", "#ccccff", "#b3b3ff", "#9999ff","#aa80ff", "#9966ff", "#9933ff", "#8c1aff", "#8000ff", "#7300e6", "#884dff", "#7733ff", "#661aff", "#8080ff", "#6666ff", "#4d4dff", "#3333ff", "#1a1aff", "#0000ff", "#0000e6", "#0000cc", "#0000b3", "#000099", "#000080", "#000000"];
+//colors.names = ["#ffffff", "#e6f2ff", "#cce6ff", "#b3d9ff", "#99ccff","#80bfff","#66b3ff", "#e6e6ff", "#ccccff", "#b3b3ff", "#9999ff","#aa80ff", "#9966ff", "#9933ff", "#8c1aff", "#8000ff", "#7300e6", "#884dff", "#7733ff", "#661aff", "#8080ff", "#6666ff", "#4d4dff", "#3333ff", "#1a1aff", "#0000ff", "#0000e6", "#0000cc", "#0000b3", "#000099", "#000080", "#000000"];
+colors.names = ["#5574a6","#ff9900", "#109618"];
 
 var arc = d3.arc()
     .outerRadius(radius)
@@ -28,37 +28,55 @@ var labelArc = d3.arc()
 
 var pie = d3.pie()
     .sort(null)
-    .value(function(d) { return d.Amount; });
+    .value(function(d) { return d.NumberSchiller; });
 	
-var svg = d3.select("body").append("svg")
-    .attr("width", width)
-    .attr("height", height)
-    .append("g")
-    .attr("transform", "translate(" + width / 2 + "," + height / 2 + ")");
+var pie1 = d3.pie()
+    .sort(null)
+    .value(function(d) { return d.NumberStein; });
+	
+var pie2 = d3.pie()
+    .sort(null)
+    .value(function(d) { return d.NumberChristiane; });
+	
+var x = d3.scaleTime().range([0, width]);
+var y = d3.scaleLinear().range([height, 0]);
+var z = d3.scaleOrdinal(d3.schemeCategory10);	
 
-context.translate(width / 2, height / 2);
+//context.translate(width / 2, height / 2);
 
-var tip = d3.tip()
-  .attr('class', 'd3-tip')
-  .offset([0, 0])
-  .html(function(d) {
-    return d.data.Year + ": <span style='color:orangered'>" + d.data.Amount + "</span>";
-  });
-  
-svg.call(tip);
-
-d3.requestTsv("allLetters.tsv", function(d) {
-  d.Amount = +d.Amount;
+d3.csv("greatData.csv", function(d) {
+  d.Year = +d.Year;
+  d.NumberSchiller = +d.NumberSchiller;
+  d.NumberStein = +d.NumberStein;
+  d.NumberChristiane = +d.NumberChristiane;
   return d;
 }, function(error, data) {
   if (error) throw error;
+  
+  var persons = data.columns.slice(1).map(function(id) {
+    return {
+      id: id,
+      values: data.map(function(d) {
+        return {Year: d.Year, letters: d[id]};
+      })
+    };
+  });
+  
+  x.domain(d3.extent(data, function(d) { return d.Year; }));
 
+  y.domain([
+    d3.min(persons, function(c) { return d3.min(c.values, function(d) { return d.letters; }); }),
+    d3.max(persons, function(c) { return d3.max(c.values, function(d) { return d.letters; }); })
+  ]);
+  
+  
+  
   var arcs = pie(data);
 
   arcs.forEach(function(d, i) {
     context.beginPath();
     arc(d)
-    context.fillStyle = colors.names[i];
+    context.fillStyle = colors.names[1]	//z.domain(persons.map(function(c) { return c.id; }));
     context.fill();
   });
 
@@ -66,20 +84,69 @@ d3.requestTsv("allLetters.tsv", function(d) {
   arcs.forEach(arc);
   context.strokeStyle = "#fff";
   context.stroke();
+  context.translate(200, 200);
   
-  var path = svg.selectAll(".solidArc")
-      .data(pie(data))
-    .enter().append("path")
-      .on('mouseover', tip.show)
-      .on('mouseout', tip.hide);
 
   context.textAlign = "center";
   context.textBaseline = "middle";
   arcs.forEach(function(d) {
-    var c = labelArc.centroid(d);
+    var e = labelArc.centroid(d);
 	context.font = "bold 10px Arial";
-    context.fillText(d.data.Year + "\t" + d.data.Amount, c[0], c[1]);
+    context.fillText(d.data.Year + "\t" + d.data.NumberSchiller, e[0], e[1]);
   });  
+  
+  var arcs1 = pie1(data);
+
+  arcs1.forEach(function(d, i) {
+    context.beginPath();
+    arc(d)
+    context.fillStyle = colors.names[2]	//z.domain(persons.map(function(c) { return c.id; }));
+    context.fill();
+	
+  });
+
+  context.beginPath();
+  arcs1.forEach(arc);
+  context.strokeStyle = "#fff";
+  context.stroke();
+  context.translate(500, 0);
+
+  context.textAlign = "center";
+  context.textBaseline = "middle";
+  arcs1.forEach(function(d) {
+    var e = labelArc.centroid(d);
+	context.font = "bold 10px Arial";
+	context.strokeStyle = "#fff";
+    context.fillText(d.data.Year + "\t" + d.data.NumberStein, e[0], e[1]);
+  }); 
+
+  var arcs2 = pie2(data);
+
+  arcs2.forEach(function(d, i) {
+    context.beginPath();
+    arc(d)
+    context.fillStyle = colors.names[3]	//z.domain(persons.map(function(c) { return c.id; }));
+    context.fill();
+  });
+
+  context.beginPath();
+  arcs2.forEach(arc);
+  context.strokeStyle = "#fff";
+  context.stroke();
+  context.translate(500, 0);
+
+  context.textAlign = "center";
+  context.textBaseline = "middle";
+  arcs2.forEach(function(d) {
+    var e = labelArc.centroid(d);
+	context.font = "bold 10px Arial";
+    context.fillText(d.data.Year + "\t" + d.data.NumberChristiane, e[0], e[1]);
+  }); 
+function type(d, _, columns) {
+  d.Year = parseTime(d.Year);
+  for (var i = 1, n = columns.length, e; i < n; ++i) d[e = columns[i]] = +d[e];
+  return d;
+}  
 });
 
 
