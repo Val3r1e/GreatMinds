@@ -14,15 +14,17 @@ def getData(rootdir):
     #datesSchiller = []
     #datesStein = []
     yearsSchiller = []
+    yearsFrauSchiller = []
     yearsStein = []
     yearsChristiane = []
+
 
     for subdir, dirs, files in os.walk(rootdir):
         for file in files:
             if file.endswith('.json'):
                 config = json.loads(open(os.path.join(subdir, file)).read())
 
-                if "schiller" in config["Collection"]:
+                if "briefwechsel-zwischen-schiller-und-goethe-band" in config["Collection"]:
 
                     # if "Date" in config:
                     #     datesSchiller.append(config["Date"])
@@ -34,6 +36,18 @@ def getData(rootdir):
                         year = config["Year"]
                         if year.isdigit():
                             yearsSchiller.append(config["Year"])
+
+                elif config["Collection"] == "Briefe Goethes an Frau Schiller":
+                    # if "Date" in config:
+                    #     datesStein.append(config["Date"])
+                    #     date = str(config["Date"])
+                    #     date = date.split(" ")
+                    #     # years.append(date[-1])
+
+                    if "Year" in config:
+                        year = config["Year"].strip()
+                        if year.isdigit():
+                            yearsFrauSchiller.append(year)
 
                 elif "stein" in config["Collection"]:
                     # if "Date" in config:
@@ -47,7 +61,7 @@ def getData(rootdir):
                         if year.isdigit():
                             yearsStein.append(year)
 
-                elif "seiner" in config["Collection"]:
+                elif "briefwechsel-mit-seiner-frau-band" in config["Collection"]:
                     # if "Date" in config:
                     #     datesStein.append(config["Date"])
                     #     date = str(config["Date"])
@@ -64,6 +78,7 @@ def getData(rootdir):
                 pass
 
     counterSchiller = Counter(yearsSchiller)
+    counterFrauSchiller = Counter(yearsFrauSchiller)
     counterStein = Counter(yearsStein)
     counterChristiane = Counter(yearsChristiane)
     #pprint(counterStein)
@@ -71,6 +86,9 @@ def getData(rootdir):
     orderedSchiller = collections.OrderedDict(sorted(counterSchiller.items()))
     orderedSchiller = list(orderedSchiller.items())
     #pprint(orderedSchiller)
+
+    orderedFrauSchiller = collections.OrderedDict(sorted(counterFrauSchiller.items()))
+    orderedFrauSchiller = list(orderedFrauSchiller.items())
 
     orderedStein = collections.OrderedDict(sorted(counterStein.items()))
     orderedStein = list(orderedStein.items())
@@ -81,9 +99,12 @@ def getData(rootdir):
     #pprint(orderedChristiane)
 
     all_years = []
-    all_data = [tuple(["Year"] + ["NumberSchiller"] + ["NumberStein"] + ["NumberChristiane"])]
+    all_data = [tuple(["Year"] + ["NumberSchiller"]+ ["NumberFrauSchiller"] + ["NumberStein"] + ["NumberChristiane"])]
 
     for x in orderedSchiller:
+        if x[0] not in all_years:
+            all_years.append(x[0])
+    for x in orderedFrauSchiller:
         if x[0] not in all_years:
             all_years.append(x[0])
     for x in orderedStein:
@@ -98,9 +119,10 @@ def getData(rootdir):
 
     for x in all_years:
         Schiller_c = next((b for a, b in orderedSchiller if a == x), 0)
+        FrauSchiller_c = next((b for a, b in orderedFrauSchiller if a == x), 0)
         Stein_c = next((d for c, d in orderedStein if c == x), 0)
         Christiane_c = next((d for c, d in orderedChristiane if c == x), 0)
-        all_data.append(tuple([str(x)] + [str(Schiller_c)] + [str(Stein_c)] + [str(Christiane_c)]))
+        all_data.append(tuple([str(x)] + [str(Schiller_c)] + [str(FrauSchiller_c)] + [str(Stein_c)] + [str(Christiane_c)]))
 
     pprint(all_data)
     into_csv(all_data)
