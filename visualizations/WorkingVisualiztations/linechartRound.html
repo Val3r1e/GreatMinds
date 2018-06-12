@@ -80,8 +80,16 @@ d3.csv("greatData.csv", type, function(error, data) {
       .attr("d", function(d) { return line(d.values); })
       .style("stroke", function(d) { return z(d.id); });
 
+  /*var place = function(d){
+    for(var i = 1, n = d.values.length-1, f; i < n; ++i){
+      if(){
+
+      }
+    }
+  }*/
+
   person.append("text")
-      .datum(function(d) { return {id: d.id, value: d.values[d.values.length-1]}; })
+      .datum(function(d) { return {id: d.id, value: d.values[d.values.length-20]}; })
       .attr("transform", function(d) { return "translate(" + x(d.value.Year) + "," + y(d.value.letters) + ")"; })
       .attr("x", 3)
       .attr("dy", "0.35em")
