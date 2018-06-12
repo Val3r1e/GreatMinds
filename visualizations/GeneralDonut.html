@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html>
+<body>
+	<meta charset='utf8'></meta>
+	<canvas width="960" height="500"></canvas>
+	<script src="https://d3js.org/d3.v4.min.js"></script>
+	<form>
+		<label><input type="radio" name="dataset" value="NumberSchiller" checked> Schiller</label>
+		<label><input type="radio" name="dataset" value="NumberStein">Charlotte Stein</label>
+		<label><input type="radio" name="dataset" value="NumberChristiane">Cristiane Schiller</label>
+	</form>
+	
+	<script>
+		var canvas = document.querySelector("canvas"),
+		context = canvas.getContext("2d");
+
+		var width = canvas.width,
+			height = canvas.height,
+			radius = Math.min(width, height) / 2;
+
+		//var colors = ["#6fa0e2", "#c267e0", "#e03ab4", "#dd277c", "#e01620", "#e07523", "#a5d81a"];
+		var colors = [];
+		//colors.names = ["#00ffff", "#f0ffff", "#f5f5dc", "#000000", "#0000ff", "#a52a2a", "#00ffff", "#00008b", "#008b8b", "#a9a9a9", "#006400", "#bdb76b", "#8b008b", "#556b2f", "#ff8c00", "#9932cc", "#8b0000", "#e9967a", "#9400d3", "#ff00ff", "#ffd700", "#008000", "#4b0082", "#f0e68c", "#add8e6"];
+		colors.names = ["#5574a6","#ff9900", "#109618"];
+
+		var arc = d3.arc()
+			.outerRadius(radius -10)
+			.innerRadius(radius - 100)
+			.context(context);
+
+		var labelArc = d3.arc()
+			.outerRadius(radius - 70)
+			.innerRadius(radius - 40)
+			.context(context);
+
+		var pie = d3.pie()
+			.sort(null)
+			.value(function(d) { return d.NumberSchiller; });
+	
+		<!-- var pie = d3.pie() -->
+			<!-- .sort(null) -->
+			<!-- .value(function(d) { return d.NumberStein; }); -->
+			
+		<!-- var pie = d3.pie() -->
+			<!-- .sort(null) -->
+			<!-- .value(function(d) { return d.NumberChristiane; }); -->
+			
+		var x = d3.scaleTime().range([0, width]);
+		var y = d3.scaleLinear().range([height, 0]);
+		//var z = d3.scaleOrdinal(d3.schemeCategory10);
+
+		context.translate(width / 2, height / 2);
+		
+		d3.csv("greatData.csv", function(d) {
+		d.Year = +d.Year;
+		d.NumberSchiller = +d.NumberSchiller;
+		d.NumberStein = +d.NumberStein;
+		d.NumberChristiane = +d.NumberChristiane;
+		return d;
+		}, function(error, data) {
+		if (error) throw error;
+  
+		var persons = data.columns.slice(1).map(function(id) {
+			return {
+				id: id,
+				values: data.map(function(d) {
+				return {Year: d.Year, letters: d[id]};
+				})
+			};
+		});
+  
+		x.domain(d3.extent(data, function(d) { return d.Year; }));
+
+		y.domain([
+			d3.min(persons, function(c) { return d3.min(c.values, function(d) { return d.letters; }); }),
+			d3.max(persons, function(c) { return d3.max(c.values, function(d) { return d.letters; }); })
+		]);
+		
+		var arcs = pie(data);
+
+		  arcs.forEach(function(d, i) {
+			context.beginPath();
+			arc(d)
+			context.fillStyle = colors.names[0]	//z.domain(persons.map(function(c) { return c.id; }));
+			context.fill();
+		  });
+
+		  context.beginPath();
+		  arcs.forEach(arc);
+		  context.strokeStyle = "#fff";
+		  context.stroke();		  
+
+		  context.textAlign = "center";
+		  context.textBaseline = "middle";
+		  //context.stroke = "#fff";
+		  arcs.forEach(function(d) {
+			var e = labelArc.centroid(d);
+			context.font = "bold 10px Arial";
+			context.fillStyle = "#fff";
+			context.fillText(d.data.Year, e[0], e[1]);
+		  });   
+		  
+		function type(d, _, columns) {
+		  d.Year = parseTime(d.Year);
+		  for (var i = 1, n = columns.length, e; i < n; ++i) d[e = columns[i]] = +d[e];
+		  return d;
+		}
+	});	
+		
+	</script>
+</body>
+</html>
