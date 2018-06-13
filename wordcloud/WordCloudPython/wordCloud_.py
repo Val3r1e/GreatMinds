@@ -1,4 +1,4 @@
-'''e.g.: python3 ../txt/filtered/filtered_til_1805.txt '''
+'''e.g.: python3 wordCloud_.py ../txt/filtered/filtered_til_1785.txt '''
 
 import sys
 from os import path
@@ -37,7 +37,7 @@ def readTxt(name):
     
     wc.generate(text)
 
-    wc.to_file(path.join(currdir, "Wordclouds/wc7.png"))
+    wc.to_file(path.join(currdir, "Wordclouds/til_1785.png"))
 
 
 #readTxt("Charlotte2.txt")
