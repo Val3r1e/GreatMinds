@@ -130,7 +130,7 @@ def getData(rootdir):
 def into_csv(liste):
     """writes csv file of the data"""
     
-    with open("../visualizations/great_data.csv","w") as csvfile:
+    with open("../visualizations/data/great_data.csv","w") as csvfile:
 
         writer = csv.writer(csvfile)
 

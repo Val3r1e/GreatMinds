@@ -32,7 +32,7 @@ var x = d3.scaleBand().rangeRound([0, width]).padding(0.1),
 var g = svg.append("g")
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-d3.csv("SchillerYears.csv", function(d) {
+d3.csv("data/SchillerYears.csv", function(d) {
   								d.NumberOfLetters = +d.NumberOfLetters;
   								return d;
 							}, 

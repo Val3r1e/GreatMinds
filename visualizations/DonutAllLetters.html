@@ -44,7 +44,7 @@ var z = d3.scaleOrdinal(d3.schemeCategory10);
 
 //context.translate(width / 2, height / 2);
 
-d3.csv("greatData.csv", function(d) {
+d3.csv("data/greatData.csv", function(d) {
   d.Year = +d.Year;
   d.NumberSchiller = +d.NumberSchiller;
   d.NumberStein = +d.NumberStein;

@@ -22,7 +22,7 @@ var line1 = d3.line()
 var line2 = d3.line()
     .x(function(d) { return x(d.Year); })
     .y(function(d) { return y(d.NumberStein); });
-d3.csv("great_data.csv", function(d) {
+d3.csv("data/great_data.csv", function(d) {
                                 d.Year = d.Year;
                                 d.NumberSchiller = +d.NumberSchiller;
                                 d.NumberStein = +d.NumberStein

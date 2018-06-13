@@ -19,7 +19,7 @@ var line = d3.line()
     .x(function(d) { return x(d.Year); })
     .y(function(d) { return y(d.NumberOfLetters); });
 
-d3.csv("SchillerYears.csv", function(d) {
+d3.csv("data/SchillerYears.csv", function(d) {
                                 d.Year = d.Year;
                                 d.NumberOfLetters = +d.NumberOfLetters;
                                 return d;

@@ -21,16 +21,16 @@ def readTxt(name):
 
     stopwords += ["bey","seyn","heute", "muß", "ganz", "gar", "geht", "gleich", 
                 "de", "et", "sey", "Nov", "März", "wohl", "allein", "eben", 
-                "erst", "Jun", "sagen", "Morgen", "schon", "Jan", "Apr"]
+                "erst", "Jun", "sagen", "Morgen", "schon", "Jan", "Apr", "Leben", "möchte"]
 
     #Information about Wordcloud here: https://amueller.github.io/word_cloud/generated/wordcloud.WordCloud.html#wordcloud.WordCloud
 
     wc = WordCloud(background_color="white",
-                    font_path="/System/Library/Fonts/HelveticaNeue.dfont",  #Add Path to Fonts on your Computer
+                    font_path="/System/Library/Fonts/HelveticaNeue.ttc",  #Add Path to Fonts on your Computer
                     max_words=200,
                     mask=mask,                  #masks whatever figure you put in a picture of! Is really awesome!
                     stopwords=stopwords,
-                    prefer_horizontal=1.2,      #this way only horizontal words, to change, just delete
+                    #prefer_horizontal=1.2,      #this way only horizontal words, to change, just delete
                     colormap="tab20b")          #Add different Colormap here, can be found here: https://matplotlib.org/users/colormaps.html
     
     wc.generate(text)
@@ -38,4 +38,13 @@ def readTxt(name):
     wc.to_file(path.join(currdir, "Wordclouds/wc7.png"))
 
 
-readTxt("Charlotte2.txt")
+#readTxt("Charlotte2.txt")
+
+def main():
+    
+    root = sys.argv[1]
+    
+    readTxt(root)
+
+if __name__ == '__main__':
+    main()#

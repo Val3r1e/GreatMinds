@@ -57,7 +57,7 @@ var y = d3.scaleLinear().range([height, 0]);
 
 context.translate(width - 150, height / 2 );
 
-d3.csv("greatData.csv", function(d) {
+d3.csv("data/greatData.csv", function(d) {
 d.Year = +d.Year;
 d.NumberSchiller = +d.NumberSchiller;
 d.NumberStein = +d.NumberStein;
@@ -168,7 +168,7 @@ var line = d3.line()
 	
 //context.translate(width / 2, height / 2);
 		
-<!-- d3.csv("greatData.csv", function(d) { -->
+<!-- d3.csv("data/greatData.csv", function(d) { -->
 <!-- d.Year = +d.Year; -->
 <!-- d.NumberSchiller = +d.NumberSchiller; -->
 <!-- d.NumberStein = +d.NumberStein; -->
@@ -219,7 +219,7 @@ var line = d3.line()
   <!-- });    -->
 <!-- }); -->
 
-d3.csv("greatData.csv", type, function(error, data) {
+d3.csv("data/greatData.csv", type, function(error, data) {
   if (error) throw error;
 
   var persons = data.columns.slice(1).map(function(id) {
