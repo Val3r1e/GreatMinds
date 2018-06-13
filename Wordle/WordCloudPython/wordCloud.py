@@ -15,7 +15,7 @@ def readTxt(name):
         lines = f.readlines()
         text = "".join(lines)
 
-    mask = np.array(Image.open(path.join(currdir, "line.png")))     #for ex. exchange line for cloud
+    mask = np.array(Image.open(path.join(currdir, "goethe.png")))     #for ex. exchange line for cloud
 
     stopwords = get_stop_words("german")
 
@@ -23,7 +23,10 @@ def readTxt(name):
                 "de", "et", "sey", "Nov", "März", "wohl", "allein", "eben", 
                 "erst", "Jun", "sagen", "Morgen", "schon", "Jan", "Apr"]
 
+    #Information about Wordcloud here: https://amueller.github.io/word_cloud/generated/wordcloud.WordCloud.html#wordcloud.WordCloud
+
     wc = WordCloud(background_color="white",
+                    font_path="/System/Library/Fonts/HelveticaNeue.dfont",  #Add Path to Fonts on your Computer
                     max_words=200,
                     mask=mask,                  #masks whatever figure you put in a picture of! Is really awesome!
                     stopwords=stopwords,
@@ -32,7 +35,7 @@ def readTxt(name):
     
     wc.generate(text)
 
-    wc.to_file(path.join(currdir, "Wordclouds/wc.png"))
+    wc.to_file(path.join(currdir, "Wordclouds/wc7.png"))
 
 
 readTxt("Charlotte2.txt")
