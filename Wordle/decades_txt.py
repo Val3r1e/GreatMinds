@@ -17,7 +17,7 @@ import json
 import nltk
 from nltk.corpus import stopwords
 
-def extract (direc):
+def join_txt_files(direc):
     
     letters_til_1785 = []
     letters_til_1795 = []
@@ -27,8 +27,6 @@ def extract (direc):
 
     decade_ends = {1785:letters_til_1785, 1795:letters_til_1795, 1805:letters_til_1805, 
                    1815:letters_til_1815, 1830:letters_til_1830}
-    
-    stopWords = set(stopwords.words('german'))
 
     for subdir, dirs, files in os.walk(direc):
         for file in files:
@@ -99,51 +97,18 @@ def extract (direc):
 
                         txt_body = ""
 
-    whole_1785 = nltk.word_tokenize(whole_1785)
-    whole_1795 = nltk.word_tokenize(whole_1795)
-    whole_1805 = nltk.word_tokenize(whole_1805)
-    whole_1815 = nltk.word_tokenize(whole_1815)
-    whole_1830 = nltk.word_tokenize(whole_1830)
+    intoTxt(whole_1785, "til_1785") 
+    intoTxt(whole_1795, "til_1795")            
+    intoTxt(whole_1805, "til_805")            
+    intoTxt(whole_1815, "til_1815")
+    intoTxt(whole_1830, "til_1830")
 
-    filtered_whole_1785 = ""
-    filtered_whole_1795 = ""
-    filtered_whole_1805 = ""
-    filtered_whole_1815 = ""
-    filtered_whole_1830 = ""
 
-    for w in whole_1785:
-        if (w.lower()).strip() not in stopWords:
-            filtered_whole_1785 += w + " "
-
-    for w in whole_1795:
-        if (w.lower()).strip() not in stopWords:
-            filtered_whole_1795 += w + " "
-
-    for w in whole_1805:
-        if(w.lower()).strip() not in stopWords:
-            filtered_whole_1805 += w + " "
+def intoTxt(whole, name):
     
-    for w in whole_1815:
-        if (w.lower()).strip() not in stopWords:
-            filtered_whole_1815 += w + " "
-    
-    for w in whole_1830:
-        if (w.lower()).strip() not in stopWords:
-            filtered_whole_1830 += w + " "
+    filename = name + ".txt"
 
-
-    intoTxt(txt_body, filtered_whole_1785, "1785") 
-    intoTxt(txt_body, filtered_whole_1795, "1795")            
-    intoTxt(txt_body, filtered_whole_1805, "1805")            
-    intoTxt(txt_body, filtered_whole_1815, "1815")
-    intoTxt(txt_body, filtered_whole_1830, "1830")
-
-
-def intoTxt(body, whole, year):
-    
-    filename = "til_" + year + ".txt"
-
-    f = open("../Wordle/txt/filtered_"+filename, 'w') 
+    f = open("../Wordle/txt/"+filename, 'w') 
     f.write(whole)
     f.close()
 
@@ -156,7 +121,7 @@ def main():
 
     root = sys.argv[1]
     
-    extract(root)
+    join_txt_files(root)
 
 if __name__ == '__main__':
     main()

@@ -26,7 +26,7 @@ def open_file(direc, destination):
 
                 extract(soup, destination)
     
-    metadata(destination, direc)
+    #metadata(destination, direc)
 
 
 def extract(soup, destination):
@@ -65,7 +65,7 @@ def extract(soup, destination):
             title_counter += 1
 
         elif element.name in body_tags:
-            txt_body += element.text
+            txt_body += element.texts
             html_body.append(element)
         else:
             pass
