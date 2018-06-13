@@ -32,15 +32,15 @@ var x = d3.scaleBand().rangeRound([0, width]).padding(0.1),
 var g = svg.append("g")
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-d3.csv("data/SchillerYears.csv", function(d) {
-  								d.NumberOfLetters = +d.NumberOfLetters;
+d3.csv("data/barchart_data_five_years.csv", function(d) {
+  								d.TotalAmount = +d.TotalAmount;
   								return d;
 							}, 
 		function(error, data) {
   			if (error) throw error;
 
-  			x.domain(data.map(function(d) { return d.Year; }));
-  			y.domain([0, d3.max(data, function(d) { return d.NumberOfLetters; })]);
+  			x.domain(data.map(function(d) { return d.Until; }));
+  			y.domain([0, d3.max(data, function(d) { return d.TotalAmount; })]);
 
 			g.append("g")
 				.attr("class", "axis axis--x")
@@ -67,10 +67,10 @@ d3.csv("data/SchillerYears.csv", function(d) {
 				.data(data)
 				.enter().append("rect")
 				.attr("class", "bar")
-				.attr("x", function(d) { return x(d.Year); })
-				.attr("y", function(d) { return y(d.NumberOfLetters); })
+				.attr("x", function(d) { return x(d.Until); })
+				.attr("y", function(d) { return y(d.TotalAmount); })
 				.attr("width", x.bandwidth())
-				.attr("height", function(d) { return height - y(d.NumberOfLetters); });
+				.attr("height", function(d) { return height - y(d.TotalAmount); });
 		});
 
 </script>

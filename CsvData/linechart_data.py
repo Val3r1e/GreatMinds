@@ -1,14 +1,14 @@
+''' python3 linechart_data.py "../Letters/" '''
+
 import os
 import sys
 import json
 import csv
 from pprint import pprint
 from collections import Counter
-import collections 
+import collections
 
-''' python3 get_all_dates.py "../Letters/" '''
-
-def getData(rootdir):
+def getData(rootdir):<
     """gets the year and the date from the metadatafiles (.json files)"""
 
     #datesSchiller = []
@@ -130,7 +130,7 @@ def getData(rootdir):
 def into_csv(liste):
     """writes csv file of the data"""
     
-    with open("../visualizations/data/great_data.csv","w") as csvfile:
+    with open("../visualizations/data/linechart_data.csv","w") as csvfile:
 
         writer = csv.writer(csvfile)
 
