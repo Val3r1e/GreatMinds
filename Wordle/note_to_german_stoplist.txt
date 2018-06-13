@@ -1,2 +1,0 @@
-put the "german" file into "nltk_data/corpora/stopwords"
-(replace the "german"-file with this one)
