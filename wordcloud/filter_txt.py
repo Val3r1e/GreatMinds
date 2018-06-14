@@ -1,9 +1,11 @@
+'''python3 filter_txt.py txt/every_five_years
+   filters the txt files in the given direc by the stopwordlist'''
+
 import sys
 import os
 from webbrowser import open_new_tab
 import nltk
 from nltk.corpus import stopwords
-import decades_txt
 
 def filter_txt(direc):
 
@@ -24,11 +26,22 @@ def filter_txt(direc):
                 if (w.lower()).strip() not in stopWords:
                     filtered += w + " "
 
-            name = filename.replace("txt/","").replace(".txt","")
-            name = "/filtered/filtered_" + name
-            print(name)
+            name = filename.replace("txt/every_five_years/","").replace(".txt","")
+            #name = "/filtered/filtered_" + name
+            name = "filtered/filtered_" + name
+            #print(name)
             
-            decades_txt.intoTxt(filtered, name)
+            intoTxt(filtered, name)
+
+def intoTxt(whole, name):
+    
+    filename = name + ".txt"
+
+    f = open("../wordcloud/txt/every_five_years/"+filename, 'w') 
+    f.write(whole)
+    f.close()
+
+    open_new_tab(filename)
 
 def main():
     

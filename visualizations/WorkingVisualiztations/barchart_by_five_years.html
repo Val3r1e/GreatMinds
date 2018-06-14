@@ -32,7 +32,7 @@ var x = d3.scaleBand().rangeRound([0, width]).padding(0.1),
 var g = svg.append("g")
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-d3.csv("../data/barchart_data_by_decades.csv", function(d) {
+d3.csv("../data/barchart_data_five_years.csv", function(d) {
   								d.TotalAmount = +d.TotalAmount;
   								return d;
 							}, 

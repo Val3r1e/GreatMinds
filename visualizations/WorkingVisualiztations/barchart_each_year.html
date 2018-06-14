@@ -32,14 +32,14 @@ var x = d3.scaleBand().rangeRound([0, width]).padding(0.1),
 var g = svg.append("g")
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-d3.csv("../data/barchart_data_by_decades.csv", function(d) {
+d3.csv("../data/barchart_data.csv", function(d) {
   								d.TotalAmount = +d.TotalAmount;
   								return d;
 							}, 
 		function(error, data) {
   			if (error) throw error;
 
-  			x.domain(data.map(function(d) { return d.Until; }));
+  			x.domain(data.map(function(d) { return d.Year; }));
   			y.domain([0, d3.max(data, function(d) { return d.TotalAmount; })]);
 
 			g.append("g")
@@ -49,7 +49,7 @@ d3.csv("../data/barchart_data_by_decades.csv", function(d) {
 				.append("text")
 				.attr("fill", "#000")
 				.attr("text-anchor", "end")
-				.text("Until");
+				.text("Year");
 
 			g.append("g")
 				.attr("class", "axis axis--y")
@@ -67,7 +67,7 @@ d3.csv("../data/barchart_data_by_decades.csv", function(d) {
 				.data(data)
 				.enter().append("rect")
 				.attr("class", "bar")
-				.attr("x", function(d) { return x(d.Until); })
+				.attr("x", function(d) { return x(d.Year); })
 				.attr("y", function(d) { return y(d.TotalAmount); })
 				.attr("width", x.bandwidth())
 				.attr("height", function(d) { return height - y(d.TotalAmount); });
