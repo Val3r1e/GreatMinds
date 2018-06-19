@@ -34,7 +34,7 @@ var line = d3.line()
     .x(function(d) { return x(d.Year); })
     .y(function(d) { return y(d.letters); });
 
-d3.csv("greatData.csv", type, function(error, data) {
+d3.csv("../data/great_data.csv", type, function(error, data) {
   if (error) throw error;
 
   var persons = data.columns.slice(1).map(function(id) {
@@ -89,7 +89,7 @@ d3.csv("greatData.csv", type, function(error, data) {
   }*/
 
   person.append("text")
-      .datum(function(d) { return {id: d.id, value: d.values[d.values.length-20]}; })
+      .datum(function(d) { return {id: d.id, value: d.values[d.values.length-21]}; })
       .attr("transform", function(d) { return "translate(" + x(d.value.Year) + "," + y(d.value.letters) + ")"; })
       .attr("x", 3)
       .attr("dy", "0.35em")

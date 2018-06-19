@@ -36,7 +36,7 @@ var line3 = d3.line()
     .x(function(d) { return x(d.Year); })
     .y(function(d) { return y(d.NumberChristiane); });
 
-d3.csv("greatData.csv", function(d) {
+d3.csv("../data/great_data.csv", function(d) {
         d.Year = +d.Year;
         d.NumberSchiller = +d.NumberSchiller;
         d.NumberStein = +d.NumberStein;
