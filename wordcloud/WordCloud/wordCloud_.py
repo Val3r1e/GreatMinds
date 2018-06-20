@@ -1,4 +1,4 @@
-'''e.g.: python3 wordCloud_.py ../txt/filtered/filtered_til_1785.txt '''
+'''e.g.: python3 wordCloud_.py ../txt/filtered/filtered_til_1785.txt 1780 '''
 
 import sys
 from os import path
@@ -7,17 +7,18 @@ from PIL import Image
 from wordcloud import WordCloud, STOPWORDS
 from stop_words import get_stop_words
 
-def readTxt(name):
+def readTxt(root, name):
     
     currdir = path.dirname(__file__)
     
     text = ""
 
-    with open(name) as f:
+    with open(root) as f:
         lines = f.readlines()
         text = "".join(lines)
 
-    mask = np.array(Image.open(path.join(currdir, "shapes/goethe.png")))     #for ex. exchange line for cloud
+    
+    mask = np.array(Image.open(path.join(currdir, "shapes/%s.jpg" %name)))     #for ex. exchange line for cloud
 
     stopwords = get_stop_words("german")
 
@@ -29,15 +30,16 @@ def readTxt(name):
 
     wc = WordCloud(background_color="white",
                     font_path="/System/Library/Fonts/HelveticaNeue.ttc",  #Add Path to Fonts on your Computer
-                    max_words=200,
+                    max_words=300,
                     mask=mask,                  #masks whatever figure you put in a picture of! Is really awesome!
                     stopwords=stopwords,
-                    #prefer_horizontal=1.2,      #this way only horizontal words, to change, just delete
-                    colormap="tab20b")          #Add different Colormap here, can be found here: https://matplotlib.org/users/colormaps.html
+                    prefer_horizontal=1.2,      #this way only horizontal words, to change, just delete
+                    # colormap="tab20b")
+                    colormap="Blues")          #Add different Colormap here, can be found here: https://matplotlib.org/users/colormaps.html
     
     wc.generate(text)
 
-    wc.to_file(path.join(currdir, "Wordclouds/til_1785.png"))
+    wc.to_file(path.join(currdir, "Wordclouds/%s.png" %name))
 
 
 #readTxt("Charlotte2.txt")
@@ -45,8 +47,9 @@ def readTxt(name):
 def main():
     
     root = sys.argv[1]
+    name = str(sys.argv[2])
     
-    readTxt(root)
+    readTxt(root, name)
 
 if __name__ == '__main__':
     main()#
