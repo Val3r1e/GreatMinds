@@ -1,5 +1,12 @@
-'''python3 filter_txt.py txt/every_five_years
-   filters the txt files in the given direc by the stopwordlist'''
+''''
+python3 filter_txt.py txt/every_five_years
+filters the txt files in the given direc by the stopwordlist
+   
+python3 filter_txt.py "../txt/people/CSchiller/"
+python3 filter_txt.py "../txt/people/CGoethe/"
+python3 filter_txt.py "../txt/people/CStein/"
+python3 filter_txt.py "../txt/people/FSchiller/"
+'''
 
 import sys
 import os
@@ -26,22 +33,21 @@ def filter_txt(direc):
                 if (w.lower()).strip() not in stopWords:
                     filtered += w + " "
 
-            name = filename.replace("txt/every_five_years/","").replace(".txt","")
+            name = filename.replace(direc,"")
             #name = "/filtered/filtered_" + name
-            name = "filtered/filtered_" + name
             #print(name)
             
             intoTxt(filtered, name)
 
 def intoTxt(whole, name):
     
-    filename = name + ".txt"
+    direc_name = ((name.split("_"))[1]).replace(".txt","")
 
-    f = open("../wordcloud/txt/every_five_years/"+filename, 'w') 
+    f = open("../corpus/" + direc_name + "/" + name, 'w') 
     f.write(whole)
     f.close()
 
-    open_new_tab(filename)
+    open_new_tab(name)
 
 def main():
     

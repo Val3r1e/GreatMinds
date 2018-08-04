@@ -1,7 +1,7 @@
 '''
 sort the letters by years (but since the metadata is quite incomplete there are probably a lot of them missing)
 
-Terminal: python3 txt_for_each_year.py "../Letters/"
+Terminal: python3 txt_for_each_year.py "../../Letters/"
 
 Timespan: 1776 - 1829
 '''
@@ -20,32 +20,6 @@ import csv
 from collections import defaultdict
 
 def join_txt_files(direc):
-    
-    # years = []
-    # filenames = defaultdict(list)
-    
-    # # get all years in which he actually wrote a letter from barchart_data.csv 
-    # # (since we already counted the letters per year there)
-    # with open("../visualizations/data/barchart_data.csv", "r") as csvfile:
-    #     myreader = csv.DictReader(csvfile, delimiter = ',')
-    #     for row in myreader:
-    #         years.append(int(row['Year']))
-
-    # # then add every filename to its corresponding year in the dict "filenames"
-    # for subdir, dirs, files in os.walk(direc):
-    #     for file in files:
-    #         if file.endswith('.json'):
-    #             f_name = os.path.join(direc, file)
-    #             config = json.loads(open(os.path.join(subdir, file)).read())
-    #             year = (config["Year"]).lstrip()
-    #             for number in years:
-    #                 if year.isdigit():
-    #                     if int(year) == number:
-    #                         f_name = f_name.replace("../Letters/","").replace(".json","")
-    #                         filenames[number].append(f_name)
-    #                         break
-    
-    #pprint(filenames)
 
     data = defaultdict(list)
 
@@ -92,7 +66,7 @@ def intoTxt(whole, name):
     
     filename = name + ".txt"
 
-    f = open("../wordcloud/txt/every_year/"+filename, 'w') 
+    f = open("../txt/every_year/"+filename, 'w') 
     f.write(whole)
     f.close()
 
