@@ -1,4 +1,4 @@
-'''e.g.: python3 wordCloud_.py ../txt/filtered/filtered_til_1785.txt 1780 '''
+'''e.g.: python3 wordCloud_.py ../txt/filtered/filtered_til_1785.txt green_1785 '''
 
 import sys
 from os import path
@@ -17,8 +17,8 @@ def readTxt(root, name):
         lines = f.readlines()
         text = "".join(lines)
 
-    
-    mask = np.array(Image.open(path.join(currdir, "shapes/%s.jpg" %name)))     #for ex. exchange line for cloud
+    shape_name = name.replace("green_","")
+    mask = np.array(Image.open(path.join(currdir, "shapes/%s.png" %shape_name)))     #for ex. exchange line for cloud
 
     stopwords = get_stop_words("german")
 
@@ -34,8 +34,8 @@ def readTxt(root, name):
                     mask=mask,                  #masks whatever figure you put in a picture of! Is really awesome!
                     stopwords=stopwords,
                     prefer_horizontal=1.2,      #this way only horizontal words, to change, just delete
-                    # colormap="tab20b")
-                    colormap="Blues")          #Add different Colormap here, can be found here: https://matplotlib.org/users/colormaps.html
+                    #colormap="tab20b")
+                    colormap="Greens")          #Add different Colormap here, can be found here: https://matplotlib.org/users/colormaps.html
     
     wc.generate(text)
 
