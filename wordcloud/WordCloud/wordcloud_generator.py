@@ -123,7 +123,7 @@ def create_wordcloud(text, name, steps, year):
 #------------------------ error and main ---------------------------
 def error(string):
     
-    names = ["all", "CSchiller", "CStein", "CGoethe", "FSchiller"]
+    names = ["whole", "CSchiller", "CStein", "CGoethe", "FSchiller"]
     times = ["0", "1", "5", "10"]
     
     test = string.split(" ")
@@ -146,7 +146,7 @@ def main():
     repeat = True
 
     print("\nCreates a wordcloud for the given options:\n" +
-            "1. name ('all', 'CGoethe', 'CSchiller', 'CStein' or 'FSchiller')\n" + 
+            "1. name ('whole', 'CGoethe', 'CSchiller', 'CStein' or 'FSchiller')\n" + 
             "2. period of time ('0', '1', '5', '10')\n"+
             "For example: 'all 0' creates a wordcloud depicting all available Letters.\n")
 
