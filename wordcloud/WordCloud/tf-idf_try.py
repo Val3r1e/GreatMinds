@@ -33,3 +33,36 @@ print (response)
 feature_names = tfidf.get_feature_names()
 for col in response.nonzero()[1]:
     print(feature_names[col], ' - ', response[0, col])
+
+#------------- and this actually works: -----------------
+
+S1 = "The car is driven on the road"
+S2 = "The truck is driven on the highway"
+
+vectorizer = TfidfVectorizer()
+response = vectorizer.fit_transform([S1, S2])
+terms = vectorizer.get_feature_names()
+resp_array = response.toarray()
+
+#print(vectorizer)
+print(response)
+print(terms)
+print(resp_array)
+
+term_dict = {}
+number_of_docs = 2
+not_full = True
+
+for i in range(number_of_docs):
+    for j in range(len(terms)):
+        if resp_array[i][j] != 0:
+            term_dict[terms[j]] = resp_array[i][j]
+        else:
+            pass
+
+        if len(term_dict) == len(terms):
+            break
+    
+    if len(term_dict) == len(terms):
+        break
+        
