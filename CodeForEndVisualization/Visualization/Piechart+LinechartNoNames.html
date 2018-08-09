@@ -40,7 +40,7 @@ var label = d3.arc()
     .innerRadius(radius - 100)
     .outerRadius(radius - 20);
 
-d3.csv("../data/piechart_data.csv", type, function(error, data) {
+d3.csv("data/DonutData.csv", type, function(error, data) {
   var path = svg.datum(data).selectAll("path")
       .data(pie)
     .enter().append("path")
@@ -88,7 +88,7 @@ var line = d3.line()
 
 
 
-d3.csv("../data/linechart_data.csv", type, function(error, data) {
+d3.csv("data/OneYear.csv", type, function(error, data) {
   if (error) throw error;
 
   var persons = data.columns.slice(1).map(function(id) {

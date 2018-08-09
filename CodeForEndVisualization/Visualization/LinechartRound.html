@@ -1,76 +1,42 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
 <style>
-.arc text {
-  font: 10px sans-serif;
-  text-anchor: middle;
-}
-.arc path {
-  stroke: #fff;
-}
+
 .axis--x path {
   display: none;
 }
+
 .line {
   fill: none;
   stroke: black;
   stroke-width: 1.5px;
 }
-</style>
-<script src="https://d3js.org/d3.v4.min.js"></script>
 
-<svg width="960" height="500"></svg>
+</style>
+<svg id="linechart" width="960" height="500"></svg>
+<script src="https://d3js.org/d3.v4.min.js"></script>
 <script>
-var width = 800,
-    height = 300,
-    radius = Math.min(width, height) / 2;
-var color = d3.scaleOrdinal(d3.schemeCategory10);
-var pie = d3.pie()
-    .value(function(d) { return d.TotalAmount; })
-    .sort(null);
-var label = d3.arc()
-    .innerRadius(radius - 100)
-    .outerRadius(radius - 20);
-d3.csv("../data/piechart_data.csv", type, function(error, data) {
-  var path = svg.datum(data).selectAll("path")
-      .data(pie)
-    .enter().append("path")
-      .attr("fill", function(d, i) { return color(i); })
-      .attr("d", label)
-	  .attr("transform", "translate(" + width / (1.2)  + "," + height / 3 + ")");
-  
-  var arc = svg.selectAll(".arc")
-    .data(pie(data))
-    .enter().append("g")
-    .attr("class", "arc");
-  arc.append("text")
-      .attr("transform", function(d) { return "translate(" + label.centroid(d) + ")"; })
-      .attr("dy", "0.35em")
-	  .style("text-anchor", "middle")
-	  .attr("fill", "#fff")
-	  .attr("transform", "translate(" + width / (1.2)  + "," + height / 3 + ")")
-      .text(function(d) { return d.Name; });
-});
-function type(d) {
-  d.Name = +d.Name;
-  d.TotalAmount
-  return d;
-}
-var svg = d3.select("svg"),
+
+var svg = d3.select("#linechart"),
     margin = {top: 20, right: 80, bottom: 30, left: 50},
     width = svg.attr("width") - margin.left - margin.right,
     height = svg.attr("height") - margin.top - margin.bottom,
     g = svg.append("g").attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
 var parseTime = d3.timeParse("%Y");
+
 var x = d3.scaleTime().range([0, width]),
     y = d3.scaleLinear().range([height, 0]),
     z = d3.scaleOrdinal(d3.schemeCategory10);
+
 var line = d3.line()
     .curve(d3.curveBasis)
     .x(function(d) { return x(d.Year); })
     .y(function(d) { return y(d.letters); });
-d3.csv("../data/linechart_data.csv", type, function(error, data) {
+
+d3.csv("data/OneYear.csv", type, function(error, data) {
   if (error) throw error;
+
   var persons = data.columns.slice(1).map(function(id) {
     return {
       id: id,
@@ -79,16 +45,21 @@ d3.csv("../data/linechart_data.csv", type, function(error, data) {
       })
     };
   });
+
   x.domain(d3.extent(data, function(d) { return d.Year; }));
+
   y.domain([
     d3.min(persons, function(c) { return d3.min(c.values, function(d) { return d.letters; }); }),
     d3.max(persons, function(c) { return d3.max(c.values, function(d) { return d.letters; }); })
   ]);
+
   z.domain(persons.map(function(c) { return c.id; }));
+
   g.append("g")
       .attr("class", "axis axis--x")
       .attr("transform", "translate(0," + height + ")")
       .call(d3.axisBottom(x));
+
   g.append("g")
       .attr("class", "axis axis--y")
       .call(d3.axisLeft(y))
@@ -98,28 +69,34 @@ d3.csv("../data/linechart_data.csv", type, function(error, data) {
       .attr("dy", "0.71em")
       .attr("fill", "#000")
       .text("Amount of Letters");
+
   var person = g.selectAll(".person")
     .data(persons)
     .enter().append("g")
       .attr("class", "person");
+
   person.append("path")
       .attr("class", "line")
       .attr("d", function(d) { return line(d.values); })
       .style("stroke", function(d) { return z(d.id); });
+
   /*var place = function(d){
     for(var i = 1, n = d.values.length-1, f; i < n; ++i){
       if(){
+
       }
     }
   }*/
+
   person.append("text")
-      .datum(function(d) { return {id: d.id, value: d.values[d.values.length-20]}; })
+      .datum(function(d) { return {id: d.id, value: d.values[d.values.length-21]}; })
       .attr("transform", function(d) { return "translate(" + x(d.value.Year) + "," + y(d.value.letters) + ")"; })
       .attr("x", 3)
       .attr("dy", "0.35em")
       .style("font", "10px sans-serif")
       .text(function(d) { return d.id; });
 });
+
 function type(d, _, columns) {
   d.Year = parseTime(d.Year);
   for (var i = 1, n = columns.length, c; i < n; ++i) d[c = columns[i]] = +d[c];
