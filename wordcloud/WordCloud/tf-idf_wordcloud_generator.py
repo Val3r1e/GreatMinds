@@ -74,7 +74,7 @@ def each_year(direc):
 
 def step_years(direc, steps):
     if int(steps) == 5:
-        years = [i for i in range(1775, 1830, 5)]
+        years = [i for i in range(1775, 1831, 5)]
     elif int(steps) == 10:
         years = [i for i in range(1775, 1835, 10)]
     else:
