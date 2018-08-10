@@ -17,21 +17,21 @@ def step_years(direc, steps):
     e.g. every year, every five years or each decade
     '''
     
+    FSchiller_data = {}
     CSchiller_data = {}
     CStein_data = {}
     CGoethe_data = {}
-    FSchiller_data = {}
 
-    data_dict = {"CSchiller": CSchiller_data, "CStein": CStein_data, "CGoethe":CGoethe_data, "FSchiller": FSchiller_data}
+    data_dict = {"FSchiller": FSchiller_data, "CSchiller": CSchiller_data, "CStein": CStein_data, "CGoethe":CGoethe_data}
 
     if int(steps) == 1:
-        years = [i for i in range(1775, 1826)]
+        years = [i for i in range(1776, 1817)]
         
     elif int(steps) == 5:
-        years = [i for i in range(1775, 1826, 5)]
+        years = [i for i in range(1780, 1821, 5)]
         
     elif int(steps) == 10:
-        years = [i for i in range(1775, 1826, 10)]
+        years = [i for i in range(1785, 1826, 10)]
 
     else:
         print("Just 1, 5 or 10 year steps are possible, sorry")
@@ -50,7 +50,7 @@ def step_years(direc, steps):
                 (data_dict[dict_name])[year] += 1
                 break
 
-    csv_data = [tuple(["Year"] + ["CSchiller"] + ["CStein"] + ["CGoethe"] + ["FSchiller"])]
+    csv_data = [tuple(["Year"] + ["FSchiller"] + ["CSchiller"] + ["CStein"] + ["CGoethe"])]
 
     for year in years:
         temp_list = [year]
