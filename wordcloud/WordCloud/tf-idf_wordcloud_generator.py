@@ -179,11 +179,12 @@ def create_wordcloud(score_dict, name, steps, year):
 def scores_to_json(score_dict, name, steps, year):
     
     to_write = {"data":[]}
+    list_to_write = []
 
     for key in score_dict:
-        to_write["data"].append({"text":key, "count":score_dict[key]})
+        list_to_write.append({"text":key, "count":score_dict[key]})
     
-    json.dump(to_write, open("json_cloud_data_tf-idf/%s/%s/%s_%s_%s.json" %(name, steps, name, year, steps), 'w'))
+    json.dump(list_to_write, open("json_cloud_data_tf-idf/%s/%s/%s_%s_%s.json" %(name, steps, name, year, steps), 'w'))
 
 
 #------------------------ error and main ---------------------------

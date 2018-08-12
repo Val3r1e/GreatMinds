@@ -1,0 +1,14 @@
+html, body {
+	height:100%;
+	width:100%;
+	margin:0;
+	padding:0;
+}
+#wordcloud {
+	height:100%;
+	width:100%;
+	min-height:150px;
+}
+.zc-ref {
+    display: none;
+  }
