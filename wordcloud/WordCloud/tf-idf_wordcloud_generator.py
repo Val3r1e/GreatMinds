@@ -1,6 +1,7 @@
 import sys
 import math
 import os
+import json
 from os import path
 import numpy as np 
 from PIL import Image
@@ -31,13 +32,16 @@ def generate_wc(direc, name, steps):
     year_counter = 0
 
     for doc_scores in scores:
+        #für jedes Dokument (also für jede wordcloud, die erzeugt wird), wird ein dict angelegt
         for i in range(len(doc_scores)):
             score_dict[terms[i]] = doc_scores[i]
         
         year = ids[year_counter]
         year_counter += 1
-            
-        create_wordcloud(score_dict, name, steps, year)
+        
+        #pprint(score_dict)
+        #create_wordcloud(score_dict, name, steps, year)
+        scores_to_json(score_dict, name, steps, year)
 
 
 #------------------ create different datasets --------------------
@@ -170,6 +174,17 @@ def create_wordcloud(score_dict, name, steps, year):
     wc.generate_from_frequencies(score_dict)
     wc.to_file(path.join(currdir, "clouds_tf-idf/%s/%s/%s_%s_%s.png" %(name, steps, name, year, steps)))
 
+#---------------- write the scores to .json files for javascript -----------------
+
+def scores_to_json(score_dict, name, steps, year):
+    
+    to_write = {"data":[]}
+
+    for key in score_dict:
+        to_write["data"].append({"text":key, "count":score_dict[key]})
+    
+    json.dump(to_write, open("json_cloud_data_tf-idf/%s/%s/%s_%s_%s.json" %(name, steps, name, year, steps), 'w'))
+
 
 #------------------------ error and main ---------------------------
 
@@ -205,8 +220,8 @@ def main():
             generate_wc(root, name, step)
         print("Done with %s" %name)
 
-    #------------------ create manually ------------------
-    #repeat = True
+    # #------------------ create manually ------------------
+    # repeat = True
     # print("\nCreates wordclouds by tf-idf scores for the given documents.\n" +
     #       "Pleas select a name and a period of time from the followin lists:\n" +
     #       "1. name ('whole', 'CGoethe', 'CSchiller', 'CStein' or 'FSchiller')\n" + 
