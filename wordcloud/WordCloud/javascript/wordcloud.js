@@ -13,7 +13,7 @@ function create_wordcloud(name, year, steps){
             options: {
             words : myText,
             minLength: 4,
-            ignore: ['establish','this'],
+            ignore: ['frau','leben'],
             maxItems: 50,
             aspect: 'spiral',
             rotate: false,
@@ -50,7 +50,7 @@ function create_wordcloud(name, year, steps){
         };
         
         zingchart.render({ 
-            id: 'wordcloud', 
+            id: 'LetterDiv', 
             data: myConfig, 
             height: '100%', 
             width: '100%' 
