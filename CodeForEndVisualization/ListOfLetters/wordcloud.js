@@ -1,6 +1,6 @@
 function create_wordcloud(name, year, steps){
     // e.g.: "../json_cloud_data_tf-idf/CSchiller/0/CSchiller_0000_0.json";
-    var requestURL = "../json_cloud_data_tf-idf/" + name + "/" + steps + "/" + name + "_" + year + "_" + steps + ".json";
+    var requestURL = "json_cloud_data_tf-idf/" + name + "/" + steps + "/" + name + "_" + year + "_" + steps + ".json";
     var request = new XMLHttpRequest();
     request.open('GET', requestURL);
     request.responseType = 'json';

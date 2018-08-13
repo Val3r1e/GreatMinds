@@ -4,7 +4,7 @@ html, body {
 	margin:0;
 	padding:0;
 }
-#wordcloud {
+#LetterDiv {
 	height:100%;
 	width:100%;
 	min-height:150px;

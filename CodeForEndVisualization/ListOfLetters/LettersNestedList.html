@@ -4,6 +4,13 @@
         <title> List of Letters </title>
         <meta charset="utf-8"/>
         <script src="http://code.jquery.com/jquery-1.10.2.js"></script>
+        <script src="https://cdn.zingchart.com/zingchart.min.js"></script>
+        <script>
+            zingchart.MODULESDIR = "https://cdn.zingchart.com/modules/";
+            ZC.LICENSE = ["569d52cefae586f634c54f86dc99e6a9", "ee6b7db5b51705a13dc2339db3edaf6d"];
+        </script>
+        <link rel="stylesheet" type="text/css" href="wordcloud_style.css">
+        <link href="https://fonts.googleapis.com/css?family=Merriweather" rel="stylesheet">
         <style>
             button{
                 display: block;
@@ -19,8 +26,11 @@
                 margin-left: 400px;
                 margin-right: 200px;
                 position: absolute;
-                top: 0px;
+                top: 50px;
                 right: 0px;
+                height:90%;
+                width:60%;
+                min-height:150px;
             }
             .ButtonDiv{
                 position: relative;
@@ -45,7 +55,7 @@
             }
         </style>
         <script>
-            function toggle(id){
+            function toggle(id, name, year, steps){
                 ul = "ul_" + id;
                 img = "img_" + id;
                 ulElement = document.getElementById(ul);
@@ -54,25 +64,37 @@
                     if (ulElement.className == 'closed'){
                         ulElement.className = "open";
                         imgElement.src = "opened.gif";
+                        //Remove everything shown before (just to make sure, not actually sure if it's necessary)
+                        //and create the new wordcloud
+                        Remove();
+                        create_wordcloud(name, year, steps);
                     }else{
                         ulElement.className = "closed";
                         imgElement.src = "closed.gif";
+                        //Remove the letter/wordcloud and show the wordcloud from the level above:
+                        Remove();
+                        if (name == 'whole'){
+                            create_wordcloud(name, 1111, 0);
+                        }
+                        else{
+                            create_wordcloud('whole', year, steps)
+                        }
                     }
                 }
             }
         </script>
     </head>
-    <body>
+    <body onload="create_wordcloud('whole', 1111, 0)">
         <div class = "ButtonDiv">
             <ul class="open">
 
                 <li id="1776">
-                    <a  onclick="toggle('1776');">
+                    <a  onclick="toggle('1776', 'whole', 1776, 1);">
                         <img src="closed.gif" alt="" id="img_1776" border="0" style="height:2ex;width:2ex">
                     </a>
                     1776
                     <ul id="ul_1776" class="closed">
-                        <li id="Charlotte_von_Stein"><a  onclick="toggle('Charlotte_von_Stein');">
+                        <li id="Charlotte_von_Stein"><a  onclick="toggle('Charlotte_von_Stein', 'CStein', 1776, 1);">
                             <img src="closed.gif" alt="" id="img_Charlotte_von_Stein" border="0" style="height:2ex;width:2ex">
                             </a>
                             Charlotte von Stein
@@ -200,12 +222,12 @@
                 </li>
 
                 <li id="1777">
-                    <a  onclick="toggle('1777');">
+                    <a  onclick="toggle('1777', 'whole', 1777, 1);">
                         <img src="closed.gif" alt="" id="img_1777" border="0" style="height:2ex;width:2ex">
                     </a>
                     1777
                     <ul id="ul_1777" class="closed">
-                        <li id="Charlotte_von_Stein2"><a  onclick="toggle('Charlotte_von_Stein2');">
+                        <li id="Charlotte_von_Stein2"><a  onclick="toggle('Charlotte_von_Stein2', 'CStein', 1777, 1);">
                             <img src="closed.gif" alt="" id="img_Charlotte_von_Stein2" border="0" style="height:2ex;width:2ex">
                             </a>
                             Charlotte von Stein
@@ -307,12 +329,12 @@
                 </li>
 
                 <li id="1778">
-                    <a  onclick="toggle('1778');">
+                    <a  onclick="toggle('1778', 'whole', 1778, 1);">
                         <img src="closed.gif" alt="" id="img_1778" border="0" style="height:2ex;width:2ex">
                     </a>
                     1778
                     <ul id="ul_1778" class="closed">
-                        <li id="Charlotte_von_Stein3"><a  onclick="toggle('Charlotte_von_Stein3');">
+                        <li id="Charlotte_von_Stein3"><a  onclick="toggle('Charlotte_von_Stein3', 'CStein', 1778, 1);">
                             <img src="closed.gif" alt="" id="img_Charlotte_von_Stein3" border="0" style="height:2ex;width:2ex">
                             </a>
                             Charlotte von Stein
@@ -408,12 +430,12 @@
                 </li>
 
                 <li id="1779">
-                    <a  onclick="toggle('1779');">
+                    <a  onclick="toggle('1779', 'whole', 1779, 1);">
                         <img src="closed.gif" alt="" id="img_1779" border="0" style="height:2ex;width:2ex">
                     </a>
                     1779
                     <ul id="ul_1779" class="closed">
-                        <li id="Charlotte_von_Stein4"><a  onclick="toggle('Charlotte_von_Stein4');">
+                        <li id="Charlotte_von_Stein4"><a  onclick="toggle('Charlotte_von_Stein4', 'CStein', 1779, 1);">
                             <img src="closed.gif" alt="" id="img_Charlotte_von_Stein4" border="0" style="height:2ex;width:2ex">
                             </a>
                             Charlotte von Stein
@@ -492,12 +514,12 @@
                 </li>
 
                 <li id="1780">
-                    <a  onclick="toggle('1780');">
+                    <a  onclick="toggle('1780', 'whole', 1780, 1);">
                         <img src="closed.gif" alt="" id="img_1780" border="0" style="height:2ex;width:2ex">
                     </a>
                     1780
                     <ul id="ul_1780" class="closed">
-                        <li id="Charlotte_von_Stein5"><a  onclick="toggle('Charlotte_von_Stein5');">
+                        <li id="Charlotte_von_Stein5"><a  onclick="toggle('Charlotte_von_Stein5', 'CStein', 1780, 1);">
                             <img src="closed.gif" alt="" id="img_Charlotte_von_Stein5" border="0" style="height:2ex;width:2ex">
                             </a>
                             Charlotte von Stein
@@ -679,12 +701,12 @@
                 </li>
 
                 <li id="1781">
-                    <a  onclick="toggle('1781');">
+                    <a  onclick="toggle('1781', 'whole', 1781, 1);">
                         <img src="closed.gif" alt="" id="img_1781" border="0" style="height:2ex;width:2ex">
                     </a>
                     1781
                     <ul id="ul_1781" class="closed">
-                        <li id="Charlotte_von_Stein6"><a  onclick="toggle('Charlotte_von_Stein6');">
+                        <li id="Charlotte_von_Stein6"><a  onclick="toggle('Charlotte_von_Stein6', 'CStein', 1781, 1);">
                             <img src="closed.gif" alt="" id="img_Charlotte_von_Stein6" border="0" style="height:2ex;width:2ex">
                             </a>
                             Charlotte von Stein
@@ -936,12 +958,12 @@
                 </li>
 
                 <li id="1782">
-                    <a  onclick="toggle('1782');">
+                    <a  onclick="toggle('1782', 'whole', 1782, 1);">
                         <img src="closed.gif" alt="" id="img_1782" border="0" style="height:2ex;width:2ex">
                     </a>
                     1782
                     <ul id="ul_1782" class="closed">
-                        <li id="Charlotte_von_Stein7"><a  onclick="toggle('Charlotte_von_Stein7');">
+                        <li id="Charlotte_von_Stein7"><a  onclick="toggle('Charlotte_von_Stein7', 'CStein', 1782, 1);">
                             <img src="closed.gif" alt="" id="img_Charlotte_von_Stein7" border="0" style="height:2ex;width:2ex">
                             </a>
                             Charlotte von Stein
@@ -1222,12 +1244,12 @@
                 </li>
 
                 <li id="1783">
-                    <a  onclick="toggle('1783');">
+                    <a  onclick="toggle('1783', 'whole', 1783, 1);">
                         <img src="closed.gif" alt="" id="img_1783" border="0" style="height:2ex;width:2ex">
                     </a>
                     1783
                     <ul id="ul_1783" class="closed">
-                        <li id="Charlotte_von_Stein8"><a  onclick="toggle('Charlotte_von_Stein8');">
+                        <li id="Charlotte_von_Stein8"><a  onclick="toggle('Charlotte_von_Stein8', 'CStein', 1783, 1);">
                             <img src="closed.gif" alt="" id="img_Charlotte_von_Stein8" border="0" style="height:2ex;width:2ex">
                             </a>
                             Charlotte von Stein
@@ -1391,12 +1413,12 @@
                 </li>
 
                 <li id="1784">
-                    <a  onclick="toggle('1784');">
+                    <a  onclick="toggle('1784', 'whole', 1784, 1);">
                         <img src="closed.gif" alt="" id="img_1784" border="0" style="height:2ex;width:2ex">
                     </a>
                     1784
                     <ul id="ul_1784" class="closed">
-                        <li id="Charlotte_von_Stein9"><a  onclick="toggle('Charlotte_von_Stein9');">
+                        <li id="Charlotte_von_Stein9"><a  onclick="toggle('Charlotte_von_Stein9', 'CStein', 1784, 1);">
                             <img src="closed.gif" alt="" id="img_Charlotte_von_Stein9" border="0" style="height:2ex;width:2ex">
                             </a>
                             Charlotte von Stein
@@ -1549,12 +1571,12 @@
                 </li>
 
                 <li id="1785">
-                    <a  onclick="toggle('1785');">
+                    <a  onclick="toggle('1785', 'whole', 1785, 1);">
                         <img src="closed.gif" alt="" id="img_1785" border="0" style="height:2ex;width:2ex">
                     </a>
                     1785
                     <ul id="ul_1785" class="closed">
-                        <li id="Charlotte_von_Stein10"><a  onclick="toggle('Charlotte_von_Stein10');">
+                        <li id="Charlotte_von_Stein10"><a  onclick="toggle('Charlotte_von_Stein10', 'CStein', 1785, 1);">
                             <img src="closed.gif" alt="" id="img_Charlotte_von_Stein10" border="0" style="height:2ex;width:2ex">
                             </a>
                             Charlotte von Stein
@@ -1727,12 +1749,12 @@
                 </li>
 
                 <li id="1786">
-                    <a  onclick="toggle('1786');">
+                    <a  onclick="toggle('1786', 'whole', 1786, 1);">
                         <img src="closed.gif" alt="" id="img_1786" border="0" style="height:2ex;width:2ex">
                     </a>
                     1786
                     <ul id="ul_1786" class="closed">
-                        <li id="Charlotte_von_Stein11"><a  onclick="toggle('Charlotte_von_Stein11');">
+                        <li id="Charlotte_von_Stein11"><a  onclick="toggle('Charlotte_von_Stein11', 'CStein', 1786, 1);">
                             <img src="closed.gif" alt="" id="img_Charlotte_von_Stein11" border="0" style="height:2ex;width:2ex">
                             </a>
                             Charlotte von Stein
@@ -1844,12 +1866,12 @@
                 </li>
 
                 <li id="1787">
-                    <a  onclick="toggle('1787');">
+                    <a  onclick="toggle('1787', 'whole', 1787, 1);">
                         <img src="closed.gif" alt="" id="img_1787" border="0" style="height:2ex;width:2ex">
                     </a>
                     1787
                     <ul id="ul_1787" class="closed">
-                        <li id="Charlotte_von_Stein12"><a  onclick="toggle('Charlotte_von_Stein12');">
+                        <li id="Charlotte_von_Stein12"><a  onclick="toggle('Charlotte_von_Stein12', 'CStein', 1787, 1);">
                             <img src="closed.gif" alt="" id="img_Charlotte_von_Stein12" border="0" style="height:2ex;width:2ex">
                             </a>
                             Charlotte von Stein
@@ -1880,12 +1902,12 @@
                 </li>
 
                 <li id="1788">
-                    <a  onclick="toggle('1788');">
+                    <a  onclick="toggle('1788', 'whole', 1788, 1);">
                         <img src="closed.gif" alt="" id="img_1788" border="0" style="height:2ex;width:2ex">
                     </a>
                     1788
                     <ul id="ul_1788" class="closed">
-                        <li id="Charlotte_von_Stein13"><a  onclick="toggle('Charlotte_von_Stein13');">
+                        <li id="Charlotte_von_Stein13"><a  onclick="toggle('Charlotte_von_Stein13', 'CStein', 1788, 1);">
                             <img src="closed.gif" alt="" id="img_Charlotte_von_Stein13" border="0" style="height:2ex;width:2ex">
                             </a>
                             Charlotte von Stein
@@ -1903,12 +1925,12 @@
                 </li>
 
                 <li id="1789">
-                    <a  onclick="toggle('1789');">
+                    <a  onclick="toggle('1789', 'whole', 1789, 1);">
                         <img src="closed.gif" alt="" id="img_1789" border="0" style="height:2ex;width:2ex">
                     </a>
                     1789
                     <ul id="ul_1789" class="closed">
-                        <li id="Charlotte_von_Stein14"><a  onclick="toggle('Charlotte_von_Stein14');">
+                        <li id="Charlotte_von_Stein14"><a  onclick="toggle('Charlotte_von_Stein14', 'CStein', 1789, 1);">
                             <img src="closed.gif" alt="" id="img_Charlotte_von_Stein14" border="0" style="height:2ex;width:2ex">
                             </a>
                             Charlotte von Stein
@@ -1923,12 +1945,12 @@
                 </li>
 
                 <li id="1792">
-                    <a  onclick="toggle('1792');">
+                    <a  onclick="toggle('1792', 'whole', 1792, 1);">
                         <img src="closed.gif" alt="" id="img_1792" border="0" style="height:2ex;width:2ex">
                     </a>
                     1792
                     <ul id="ul_1792" class="closed">
-                        <li id="Christiane_Goethe"><a  onclick="toggle('Christiane_Goethe');">
+                        <li id="Christiane_Goethe"><a  onclick="toggle('Christiane_Goethe', 'CGoethe', 1792, 1);">
                             <img src="closed.gif" alt="" id="img_Christiane_Goethe" border="0" style="height:2ex;width:2ex">
                             </a>
                             Christiane Goethe
@@ -1951,12 +1973,12 @@
                 </li>
 
                 <li id="1793">
-                    <a  onclick="toggle('1793');">
+                    <a  onclick="toggle('1793', 'whole', 1793, 1);">
                         <img src="closed.gif" alt="" id="img_1793" border="0" style="height:2ex;width:2ex">
                     </a>
                     1793
                     <ul id="ul_1793" class="closed">
-                        <li id="Christiane_Goethe2"><a  onclick="toggle('Christiane_Goethe2');">
+                        <li id="Christiane_Goethe2"><a  onclick="toggle('Christiane_Goethe2', 'CGoethe', 1793, 1);">
                             <img src="closed.gif" alt="" id="img_Christiane_Goethe2" border="0" style="height:2ex;width:2ex">
                             </a>
                             Christiane Goethe
@@ -1991,12 +2013,12 @@
                 </li>
 
                 <li id="1794">
-                    <a  onclick="toggle('1794');">
+                    <a  onclick="toggle('1794', 'whole', 1794, 1);">
                         <img src="closed.gif" alt="" id="img_1794" border="0" style="height:2ex;width:2ex">
                     </a>
                     1794
                     <ul id="ul_1794" class="closed">
-                        <li id="Christiane_Goethe3"><a  onclick="toggle('Christiane_Goethe3');">
+                        <li id="Christiane_Goethe3"><a  onclick="toggle('Christiane_Goethe3', 'CGoethe', 1794, 1);">
                             <img src="closed.gif" alt="" id="img_Christiane_Goethe3" border="0" style="height:2ex;width:2ex">
                             </a>
                             Christiane Goethe
@@ -2005,7 +2027,7 @@
                                 <button onclick="Load(this.id)" id="1794_CGoethe_00038"> 1794_CGoethe_00038 </button>
                             </ul>				
                         </li>
-                        <li id="Friedrich_Schiller"><a  onclick="toggle('Friedrich_Schiller');">
+                        <li id="Friedrich_Schiller"><a  onclick="toggle('Friedrich_Schiller', 'FSchiller', 1794, 1);">
                             <img src="closed.gif" alt="" id="img_Friedrich_Schiller" border="0" style="height:2ex;width:2ex">
                             </a>
                             Friedrich Schiller
@@ -2052,12 +2074,12 @@
                 </li>
 
                 <li id="1795">
-                    <a  onclick="toggle('1795');">
+                    <a  onclick="toggle('1795', 'whole', 1795, 1);">
                         <img src="closed.gif" alt="" id="img_1795" border="0" style="height:2ex;width:2ex">
                     </a>
                     1795
                     <ul id="ul_1795" class="closed">
-                        <li id="Christiane_Goethe4"><a  onclick="toggle('Christiane_Goethe4');">
+                        <li id="Christiane_Goethe4"><a  onclick="toggle('Christiane_Goethe4', 'CGoethe', 1795, 1);">
                             <img src="closed.gif" alt="" id="img_Christiane_Goethe4" border="0" style="height:2ex;width:2ex">
                             </a>
                             Christiane Goethe
@@ -2088,7 +2110,7 @@
                                 <button onclick="Load(this.id)" id="1795_CGoethe_00062"> 1795_CGoethe_00062 </button>
                             </ul>				
                         </li>
-                        <li id="Friedrich_Schiller2"><a  onclick="toggle('Friedrich_Schiller2');">
+                        <li id="Friedrich_Schiller2"><a  onclick="toggle('Friedrich_Schiller2', 'FSchiller', 1795, 1);">
                             <img src="closed.gif" alt="" id="img_Friedrich_Schiller2" border="0" style="height:2ex;width:2ex">
                             </a>
                             Friedrich Schiller
@@ -2200,12 +2222,12 @@
                 </li>
 
                 <li id="1796">
-                    <a  onclick="toggle('1796');">
+                    <a  onclick="toggle('1796', 'whole', 1796, 1);">
                         <img src="closed.gif" alt="" id="img_1796" border="0" style="height:2ex;width:2ex">
                     </a>
                     1796
                     <ul id="ul_1796" class="closed">
-                        <li id="Christiane_Goethe5"><a  onclick="toggle('Christiane_Goethe5');">
+                        <li id="Christiane_Goethe5"><a  onclick="toggle('Christiane_Goethe5', 'CGoethe', 1796, 1);">
                             <img src="closed.gif" alt="" id="img_Christiane_Goethe5" border="0" style="height:2ex;width:2ex">
                             </a>
                             Christiane Goethe
@@ -2245,7 +2267,7 @@
                                 <button onclick="Load(this.id)" id="1796_CGoethe_00095"> 1796_CGoethe_00095 </button>
                             </ul>				
                         </li>
-                        <li id="Friedrich_Schiller3"><a  onclick="toggle('Friedrich_Schiller3');">
+                        <li id="Friedrich_Schiller3"><a  onclick="toggle('Friedrich_Schiller3', 'FSchiller', 1796, 1);">
                             <img src="closed.gif" alt="" id="img_Friedrich_Schiller3" border="0" style="height:2ex;width:2ex">
                             </a>
                             Friedrich Schiller
@@ -2381,12 +2403,12 @@
                 </li>
 
                 <li id="1797">
-                    <a  onclick="toggle('1797');">
+                    <a  onclick="toggle('1797', 'whole', 1797, 1);">
                         <img src="closed.gif" alt="" id="img_1797" border="0" style="height:2ex;width:2ex">
                     </a>
                     1797
                     <ul id="ul_1797" class="closed">
-                        <li id="Christiane_Goethe6"><a  onclick="toggle('Christiane_Goethe6');">
+                        <li id="Christiane_Goethe6"><a  onclick="toggle('Christiane_Goethe6', 'CGoethe', 1797, 1);">
                             <img src="closed.gif" alt="" id="img_Christiane_Goethe6" border="0" style="height:2ex;width:2ex">
                             </a>
                             Christiane Goethe
@@ -2455,7 +2477,7 @@
                                 <button onclick="Load(this.id)" id="1797_CGoethe_00157"> 1797_CGoethe_00157 </button>
                             </ul>				
                         </li>
-                        <li id="Friedrich_Schiller4"><a  onclick="toggle('Friedrich_Schiller4');">
+                        <li id="Friedrich_Schiller4"><a  onclick="toggle('Friedrich_Schiller4', 'FSchiller', 1797, 1);">
                             <img src="closed.gif" alt="" id="img_Friedrich_Schiller4" border="0" style="height:2ex;width:2ex">
                             </a>
                             Friedrich Schiller
@@ -2601,12 +2623,12 @@
                 </li>
 
                 <li id="1798">
-                    <a  onclick="toggle('1798');">
+                    <a  onclick="toggle('1798', 'whole', 1798, 1);">
                         <img src="closed.gif" alt="" id="img_1798" border="0" style="height:2ex;width:2ex">
                     </a>
                     1798
                     <ul id="ul_1798" class="closed">
-                        <li id="Christiane_Goethe7"><a  onclick="toggle('Christiane_Goethe7');">
+                        <li id="Christiane_Goethe7"><a  onclick="toggle('Christiane_Goethe7', 'CGoethe', 1798, 1);">
                             <img src="closed.gif" alt="" id="img_Christiane_Goethe7" border="0" style="height:2ex;width:2ex">
                             </a>
                             Christiane Goethe
@@ -2673,7 +2695,7 @@
                                 <button onclick="Load(this.id)" id="1798_CGoethe_00217"> 1798_CGoethe_00217 </button>
                             </ul>				
                         </li>
-                        <li id="Friedrich_Schiller5"><a  onclick="toggle('Friedrich_Schiller5');">
+                        <li id="Friedrich_Schiller5"><a  onclick="toggle('Friedrich_Schiller5', 'FSchiller', 1798, 1);">
                             <img src="closed.gif" alt="" id="img_Friedrich_Schiller5" border="0" style="height:2ex;width:2ex">
                             </a>
                             Friedrich Schiller
@@ -2851,12 +2873,12 @@
                 </li>
 
                 <li id="1799">
-                    <a  onclick="toggle('1799');">
+                    <a  onclick="toggle('1799', 'whole', 1799, 1);">
                         <img src="closed.gif" alt="" id="img_1799" border="0" style="height:2ex;width:2ex">
                     </a>
                     1799
                     <ul id="ul_1799" class="closed">
-                        <li id="Christiane_Goethe8"><a  onclick="toggle('Christiane_Goethe8');">
+                        <li id="Christiane_Goethe8"><a  onclick="toggle('Christiane_Goethe8', 'CGoethe', 1799, 1);">
                             <img src="closed.gif" alt="" id="img_Christiane_Goethe8" border="0" style="height:2ex;width:2ex">
                             </a>
                             Christiane Goethe
@@ -2916,7 +2938,7 @@
                                 <button onclick="Load(this.id)" id="1799_CGoethe_00270"> 1799_CGoethe_00270 </button>
                             </ul>				
                         </li>
-                        <li id="Friedrich_Schiller6"><a  onclick="toggle('Friedrich_Schiller6');">
+                        <li id="Friedrich_Schiller6"><a  onclick="toggle('Friedrich_Schiller6', 'FSchiller', 1799, 1);">
                             <img src="closed.gif" alt="" id="img_Friedrich_Schiller6" border="0" style="height:2ex;width:2ex">
                             </a>
                             Friedrich Schiller
@@ -3058,12 +3080,12 @@
                 </li>
 
                 <li id="1800">
-                    <a  onclick="toggle('1800');">
+                    <a  onclick="toggle('1800', 'whole', 1800, 1);">
                         <img src="closed.gif" alt="" id="img_1800" border="0" style="height:2ex;width:2ex">
                     </a>
                     1800
                     <ul id="ul_1800" class="closed">
-                        <li id="Christiane_Goethe9"><a  onclick="toggle('Christiane_Goethe9');">
+                        <li id="Christiane_Goethe9"><a  onclick="toggle('Christiane_Goethe9', 'CGoethe', 1800, 1);">
                             <img src="closed.gif" alt="" id="img_Christiane_Goethe9" border="0" style="height:2ex;width:2ex">
                             </a>
                             Christiane Goethe
@@ -3096,7 +3118,7 @@
                                 <button onclick="Load(this.id)" id="1800_CGoethe_00296"> 1800_CGoethe_00296 </button>
                             </ul>				
                         </li>
-                        <li id="Friedrich_Schiller7"><a  onclick="toggle('Friedrich_Schiller7');">
+                        <li id="Friedrich_Schiller7"><a  onclick="toggle('Friedrich_Schiller7', 'FSchiller', 1800, 1);">
                             <img src="closed.gif" alt="" id="img_Friedrich_Schiller7" border="0" style="height:2ex;width:2ex">
                             </a>
                             Friedrich Schiller
@@ -3200,12 +3222,12 @@
                 </li>
 
                 <li id="1801">
-                    <a  onclick="toggle('1801');">
+                    <a  onclick="toggle('1801', 'whole', 1801, 1);">
                         <img src="closed.gif" alt="" id="img_1801" border="0" style="height:2ex;width:2ex">
                     </a>
                     1801
                     <ul id="ul_1801" class="closed">
-                        <li id="Christiane_Goethe10"><a  onclick="toggle('Christiane_Goethe10');">
+                        <li id="Christiane_Goethe10"><a  onclick="toggle('Christiane_Goethe10', 'CGoethe', 1801, 1);">
                             <img src="closed.gif" alt="" id="img_Christiane_Goethe10" border="0" style="height:2ex;width:2ex">
                             </a>
                             Christiane Goethe
@@ -3226,7 +3248,7 @@
                                 <button onclick="Load(this.id)" id="1801_CGoethe_00310"> 1801_CGoethe_00310 </button>
                             </ul>				
                         </li>
-                        <li id="Friedrich_Schiller8"><a  onclick="toggle('Friedrich_Schiller8');">
+                        <li id="Friedrich_Schiller8"><a  onclick="toggle('Friedrich_Schiller8', 'FSchiller', 1801, 1);">
                             <img src="closed.gif" alt="" id="img_Friedrich_Schiller8" border="0" style="height:2ex;width:2ex">
                             </a>
                             Friedrich Schiller
@@ -3279,12 +3301,12 @@
                 </li>
 
                 <li id="1802">
-                    <a  onclick="toggle('1802');">
+                    <a  onclick="toggle('1802', 'whole', 1802, 1);">
                         <img src="closed.gif" alt="" id="img_1802" border="0" style="height:2ex;width:2ex">
                     </a>
                     1802
                     <ul id="ul_1802" class="closed">
-                        <li id="Christiane_Goethe11"><a  onclick="toggle('Christiane_Goethe11');">
+                        <li id="Christiane_Goethe11"><a  onclick="toggle('Christiane_Goethe11', 'CGoethe', 1802, 1);">
                             <img src="closed.gif" alt="" id="img_Christiane_Goethe11" border="0" style="height:2ex;width:2ex">
                             </a>
                             Christiane Goethe
@@ -3336,7 +3358,7 @@
                                 <button onclick="Load(this.id)" id="1802_CGoethe_00355"> 1802_CGoethe_00355 </button>
                             </ul>				
                         </li>
-                        <li id="Friedrich_Schiller9"><a  onclick="toggle('Friedrich_Schiller9');">
+                        <li id="Friedrich_Schiller9"><a  onclick="toggle('Friedrich_Schiller9', 'FSchiller', 1802, 1);">
                             <img src="closed.gif" alt="" id="img_Friedrich_Schiller9" border="0" style="height:2ex;width:2ex">
                             </a>
                             Friedrich Schiller
@@ -3397,12 +3419,12 @@
                 </li>
 
                 <li id="1803">
-                    <a  onclick="toggle('1803');">
+                    <a  onclick="toggle('1803', 'whole', 1803, 1);">
                         <img src="closed.gif" alt="" id="img_1803" border="0" style="height:2ex;width:2ex">
                     </a>
                     1803
                     <ul id="ul_1803" class="closed">
-                        <li id="Charlotte_Schiller"><a  onclick="toggle('Charlotte_Schiller');">
+                        <li id="Charlotte_Schiller"><a  onclick="toggle('Charlotte_Schiller', 'CSchiller', 1803, 1);">
                             <img src="closed.gif" alt="" id="img_Charlotte_Schiller" border="0" style="height:2ex;width:2ex">
                             </a>
                             Charlotte Schiller
@@ -3414,7 +3436,7 @@
                                 <button onclick="Load(this.id)" id="1803_CSchiller_00014"> 1803_CSchiller_00014 </button>
                             </ul>				
                         </li>
-                        <li id="Christiane_Goethe12"><a  onclick="toggle('Christiane_Goethe12');">
+                        <li id="Christiane_Goethe12"><a  onclick="toggle('Christiane_Goethe12', 'CGoethe', 1803, 1);">
                             <img src="closed.gif" alt="" id="img_Christiane_Goethe12" border="0" style="height:2ex;width:2ex">
                             </a>
                             Christiane Goethe
@@ -3458,7 +3480,7 @@
                                 <button onclick="Load(this.id)" id="1803_CGoethe_00392"> 1803_CGoethe_00392 </button>
                             </ul>				
                         </li>
-                        <li id="Friedrich_Schiller10"><a  onclick="toggle('Friedrich_Schiller10');">
+                        <li id="Friedrich_Schiller10"><a  onclick="toggle('Friedrich_Schiller10', 'FSchiller', 1803, 1);">
                             <img src="closed.gif" alt="" id="img_Friedrich_Schiller10" border="0" style="height:2ex;width:2ex">
                             </a>
                             Friedrich Schiller
@@ -3522,12 +3544,12 @@
                 </li>
 
                 <li id="1804">
-                    <a  onclick="toggle('1804');">
+                    <a  onclick="toggle('1804', 'whole', 1804, 1);">
                         <img src="closed.gif" alt="" id="img_1804" border="0" style="height:2ex;width:2ex">
                     </a>
                     1804
                     <ul id="ul_1804" class="closed">
-                        <li id="Charlotte_Schiller2"><a  onclick="toggle('Charlotte_Schiller2');">
+                        <li id="Charlotte_Schiller2"><a  onclick="toggle('Charlotte_Schiller2', 'CSchiller', 1804, 1);">
                             <img src="closed.gif" alt="" id="img_Charlotte_Schiller2" border="0" style="height:2ex;width:2ex">
                             </a>
                             Charlotte Schiller
@@ -3535,7 +3557,7 @@
                                 <button onclick="Load(this.id)" id="1804_CSchiller_00015"> 1804_CSchiller_00015 </button>
                             </ul>				
                         </li>
-                        <li id="Christiane_Goethe13"><a  onclick="toggle('Christiane_Goethe13');">
+                        <li id="Christiane_Goethe13"><a  onclick="toggle('Christiane_Goethe13', 'CGoethe', 1804, 1);">
                             <img src="closed.gif" alt="" id="img_Christiane_Goethe13" border="0" style="height:2ex;width:2ex">
                             </a>
                             Christiane Goethe
@@ -3546,7 +3568,7 @@
                                 <button onclick="Load(this.id)" id="1804_CGoethe_00396"> 1804_CGoethe_00396 </button>
                             </ul>				
                         </li>
-                        <li id="Friedrich_Schiller11"><a  onclick="toggle('Friedrich_Schiller11');">
+                        <li id="Friedrich_Schiller11"><a  onclick="toggle('Friedrich_Schiller11', 'FSchiller', 1804, 1);">
                             <img src="closed.gif" alt="" id="img_Friedrich_Schiller11" border="0" style="height:2ex;width:2ex">
                             </a>
                             Friedrich Schiller
@@ -3602,12 +3624,12 @@
                 </li>
 
                 <li id="1805">
-                    <a  onclick="toggle('1805');">
+                    <a  onclick="toggle('1805', 'whole', 1805, 1);">
                         <img src="closed.gif" alt="" id="img_1805" border="0" style="height:2ex;width:2ex">
                     </a>
                     1805
                     <ul id="ul_1805" class="closed">
-                        <li id="Christiane_Goethe14"><a  onclick="toggle('Christiane_Goethe14');">
+                        <li id="Christiane_Goethe14"><a  onclick="toggle('Christiane_Goethe14', 'CGoethe', 1805, 1);">
                             <img src="closed.gif" alt="" id="img_Christiane_Goethe14" border="0" style="height:2ex;width:2ex">
                             </a>
                             Christiane Goethe
@@ -3617,7 +3639,7 @@
                                 <button onclick="Load(this.id)" id="1805_CGoethe_00399"> 1805_CGoethe_00399 </button>
                             </ul>				
                         </li>
-                        <li id="Friedrich_Schiller12"><a  onclick="toggle('Friedrich_Schiller12');">
+                        <li id="Friedrich_Schiller12"><a  onclick="toggle('Friedrich_Schiller12', 'FSchiller', 1805, 1);">
                             <img src="closed.gif" alt="" id="img_Friedrich_Schiller12" border="0" style="height:2ex;width:2ex">
                             </a>
                             Friedrich Schiller
@@ -3653,12 +3675,12 @@
                 </li>
 
                 <li id="1806">
-                    <a  onclick="toggle('1806');">
+                    <a  onclick="toggle('1806', 'whole', 1806, 1);">
                         <img src="closed.gif" alt="" id="img_1806" border="0" style="height:2ex;width:2ex">
                     </a>
                     1806
                     <ul id="ul_1806" class="closed">
-                        <li id="Christiane_Goethe15"><a  onclick="toggle('Christiane_Goethe15');">
+                        <li id="Christiane_Goethe15"><a  onclick="toggle('Christiane_Goethe15', 'CGoethe', 1806, 1);">
                             <img src="closed.gif" alt="" id="img_Christiane_Goethe15" border="0" style="height:2ex;width:2ex">
                             </a>
                             Christiane Goethe
@@ -3678,12 +3700,12 @@
                 </li>
 
                 <li id="1807">
-                    <a  onclick="toggle('1807');">
+                    <a  onclick="toggle('1807', 'whole', 1807, 1);">
                         <img src="closed.gif" alt="" id="img_1807" border="0" style="height:2ex;width:2ex">
                     </a>
                     1807
                     <ul id="ul_1807" class="closed">
-                        <li id="Christiane_Goethe16"><a  onclick="toggle('Christiane_Goethe16');">
+                        <li id="Christiane_Goethe16"><a  onclick="toggle('Christiane_Goethe16', 'CGoethe', 1807, 1);">
                             <img src="closed.gif" alt="" id="img_Christiane_Goethe16" border="0" style="height:2ex;width:2ex">
                             </a>
                             Christiane Goethe
@@ -3710,12 +3732,12 @@
                 </li>
 
                 <li id="1808">
-                    <a  onclick="toggle('1808');">
+                    <a  onclick="toggle('1808', 'whole', 1808, 1);">
                         <img src="closed.gif" alt="" id="img_1808" border="0" style="height:2ex;width:2ex">
                     </a>
                     1808
                     <ul id="ul_1808" class="closed">
-                        <li id="Christiane_Goethe17"><a  onclick="toggle('Christiane_Goethe17');">
+                        <li id="Christiane_Goethe17"><a  onclick="toggle('Christiane_Goethe17', 'CGoethe', 1808, 1);">
                             <img src="closed.gif" alt="" id="img_Christiane_Goethe17" border="0" style="height:2ex;width:2ex">
                             </a>
                             Christiane Goethe
@@ -3748,12 +3770,12 @@
                 </li>
 
                 <li id="1809">
-                    <a  onclick="toggle('1809');">
+                    <a  onclick="toggle('1809', 'whole', 1809, 1);">
                         <img src="closed.gif" alt="" id="img_1809" border="0" style="height:2ex;width:2ex">
                     </a>
                     1809
                     <ul id="ul_1809" class="closed">
-                        <li id="Christiane_Goethe18"><a  onclick="toggle('Christiane_Goethe18');">
+                        <li id="Christiane_Goethe18"><a  onclick="toggle('Christiane_Goethe18', 'CGoethe', 1809, 1);">
                             <img src="closed.gif" alt="" id="img_Christiane_Goethe18" border="0" style="height:2ex;width:2ex">
                             </a>
                             Christiane Goethe
@@ -3797,12 +3819,12 @@
                 </li>
 
                 <li id="1810">
-                    <a  onclick="toggle('1810');">
+                    <a  onclick="toggle('1810', 'whole', 1810, 1);">
                         <img src="closed.gif" alt="" id="img_1810" border="0" style="height:2ex;width:2ex">
                     </a>
                     1810
                     <ul id="ul_1810" class="closed">
-                        <li id="Christiane_Goethe19"><a  onclick="toggle('Christiane_Goethe19');">
+                        <li id="Christiane_Goethe19"><a  onclick="toggle('Christiane_Goethe19', 'CGoethe', 1810, 1);">
                             <img src="closed.gif" alt="" id="img_Christiane_Goethe19" border="0" style="height:2ex;width:2ex">
                             </a>
                             Christiane Goethe
@@ -3856,12 +3878,12 @@
                 </li>
 
                 <li id="1811">
-                    <a  onclick="toggle('1811');">
+                    <a  onclick="toggle('1811', 'whole', 1811, 1);">
                         <img src="closed.gif" alt="" id="img_1811" border="0" style="height:2ex;width:2ex">
                     </a>
                     1811
                     <ul id="ul_1811" class="closed">
-                        <li id="Christiane_Goethe20"><a  onclick="toggle('Christiane_Goethe20');">
+                        <li id="Christiane_Goethe20"><a  onclick="toggle('Christiane_Goethe20', 'CGoethe', 1811, 1);">
                             <img src="closed.gif" alt="" id="img_Christiane_Goethe20" border="0" style="height:2ex;width:2ex">
                             </a>
                             Christiane Goethe
@@ -3883,12 +3905,12 @@
                 </li>
 
                 <li id="1812">
-                    <a  onclick="toggle('1812');">
+                    <a  onclick="toggle('1812', 'whole', 1812, 1);">
                         <img src="closed.gif" alt="" id="img_1812" border="0" style="height:2ex;width:2ex">
                     </a>
                     1812
                     <ul id="ul_1812" class="closed">
-                        <li id="Christiane_Goethe21"><a  onclick="toggle('Christiane_Goethe21');">
+                        <li id="Christiane_Goethe21"><a  onclick="toggle('Christiane_Goethe21', 'CGoethe', 1812, 1);">
                             <img src="closed.gif" alt="" id="img_Christiane_Goethe21" border="0" style="height:2ex;width:2ex">
                             </a>
                             Christiane Goethe
@@ -3917,12 +3939,12 @@
                 </li>
 
                 <li id="1813">
-                    <a  onclick="toggle('1813');">
+                    <a  onclick="toggle('1813', 'whole', 1813, 1);">
                         <img src="closed.gif" alt="" id="img_1813" border="0" style="height:2ex;width:2ex">
                     </a>
                     1813
                     <ul id="ul_1813" class="closed">
-                        <li id="Christiane_Goethe22"><a  onclick="toggle('Christiane_Goethe22');">
+                        <li id="Christiane_Goethe22"><a  onclick="toggle('Christiane_Goethe22', 'CGoethe', 1813, 1);">
                             <img src="closed.gif" alt="" id="img_Christiane_Goethe22" border="0" style="height:2ex;width:2ex">
                             </a>
                             Christiane Goethe
@@ -3952,12 +3974,12 @@
                 </li>
 
                 <li id="1814">
-                    <a  onclick="toggle('1814');">
+                    <a  onclick="toggle('1814', 'whole', 1814, 1);">
                         <img src="closed.gif" alt="" id="img_1814" border="0" style="height:2ex;width:2ex">
                     </a>
                     1814
                     <ul id="ul_1814" class="closed">
-                        <li id="Christiane_Goethe23"><a  onclick="toggle('Christiane_Goethe23');">
+                        <li id="Christiane_Goethe23"><a  onclick="toggle('Christiane_Goethe23', 'CGoethe', 1814, 1);">
                             <img src="closed.gif" alt="" id="img_Christiane_Goethe23" border="0" style="height:2ex;width:2ex">
                             </a>
                             Christiane Goethe
@@ -3987,12 +4009,12 @@
                 </li>
 
                 <li id="1815">
-                    <a  onclick="toggle('1815');">
+                    <a  onclick="toggle('1815', 'whole', 1815, 1);">
                         <img src="closed.gif" alt="" id="img_1815" border="0" style="height:2ex;width:2ex">
                     </a>
                     1815
                     <ul id="ul_1815" class="closed">
-                        <li id="Christiane_Goethe24"><a  onclick="toggle('Christiane_Goethe24');">
+                        <li id="Christiane_Goethe24"><a  onclick="toggle('Christiane_Goethe24', 'CGoethe', 1815, 1);">
                             <img src="closed.gif" alt="" id="img_Christiane_Goethe24" border="0" style="height:2ex;width:2ex">
                             </a>
                             Christiane Goethe
@@ -4026,12 +4048,12 @@
                 </li>
 
                 <li id="1816">
-                    <a  onclick="toggle('1816');">
+                    <a  onclick="toggle('1816', 'whole', 1816, 1);">
                         <img src="closed.gif" alt="" id="img_1816" border="0" style="height:2ex;width:2ex">
                     </a>
                     1816
                     <ul id="ul_1816" class="closed">
-                        <li id="Christiane_Goethe25"><a  onclick="toggle('Christiane_Goethe25');">
+                        <li id="Christiane_Goethe25"><a  onclick="toggle('Christiane_Goethe25', 'CGoethe', 1816, 1);">
                             <img src="closed.gif" alt="" id="img_Christiane_Goethe25" border="0" style="height:2ex;width:2ex">
                             </a>
                             Christiane Goethe
@@ -4049,9 +4071,13 @@
         </div>
 
         <div id="LetterDiv"/>
+        <script src= "wordcloud.js" type="text/javascript"></script>
         <script type="text/javascript">
             function Load(clickedButton){
-                $("#LetterDiv").load("../../AllLetters/" + clickedButton + ".html")
+                $("#LetterDiv").load("../../../AllLetters/" + clickedButton + ".html")
+            }
+            function Remove(){
+                $("#LetterDiv").empty();
             }
         </script>
     </body>
