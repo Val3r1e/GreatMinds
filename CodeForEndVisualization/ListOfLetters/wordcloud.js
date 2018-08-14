@@ -5,24 +5,26 @@ function create_wordcloud(name, year, steps){
 
     var thisYear = get_year(year);
     var thisName = get_name(name);
+    //set_title(name, year);
 
     request.open('GET', requestURL);
     request.responseType = 'json';
     request.send();
     request.onload = function(){
+        
         var myText = request.response;
-        console.log(myText);
+        // console.log(myText);
 
         var myConfig = {
             type: 'wordcloud',
-            title:{
-                text: thisName + " " + thisYear,
-                visible:true,
-                width:150, 
-                height: 50,
-                paddingBottom: "20px",
-                margin:"20px"
-            },
+            // title:{
+            //     text: thisName + " " + thisYear,
+            //     visible:true,
+            //     width:150, 
+            //     height: 50,
+            //     paddingBottom: "20px",
+            //     margin:"20px"
+            // },
             options: {
                 words : myText,
                 minLength: 4,
@@ -45,14 +47,14 @@ function create_wordcloud(name, year, steps){
                         fontColor: 'white'
                     },
                     tooltip: {
-                        text: "%text\n tf-idf index: %hits \n Click on the word to show a list with corresponding letters",
+                        text: "%text\n tf-idf index: %hits \n Click on the word to show a list of corresponding letters.",
                         visible: true,
                         alpha: 0.8,
                         backgroundColor: '#D32F2F',
                         borderColor: 'none',
                         borderRadius: 3,
                         fontColor: 'white',
-                        fontFamily: 'Georgia',
+                        fontFamily: 'Merriweather',
                         fontSize:16,
                         padding: 5,
                         textAlpha: 1,
@@ -69,10 +71,12 @@ function create_wordcloud(name, year, steps){
             width: '100%'
         });
 
-        zingchart.bind('LetterDiv','label_click', function() {
+        zingchart.bind('LetterDiv','label_click', function(p) {
             if(confirm("Show a list of all correspondig letters?")){
-                txt = "And now for something completely different.";
-                document.getElementById("LetterDiv").innerHTML = txt;
+                headline = "<h2>And now for something completely different.</h2><br>";
+                id = p.labelindex;
+                txt = "<h3>The clicked label was label " + id + ".</h3><p>Albatros!</p>";
+                document.getElementById("LetterDiv").innerHTML = headline + txt;
             }
         });
     }
@@ -94,6 +98,22 @@ function create_wordcloud(name, year, steps){
             }
         }
         return thisName;
+    }
+
+    function set_title(name, year){
+        if (year == "1111"){
+            var thisYear = "";
+        }else{
+            var thisYear = year;
+        }
+        var names = {"whole": "Everyone","CSchiller":"Charlotte von Schiller", "CGoethe":"Christiane Goethe", "FSchiller": "Friedrich Schiller", "CStein": "Charlotte von Stein"};
+        var thisName = "unknown";
+        for(i in names){
+            if (name == i){
+                thisName = names[i];
+            }
+        }
+        document.getElementById("LetterTitle").innerHTML = thisName + " " + thisYear;
     }
 }
 
