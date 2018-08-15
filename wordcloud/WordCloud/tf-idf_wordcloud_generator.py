@@ -28,27 +28,33 @@ def generate_wc(direc, name, steps):
         data, ids = step_years(direc, steps)
 
     scores, terms = create_tfidf_score(data)
-    score_dict = {}
     year_counter = 0
 
     for doc_scores in scores:
         #für jedes Dokument (also für jede wordcloud, die erzeugt wird), wird ein dict angelegt
+        score_dict = {}
         for i in range(len(doc_scores)):
             score_dict[terms[i]] = doc_scores[i]
-        
+
+        sorted_score_dict = sorted(score_dict.items(), key=lambda x:x[1], reverse=True)
+
+        term_words = {}
+        for entry in sorted_score_dict:
+            term_words[entry[0]] = entry[1]
+
         year = ids[year_counter]
         year_counter += 1
         
         #pprint(score_dict)
         #create_wordcloud(score_dict, name, steps, year)
-        scores_to_json(score_dict, name, steps, year)
+        scores_to_json(term_words, name, steps, year)
 
 
 #------------------ create different datasets --------------------
 
 def whole(direc):
     data = []
-    ids = ["0000"]
+    ids = ["1111"]
 
     for file in os.listdir(direc):
         filename = os.path.join(direc, file)
@@ -184,7 +190,7 @@ def scores_to_json(score_dict, name, steps, year):
     for key in score_dict:
         list_to_write.append({"text":key, "count":score_dict[key]})
     
-    json.dump(list_to_write, open("json_cloud_data_tf-idf/%s/%s/%s_%s_%s.json" %(name, steps, name, year, steps), 'w'))
+    json.dump(list_to_write, open("cloud_data_tf-idf/%s/%s/%s_%s_%s.json" %(name, steps, name, year, steps), 'w'))
 
 
 #------------------------ error and main ---------------------------
