@@ -9,81 +9,11 @@
             zingchart.MODULESDIR = "https://cdn.zingchart.com/modules/";
             ZC.LICENSE = ["569d52cefae586f634c54f86dc99e6a9", "ee6b7db5b51705a13dc2339db3edaf6d"];
         </script>
-        <link rel="stylesheet" type="text/css" href="wordcloud_style.css">
+        <link href = "wordcloud_style.css" rel="stylesheet" type="text/CSS">
         <link href="https://fonts.googleapis.com/css?family=Merriweather" rel="stylesheet">
-        <style>
-            button{
-                display: block;
-                border-style: none;
-                background-color: white;
-                cursor: pointer;
-                /*margin-top: 5px;*/
-            }
-            button:hover{
-                color: grey;
-            }
-            #LetterDiv{
-                margin-left: 400px;
-                margin-right: 200px;
-                position: absolute;
-                top: 50px;
-                right: 0px;
-                height:90%;
-                width:60%;
-                min-height:150px;
-            }
-            .ButtonDiv{
-                position: relative;
-                overflow: scroll;
-                max-height: 600px;
-            }
-            .open {
-                display: block;
-            }
-            .closed {
-                display: none;
-            }
-            li {
-                list-style-type: none;
-                padding-top: .2em;
-                padding-bottom: .2em;
-                font-size: 18px;
-            }       
-            li img {
-                vertical-align: middle;
-                cursor: pointer;
-            }
-        </style>
-        <script>
-            function toggle(id, name, year, steps){
-                ul = "ul_" + id;
-                img = "img_" + id;
-                ulElement = document.getElementById(ul);
-                imgElement = document.getElementById(img);
-                if (ulElement){
-                    if (ulElement.className == 'closed'){
-                        ulElement.className = "open";
-                        imgElement.src = "opened.gif";
-                        //Remove everything shown before (just to make sure, not actually sure if it's necessary)
-                        //and create the new wordcloud
-                        Remove();
-                        create_wordcloud(name, year, steps);
-                    }else{
-                        ulElement.className = "closed";
-                        imgElement.src = "closed.gif";
-                        //Remove the letter/wordcloud and show the wordcloud from the level above:
-                        Remove();
-                        if (name == 'whole'){
-                            create_wordcloud(name, 1111, 0);
-                        }
-                        else{
-                            create_wordcloud('whole', year, steps)
-                        }
-                    }
-                }
-            }
-        </script>
+        <link href="https://fonts.googleapis.com/css?family=Montserrat|Ubuntu+Mono|Vidaloka|Raleway|Marcellus+SC|IM+Fell+French+Canon+SC" rel="stylesheet"> 
     </head>
+
     <body onload="create_wordcloud('whole', 1111, 0)">
         <div class = "ButtonDiv">
             <ul class="open">
@@ -4069,16 +3999,8 @@
 
             </ul>
         </div>
-
         <div id="LetterDiv"/>
-        <script src= "wordcloud.js" type="text/javascript"></script>
-        <script type="text/javascript">
-            function Load(clickedButton){
-                $("#LetterDiv").load("../../../AllLetters/" + clickedButton + ".html")
-            }
-            function Remove(){
-                $("#LetterDiv").empty();
-            }
-        </script>
+        <script src= "my_wordcloud.js" type="text/javascript"></script>
+        <!-- <div id="LetterTitle"/> -->
     </body>
 </html>
