@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+    <html lang="DE">
+
+        <head>
+            <title> Bars all letters</title>
+            <meta charset="utf-8"/>
+
+            <style> 
+                .divchart {
+                    font: 10px sans-serif;
+                    text-align: right;
+                    padding: 3px;
+                    margin: 1px;
+                    color: white;
+                }
+            </style>
+
+        </head>
+
+        <body>
+
+            <script src="https://d3js.org/d3.v4.min.js"></script>
+
+            <script>
+
+                var data = [117, 91, 85, 68, 171, 241, 270, 153, 142, 162, 101, 20, 7, 4, 12, 24, 38, 125, 158, 197, 227, 184, 119, 56, 95, 95, 50, 28, 9, 16, 22, 33, 43, 11, 18, 19, 19, 23, 3];
+
+                var body = d3.select("body");
+                
+                var divs = body.selectAll("div")
+                .data(data)
+                .enter().append("div");
+                    
+                var color = d3.scaleLinear()
+                .domain([0, 300])
+                .range(["powderblue", "midnightblue"]);
+                    
+                divs.style("width", function(d) { return d + "px"; })
+                .attr("class", "divchart")
+                .style("background-color", function(d){ return color(d)})
+                .text(function(d) { return d; });
+
+             </script>
+
+        </body>
+    </html>

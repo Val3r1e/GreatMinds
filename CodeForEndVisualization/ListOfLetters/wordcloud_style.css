@@ -4,12 +4,18 @@ html, body {
 	margin:0;
 	padding:0;
 }
+.divchart  {
+	font: 10px sans-serif; 
+	text-align: right;
+	padding: 3px;
+	margin: 1px;
+	color: white;
+}
 button{
 	display: block;
 	border-style: none;
 	background-color: white;
 	cursor: pointer;
-	/*margin-top: 5px;*/
 }
 button:hover{
 	color: grey;
@@ -18,8 +24,8 @@ button:hover{
 	margin-left: 400px;
 	margin-right: 100px;
 	position: absolute;
-	top: 50px;
-	right: 0px;
+	top: 700px;
+	right: 20px;
 	height:66.67vh;
 	width:60%;
 	min-height:150px;

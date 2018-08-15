@@ -28,6 +28,32 @@ function toggle(id, name, year, steps){
     }
 }
 
+// ---------------- (Hopefully soon) Code for bars to show letter amount -----------------
+function bar(i){
+
+    var data = [i];
+
+    var body = d3.select("body");
+
+    var divs = body.selectAll("div")
+    .data(data)
+    .enter().append("div");
+        
+    var color = d3.scaleLinear()
+    .domain([0, 300])
+    .range(["powderblue", "midnightblue"]);
+        
+    divs.style("width", function(d) { return d + "px"; })
+    .attr("class", "divchart")
+    .style("background-color", function(d){ return color(d)})
+    .text(function(d) { return d; });
+}
+
+//---------------- Just a try, won't stay! -------------------
+function text(i){
+    document.getElementById("try").innerHTML = "--Here should be a bar--";
+}
+
 //------------- Load the letters --------------
 function Load(clickedButton){
     Remove();
@@ -74,26 +100,27 @@ function create_wordcloud(name, year, steps){
                 rotate: false,
                 
                 colorType: 'palette',
-                palette: ['#D32F2F','#1976D2','#9E9E9E','#E53935','#1E88E5','#7E57C2','#F44336','#2196F3','#A1887F'],
+                palette: ["#7b1fa2", "#512da8", "#283593", "#6a1b9a", "#0d47a1", "#1565c0", "#01579b", "#0288d1", "#0d47a1", "#6200ea", "#8e24aa"],
+                //['#D32F2F','#1976D2','#9E9E9E','#E53935','#1E88E5','#7E57C2','#F44336','#2196F3','#A1887F'],
             
                 style: {
                     fontFamily: 'Marcellus SC',
                     padding:"5px",
                     
                     hoverState: {
-                        backgroundColor: '#D32F2F',
-                        borderColor: 'none',
-                        borderRadius: 10,
-                        fontColor: 'white'
+                        //backgroundColor: '#D32F2F',
+                        //borderColor: 'none',
+                        //borderRadius: 10,
+                        fontColor: 'grey'
                     },
                     tooltip: {
                         text: "%text\n tf-idf index: %hits \n Click on the word to show a list of corresponding letters",
                         visible: true,
                         alpha: 0.8,
-                        backgroundColor: '#1976D2',
+                        //backgroundColor: '#1976D2',
                         borderColor: 'none',
                         borderRadius: 6,
-                        fontColor: 'white',
+                        fontColor: 'black',
                         fontFamily: 'Ubuntu Mono',
                         fontSize:18,
                         padding: 5,
@@ -138,7 +165,7 @@ function create_wordcloud(name, year, steps){
         });
 
         zingchart.bind('LetterDiv','label_click', function(p) {
-            if(confirm("Show a list of all correspondig letters?")){
+            //if(confirm("Show a list of all correspondig letters?")){
                 headline = "<h2>And now for something completely different.</h2><br>";
                 id = p.labelindex;
                 txt = "<h3>The clicked label was label " + id + ".</h3><p>Albatros!</p>";
@@ -146,7 +173,7 @@ function create_wordcloud(name, year, steps){
                 // console.log(labelText);
                 document.getElementById("LetterDiv").innerHTML = headline + txt;
                 zingchart.exec("LetterDiv", "destroy");
-            }
+            //}
         });
 
     }
