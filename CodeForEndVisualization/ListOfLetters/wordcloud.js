@@ -115,6 +115,7 @@ function create_wordcloud(name, year, steps){
                         visible: true,
                         alpha: 0.8,
                         backgroundColor: 'lightgrey',
+                        //backgroundColor: 'none',
                         borderColor: 'none',
                         borderRadius: 6,
                         fontColor: 'black',

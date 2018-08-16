@@ -7,11 +7,70 @@
             .axis .domain {
                 display: none;
             }
+            .bar{
+                cursor: pointer;
+            }
+            .bar:active{
+                color: grey;
+            }
+            .donut{
+                cursor: pointer;
+            }
         </style>
         <svg width="1250" height="600"></svg>
     </head>
     <body>
         <script>
+
+            //--------------------------- Donut Chart ----------------------------
+            var width = 800,
+                height = 300,
+                radius = Math.min(width, height) / 2;
+
+            var color = d3.scaleOrdinal()
+            //      FSchiller, CSchiller, CStein, CGoethe
+            .range(["#7986cb", "#7b1fa2", "#5c6bc0", "#9575cd"]);
+
+            var pie = d3.pie()
+                .value(function(d) { return d.TotalAmount; })
+                .sort(null);
+
+            var label = d3.arc()
+                .innerRadius(radius - 100)
+                .outerRadius(radius - 20);
+
+            d3.csv("data/DonutData.csv", type, function(error, data){
+
+                var path = svg.datum(data).selectAll("path")
+                    .data(pie)
+                    .enter().append("path")
+                    .attr("fill", function(d, i) { return color(i); })
+                    .attr("d", label)
+                    .attr("class", "donut")   //------------------ add class
+                    .attr("transform", "translate(" + width / (1.2)  + "," + height / 3 + ")");
+              
+                var arc = svg.selectAll(".arc")
+                    .data(pie(data))
+                    .enter().append("g")
+                    .attr("class", "arc");
+                    arc.append("text")
+                    .attr("transform", function(d) { return "translate(" + label.centroid(d) + ")"; })
+                    .attr("dy", "0.35em")
+                    .style("text-anchor", "middle")
+                    //.attr("fill", "#fff")
+                    .attr("fill", "#000")
+                    .attr("font-weight", "bold")
+                    .attr("transform", "translate(" + width / (1.2)  + "," + height / 3 + ")")
+                    .text(function(d) { return d.Name; });
+            });
+            function type(d) {
+              d.Name = +d.Name;
+              d.TotalAmount
+              return d;
+            }
+
+
+            //----------------------------- Barchart ----------------------------
             var svg = d3.select("svg"),
                 margin = {top: 20, right: 20, bottom: 30, left: 40},
                 width = +svg.attr("width") - margin.left - margin.right,
@@ -26,10 +85,10 @@
             var y = d3.scaleLinear()
                 .rangeRound([height, 0]);
 
+            //Color
             var z = d3.scaleOrdinal()
                 //      FSchiller, CSchiller, CStein, CGoethe
                 .range(["#7986cb", "#7b1fa2", "#5c6bc0", "#9575cd"]);
-
                 //Old color style
                 //d3.scaleOrdinal(d3.schemeCategory10);
 
@@ -61,6 +120,7 @@
                         .attr("x", function(d) { return x(d.data.Year); })
                         .attr("y", function(d) { return y(d[1]); })
                         .attr("height", function(d) { return y(d[0]) - y(d[1]); })
+                        .attr("class", "bar")   //----------------------- add class
                         .attr("width", x.bandwidth());    // Width of bars -1 smaller +1 bigger etc
 
                     /* --------- x-axis --------- */
