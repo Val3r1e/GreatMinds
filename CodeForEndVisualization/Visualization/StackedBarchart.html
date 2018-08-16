@@ -121,7 +121,8 @@
                         .attr("y", function(d) { return y(d[1]); })
                         .attr("height", function(d) { return y(d[0]) - y(d[1]); })
                         .attr("class", "bar")   //----------------------- add class
-                        .attr("width", x.bandwidth());    // Width of bars -1 smaller +1 bigger etc
+                        .attr("width", x.bandwidth()) // Width of bars -1 smaller +1 bigger etc
+                        //.on("hover", function(){});  
 
                     /* --------- x-axis --------- */
                     g.append("g")

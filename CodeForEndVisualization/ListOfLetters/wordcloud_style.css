@@ -10,6 +10,7 @@ html, body {
 	padding: 3px;
 	margin: 1px;
 	color: white;
+	display: inline-block;
 }
 button{
 	display: block;
@@ -21,7 +22,7 @@ button:hover{
 	color: grey;
 }
 #LetterDiv{
-	margin-left: 400px;
+	margin-left: 600px;
 	margin-right: 100px;
 	position: absolute;
 	top: 700px;

@@ -26,14 +26,14 @@ function toggle(id, name, year, steps){
     }
 }
 
-// ---------------- (Hopefully soon) Code for bars to show letter amount -----------------
-function bar(i){
+// ---------------- Code for bars to show letter amount -----------------
+function bar(i,id){
 
     var data = [i];
+  
+    //var body = d3.select("body");
 
-    var body = d3.select("body");
-
-    var divs = body.selectAll("div")
+    var divs = d3.select("#"+id).selectAll("div")
     .data(data)
     .enter().append("div");
         
