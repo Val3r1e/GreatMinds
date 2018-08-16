@@ -47,7 +47,23 @@
                     .attr("fill", function(d, i) { return color(i); })
                     .attr("d", label)
                     .attr("class", "donut")   //------------------ add class
-                    .attr("transform", "translate(" + width / (1.2)  + "," + height / 3 + ")");
+                    .attr("transform", "translate(" + width / (1.2)  + "," + height / 3 + ")")
+                    .on("mouseover", function(d){ 
+                        d3.select(this)
+                        //.style("transform", "scale(1.5,1")
+                        //.style("transform-origin", "50% 50%")
+                        .attr("fill","darkred");
+                    })
+                    .on("mouseout", function(d){
+                        d3.select(this)
+                        //.style("transform", "scale(1,1")
+                        //.style("transform-origin", "50% 50%")
+                        .attr("fill", function(){ return color(this.id); });
+                    });
+                    /*.on("click", function(d){ 
+                        d3.select(this)
+                        .attr("fill", "grey"); 
+                    });*/
               
                 var arc = svg.selectAll(".arc")
                     .data(pie(data))
@@ -113,7 +129,7 @@
                         .selectAll("g")
                         .data(d3.stack().keys(keys)(data))      // Stack function, stacks bars
                         .enter().append("g")
-                        .attr("fill", function(d) { return z(d.key); })     // Coloring the bars, z-axis
+                        .attr("fill", function(d,i){ return z(i); })     // Coloring the bars, z-axis
                         .selectAll("rect")
                         .data(function(d) { return d; })
                         .enter().append("rect")
@@ -122,7 +138,25 @@
                         .attr("height", function(d) { return y(d[0]) - y(d[1]); })
                         .attr("class", "bar")   //----------------------- add class
                         .attr("width", x.bandwidth()) // Width of bars -1 smaller +1 bigger etc
-                        //.on("hover", function(){});  
+                        .on("mouseover", function(d){ 
+                            d3.select(this)
+                            .style("transform", "scale(1.5,1")
+                            .style("transform-origin", "50% 50%")
+                            .attr("fill","darkred");
+                        })
+                        .on("mouseout", function(d){
+                            d3.select(this)
+                            .style("transform", "scale(1,1")
+                            .style("transform-origin", "50% 50%")
+                            .attr("fill", function(){ return z(this.id); });
+                        });
+                        /*.on("click", function(d){ 
+                            d3.select(this)
+                            .attr("fill", "grey"); 
+                        });*/
+                        
+                        
+                          
 
                     /* --------- x-axis --------- */
                     g.append("g")

@@ -50,6 +50,10 @@ button:hover{
 .closed {
 	display: none;
 }
+ul{
+	overflow: scroll;
+	max-height: 600px;
+}
 li {
 	list-style-type: none;
 	padding-top: .2em;
