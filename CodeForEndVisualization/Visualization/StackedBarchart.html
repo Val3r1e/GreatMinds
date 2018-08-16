@@ -29,7 +29,7 @@
 
             var color = d3.scaleOrdinal()
             //      FSchiller, CSchiller, CStein, CGoethe
-            .range(["#8c9eff", "#7b1fa2", "#5c6bc0", "#9575cd"]);
+            .range(["#9fa8da", "#7b1fa2", "#5c6bc0", "#9575cd"]);
 
             var pie = d3.pie()
                 .value(function(d) { return d.TotalAmount; })
@@ -48,17 +48,13 @@
                     .attr("d", label)
                     .attr("class", "donut")   //------------------ add class
                     .attr("transform", "translate(" + width / (1.2)  + "," + height / 3 + ")")
-                    .on("mouseover", function(d){ 
+                    .on("mouseover", function(d){
                         d3.select(this)
-                        //.style("transform", "scale(1.5,1")
-                        //.style("transform-origin", "50% 50%")
-                        .attr("fill","darkred");
+                        .style("opacity", 0.7);
                     })
                     .on("mouseout", function(d){
                         d3.select(this)
-                        //.style("transform", "scale(1,1")
-                        //.style("transform-origin", "50% 50%")
-                        .attr("fill", function(){ return color(this.id); });
+                        .style("opacity", 1);
                     });
                     /*.on("click", function(d){ 
                         d3.select(this)
@@ -104,7 +100,7 @@
             //Color
             var z = d3.scaleOrdinal()
                 //      FSchiller, CSchiller, CStein, CGoethe
-                .range(["#8c9eff", "#7b1fa2", "#5c6bc0", "#9575cd"]);
+                .range(["#9fa8da", "#7b1fa2", "#5c6bc0", "#9575cd"]);
                 //Old color style
                 //d3.scaleOrdinal(d3.schemeCategory10);
 
@@ -142,13 +138,17 @@
                             d3.select(this)
                             .style("transform", "scale(1.5,1")
                             .style("transform-origin", "50% 50%")
-                            .attr("fill","darkred");
+                            .style("opacity", 0.7);
+
+                            //.attr("fill","darkred");
                         })
                         .on("mouseout", function(d){
                             d3.select(this)
                             .style("transform", "scale(1,1")
                             .style("transform-origin", "50% 50%")
-                            .attr("fill", function(){ return z(this.id); });
+                            .style("opacity", 1);
+                            
+                            //.attr("fill", function(){ return z(this.id); });
                         });
                         /*.on("click", function(d){ 
                             d3.select(this)
