@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<script src="http://code.jquery.com/jquery-1.10.2.js"></script>
+		<script src="https://d3js.org/d3.v4.min.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.13/d3.min.js"></script>
+		<style>
+			body {
+				font: 10px sans-serif;
+			}
+
+			.axis path, .axis line {
+				fill: none;
+				stroke: #000;
+				shape-rendering: crispEdges;
+			}
+
+			.x.axis path {
+				display: none;
+			}
+
+			.y.axis path{
+				display: none;
+			}
+
+			.tooltip{
+				/*position: absolute;
+                display: none;
+                min-width: 50px;
+                height: auto;
+                background: none; 
+                border: 2px solid #6F257F;
+                padding: 10px;
+                text-align: center;
+				font-weight: bold;*/
+		
+				text-anchor: start;
+				font-family: sans-serif;
+				font-size: 10px;
+				font-weight: bold;
+				fill:black; 
+			}
+		</style>
+	</head>
+
+	<body>
+		<script>
+
+			var margin = {top: 20, right: 20, bottom: 30, left: 40},
+				width = 1250 - margin.left - margin.right,
+				height = 600 - margin.top - margin.bottom;
+
+			var x = d3.scale
+					.ordinal()
+					.rangeRoundBands([0, width], .1);
+
+			var y = d3.scale
+					.linear()
+					.rangeRound([height, 0]);
+
+			var color = d3.scale
+						.ordinal()
+						//      FSchiller, CSchiller, CStein, CGoethe
+						.range(["#9fa8da", "#7b1fa2", "#5c6bc0", "#9575cd"]);
+
+			var xAxis = d3.svg.axis()
+						.scale(x)
+						.orient("bottom");
+
+			var yAxis = d3.svg.axis()
+						.scale(y)
+						.orient("left");
+
+			var svg = d3.select("body")
+						.append("svg")
+						.attr("width", width + margin.left + margin.right)
+						.attr("height", height + margin.top + margin.bottom)
+						.append("g")
+						.attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+			var active_link = "0"; //to control legend selections and hover
+			var legendClicked; //to control legend selections
+			var legendClassArray = []; //store legend classes to select bars in plotSingle()
+			var y_orig; //to store original y-posn
+
+			d3.csv("data/vis_data_1.csv", function(error, data){
+				if (error) throw error;
+
+				color.domain(d3.keys(data[0]).filter(function(key){ return key !== "Year"; }));
+
+				data.forEach(function(d) {
+					var myyear = d.Year; //add to stock code
+					var y0 = 0;
+					d.persons = color.domain().map(function(name){ return {myyear:myyear, name: name, y0: y0, y1: y0 += +d[name]}; });
+					d.total = d.persons[d.persons.length - 1].y1;
+
+				});
+
+				x.domain(data.map(function(d) { return d.Year; }));
+				y.domain([0, d3.max(data, function(d) { return d.total; })]);
+
+				/* --------------- x-axis---------------- */
+				svg.append("g")
+					.attr("class", "x axis")
+					.attr("transform", "translate(0," + height + ")")
+					.attr("font-weight", "bold")					// bold text on x-axis
+					.call(xAxis);
+
+				/* --------------- y-axis + amount tag in top left corner ---------------- */
+				svg.append("g")
+					.attr("class", "y axis")
+					.attr("font-weight", "bold")
+					.call(yAxis)
+					.append("text")
+					.attr("y", 6)
+					.attr("x", 2)
+					.attr("dy", ".71em")
+					.style("text-anchor", "start")
+					.text("Amount");
+
+				var year = svg.selectAll(".year")
+					.data(data)
+					.enter().append("g")
+					.attr("class", "g")
+					.attr("transform", function(d) { return "translate(" + "0" + ",0)"; });
+
+				/* --------------- Bars ---------------- */
+				year.selectAll("rect")
+					.data(function(d) {
+						return d.persons; 
+					})
+					.enter().append("rect")
+					.attr("width", x.rangeBand())
+					.attr("y", function(d) { return y(d.y1); })
+					.attr("x",function(d) { //add to stock code
+						return x(d.myyear)
+					})
+					.attr("height", function(d) { return y(d.y0) - y(d.y1); })
+					.attr("class", function(d) {
+						classLabel = d.name.replace(/\s/g, ''); //remove spaces
+						return "class" + classLabel;
+					})
+					.style("fill", function(d) { return color(d.name); })
+					/* -------------------------- Mouseover --------------------------- */
+					.on("mouseover", function(d){
+						d3.select(this)
+						.attr("stroke","blue")
+						.attr("stroke-width",0.8)
+						//.style("opacity", 0.7);
+
+						var delta = d.y1 - d.y0;
+						var xPos = parseFloat(d3.select(this).attr("x"));
+						var yPos = parseFloat(d3.select(this).attr("y"));
+						var height = parseFloat(d3.select(this).attr("height"))
+
+						svg.append("text")
+						.attr("x",xPos)
+						.attr("y",yPos +height/2)
+						.attr("class","tooltip")
+						.text(d.name +": "+ delta); 
+							
+						})
+						/* --------------------------- Mouseout --------------------------- */
+						.on("mouseout",function(){
+							d3.select(this)
+							.attr("stroke","pink")
+							.attr("stroke-width",0.2)
+							//.style("opacity", 1);
+
+							svg.select(".tooltip").remove();
+										
+						})
+
+				/* -------------------------- Legend in top right corner and "animation" --------------------------- */
+				var legend = svg.selectAll(".legend")
+					.data(color.domain().slice().reverse())
+					.enter().append("g")
+					//.attr("class", "legend")
+					.attr("class", function (d) {
+						legendClassArray.push(d.replace(/\s/g, '')); //remove spaces
+						return "legend";
+					})
+					.attr("transform", function(d, i) { return "translate(0," + i * 20 + ")"; });
+
+				//reverse order to match order in which bars are stacked    
+				legendClassArray = legendClassArray.reverse();
+
+				/* ------------------------- Rectangles of legend -------------------------- */
+				legend.append("rect")
+					.attr("x", width - 18)
+					.attr("width", 18)
+					.attr("height", 18)
+					.style("fill", color)
+					.attr("id", function (d, i) {
+						return "id" + d.replace(/\s/g, '');
+					})
+					/* -------------------------- Mouseover --------------------------- */
+					.on("mouseover",function(){        
+
+						if (active_link === "0"){
+							d3.select(this)
+							.style("cursor", "pointer")
+							.attr("stroke","blue")
+							.attr("stroke-width",0.8);
+						}
+						else {
+							if (active_link.split("class").pop() === this.id.split("id").pop()) {
+								d3.select(this).style("cursor", "pointer");
+							} else d3.select(this).style("cursor", "auto");
+						}
+					})
+					/* -------------------------- Mouseout --------------------------- */
+					.on("mouseout", function(d){
+						d3.select(this)
+						.attr("stroke","pink")
+						.attr("stroke-width",0.2)
+					})
+					/* -------------------------- Click --------------------------- */
+					.on("click",function(d){        
+
+						if (active_link === "0") { //nothing selected, turn on this selection
+							d3.select(this)           
+								.style("stroke", "black")
+								.style("stroke-width", 1);
+
+								active_link = this.id.split("id").pop();
+								plotSingle(this);
+
+								//gray out the others
+								for (i = 0; i < legendClassArray.length; i++) {
+									if (legendClassArray[i] != active_link) {
+										d3.select("#id" + legendClassArray[i])
+										.style("opacity", 0.5);
+									}
+								}
+						
+						} else { //deactivate
+							if (active_link === this.id.split("id").pop()) {//active square selected; turn it OFF
+								d3.select(this)           
+								.style("stroke", "none");
+
+								active_link = "0"; //reset
+
+								//restore remaining boxes to normal opacity
+								for (i = 0; i < legendClassArray.length; i++) {              
+									d3.select("#id" + legendClassArray[i])
+									.style("opacity", 1);
+								}
+
+								//restore plot to original
+								restorePlot(d);
+
+							}
+						} //end active_link check							
+					});
+
+				/* -------------------------- Text of legend --------------------------- */
+				legend.append("text")
+					.attr("x", width - 24)
+					.attr("y", 9)
+					.attr("dy", ".35em")
+					.style("text-anchor", "end")
+					.attr("font-weight", "bold")
+					.text(function(d) { return d; });
+
+				/* ---------------------------- Functions --------------------------- */
+				function restorePlot(d) {
+
+					year.selectAll("rect").forEach(function (d, i) {      
+					//restore shifted bars to original posn
+					d3.select(d[idx])
+						.transition()
+						.duration(1000)        
+						.attr("y", y_orig[i]);
+					})
+
+					//restore opacity of erased bars
+					for (i = 0; i < legendClassArray.length; i++) {
+					if (legendClassArray[i] != class_keep) {
+						d3.selectAll(".class" + legendClassArray[i])
+						.transition()
+						.duration(1000)
+						.delay(750)
+						.style("opacity", 1);
+					}
+					}
+
+				}
+
+				function plotSingle(d) {
+						
+					class_keep = d.id.split("id").pop();
+					idx = legendClassArray.indexOf(class_keep);    
+
+					//erase all but selected bars by setting opacity to 0
+					for (i = 0; i < legendClassArray.length; i++) {
+					if (legendClassArray[i] != class_keep) {
+						d3.selectAll(".class" + legendClassArray[i])
+						.transition()
+						.duration(1000)          
+						.style("opacity", 0);
+					}
+					}
+
+					//lower the bars to start on x-axis
+					y_orig = [];
+					year.selectAll("rect").forEach(function (d, i) {        
+					
+					//get height and y posn of base bar and selected bar
+					h_keep = d3.select(d[idx]).attr("height");
+					y_keep = d3.select(d[idx]).attr("y");
+					//store y_base in array to restore plot
+					y_orig.push(y_keep);
+
+					h_base = d3.select(d[0]).attr("height");
+					y_base = d3.select(d[0]).attr("y");    
+
+					h_shift = h_keep - h_base;
+					y_new = y_base - h_shift;
+
+					//reposition selected bars
+					d3.select(d[idx])
+						.transition()
+						.ease("bounce")
+						.duration(1000)
+						.delay(750)
+						.attr("y", y_new);
+
+					})    
+
+				} 
+
+			});
+
+		</script>
+	</body>
+</html>

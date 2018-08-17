@@ -3,14 +3,17 @@
     <head>
         <title> Visualization </title>
         <meta charset="utf-8"/>
-
         <script src="http://code.jquery.com/jquery-1.10.2.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.13/d3.min.js"></script>
+        
+        <!--<script src="http://code.jquery.com/jquery-1.10.2.js"></script>-->
         <script src="https://cdn.zingchart.com/zingchart.min.js"></script>
-        <script src="https://d3js.org/d3.v4.min.js"></script>
+        <!--<script src="https://d3js.org/d3.v4.min.js"></script>-->
         <script>
             zingchart.MODULESDIR = "https://cdn.zingchart.com/modules/";
             ZC.LICENSE = ["569d52cefae586f634c54f86dc99e6a9", "ee6b7db5b51705a13dc2339db3edaf6d"];
         </script>
+        <script src="https://d3js.org/d3.v4.min.js"></script>
         <script src= "wordcloud.js" type="text/javascript"></script>
 
         <link href = "wordcloud_style.css" rel="stylesheet" type="text/CSS">
@@ -22,7 +25,7 @@
 
         <!-- ...............Load Barchart Visualization............... -->
         <div id="Visualization"></div>
-        <script>$("#Visualization").load("../Visualization/StackedBarchart.html");</script> 
+        <script>$("#Visualization").load("../Visualization/OldStackedBarchart.html");</script> 
 
         <!-- ...............List with buttons............... -->
         <div class = "ButtonDiv">
