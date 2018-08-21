@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 	<head>
-		<meta charset="utf-8">
+		<!--<meta charset="utf-8">-->
 		<script src="http://code.jquery.com/jquery-1.10.2.js"></script>
 		<script src="https://d3js.org/d3.v4.min.js"></script>
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.13/d3.min.js"></script>
@@ -110,7 +110,7 @@
 				/* --------------- y-axis + amount tag in top left corner ---------------- */
 				svg.append("g")
 					.attr("class", "y axis")
-					.attr("font-weight", "bold")
+					.attr("font-weight", "bold")	// bold text on y-axis
 					.call(yAxis)
 					.append("text")
 					.attr("y", 6)
@@ -145,7 +145,7 @@
 					/* -------------------------- Mouseover --------------------------- */
 					.on("mouseover", function(d){
 						d3.select(this)
-						.attr("stroke","blue")
+						.attr("stroke","purple")
 						.attr("stroke-width",0.8)
 						//.style("opacity", 0.7);
 
@@ -193,6 +193,7 @@
 					.attr("height", 18)
 					.style("fill", color)
 					.attr("id", function (d, i) {
+						console.log("id" + d.replace(/\s/g, ''));
 						return "id" + d.replace(/\s/g, '');
 					})
 					/* -------------------------- Mouseover --------------------------- */
@@ -261,7 +262,7 @@
 					.attr("y", 9)
 					.attr("dy", ".35em")
 					.style("text-anchor", "end")
-					.attr("font-weight", "bold")
+					.attr("font-weight", "bold")	// bold legend
 					.text(function(d) { return d; });
 
 				/* ---------------------------- Functions --------------------------- */

@@ -30,78 +30,6 @@
 
     <body>
         <script>
-
-            //--------------------------- Donut Chart ----------------------------
-            /*var width = 800,
-                height = 300,
-                radius = Math.min(width, height) / 2;
-
-            var color = d3.scaleOrdinal()
-            //      FSchiller, CSchiller, CStein, CGoethe
-            .range(["#9fa8da", "#7b1fa2", "#5c6bc0", "#9575cd"]);
-
-            var pie = d3.pie()
-                .value(function(d) { return d.TotalAmount; })
-                .sort(null);
-
-            var label = d3.arc()
-                .innerRadius(radius - 100)
-                .outerRadius(radius - 20);
-
-            var tooltip = d3.select("body").append("div").attr("class", "toolTip");
-
-            d3.csv("data/DonutData.csv", type, function(error, data){
-
-                var path = svg.datum(data).selectAll("path")
-                    .data(pie)
-                    .enter().append("path")
-                    .attr("fill", function(d, i) { return color(i); })
-                    .attr("d", label)
-                    .attr("class", "donut")   //------------------ add class
-                    .attr("transform", "translate(" + width / (1.2)  + "," + height / 3 + ")")
-                    .on("mouseover", function(d){
-                        d3.select(this)
-                        .style("opacity", 0.7);
-
-                        tooltip
-                        .style("left", d3.event.pageX - 50 + "px")
-                        .style("top", d3.event.pageY - 70 + "px")
-                        .style("display", "inline-block")
-                        .html(d.Name+" Person");
-                    })
-                    .on("mouseout", function(d){
-                        d3.select(this)
-                        .style("opacity", 1);
-
-                        tooltip
-                        .style("display","none");
-                    });
-                    /*.on("click", function(d){ 
-                        d3.select(this)
-                        .attr("fill", "grey"); 
-                    });
-              
-                var arc = svg.selectAll(".arc")
-                    .data(pie(data))
-                    .enter().append("g")
-                    .attr("class", "arc");
-                    arc.append("text")
-                    .attr("transform", function(d) { return "translate(" + label.centroid(d) + ")"; })
-                    .attr("dy", "0.35em")
-                    .style("text-anchor", "middle")
-                    //.attr("fill", "#fff")
-                    .attr("fill", "#000")
-                    .attr("font-weight", "bold")
-                    .attr("transform", "translate(" + width / (1.2)  + "," + height / 3 + ")")
-                    .text(function(d) { return d.Name; });
-            });
-            function type(d) {
-              d.Name = +d.Name;
-              d.TotalAmount
-              return d;
-            }*/
-
-
             //----------------------------- Barchart ----------------------------
             var svg = d3.select("svg"),
                 margin = {top: 20, right: 20, bottom: 30, left: 40},
@@ -126,6 +54,10 @@
 
             var tooltip = d3.select("body").append("div").attr("class", "toolTip");
 
+            var active_link = "0";
+            var legendClassArray = [];
+            var rectangleClassArray = [];
+
             d3.csv("data/vis_data_1.csv", function(d, i, columns){
                 for (i = 1, t = 0; i < columns.length; ++i) t += d[columns[i]] = +d[columns[i]];
                 d.total = t;
@@ -138,57 +70,56 @@
 
                 var keys = data.columns.slice(1);
 
-                    //data.sort(function(a, b) { return b.total - a.total; });      //Sorts it by size
                     x.domain(data.map(function(d) { return d.Year; }));
                     y.domain([0, d3.max(data, function(d) { return d.total; })]).nice();
                     z.domain(keys);
 
+                    l = 0;
                     g.append("g")
                         .selectAll("g")
                         .data(d3.stack().keys(keys)(data))      // Stack function, stacks bars
                         .enter().append("g")
                         .attr("fill", function(d,i){ return z(i); })     // Coloring the bars, z-axis
                         .selectAll("rect")
-                        .data(function(d) { return d; })
+                        .data(function(d) { return d;})
                         .enter().append("rect")
                         .attr("x", function(d) { return x(d.data.Year); })
                         .attr("y", function(d) { return y(d[1]); })
                         .attr("height", function(d) { return y(d[0]) - y(d[1]); })
-                        .attr("class", "bar")   //----------------------- add class
                         .attr("width", x.bandwidth()) // Width of bars -1 smaller +1 bigger etc
+                        .attr("class", function(d){
+                            classLabel = d.name;
+                            return "class" + classLabel;
+                        })
                         .on("mouseover", function(d){ 
                             d3.select(this)
-                            .style("transform", "scale(1.3,1")
-                            .style("transform-origin", "50% 50%")
-                            .style("opacity", 0.5);
-                            
+                            .style("cursor", "pointer")
+                            .attr("stroke","purple")
+						    .attr("stroke-width",0.8);
+                            //.style("opacity", 0.5);
+
+                            var amount = d[1] - d[0];
                             tooltip
                             .style("left", d3.event.pageX - 50 + "px")
                             .style("top", d3.event.pageY - 70 + "px")
                             .style("display", "inline-block")
-                            .html(d.data.Year);
-
-                            //.attr("fill","darkred");
+                            .html(d.data.Year + ": " + amount);
                         })
                         .on("mouseout", function(d){
                             d3.select(this)
-                            .style("transform", "scale(1,1")
-                            .style("transform-origin", "50% 50%")
-                            .style("opacity", 1);
+                            .attr("stroke","pink")
+							.attr("stroke-width",0.2);
+                            //.style("opacity", 1);
 
                             tooltip
                             .style("display","none");
-
-                            //.attr("fill", function(){ return z(this.id); });
-                        });
-                        /*.on("click", function(d){ 
+                        })
+                        .on("click", function(d){ 
                             d3.select(this)
-                            .attr("fill", "grey"); 
-                        });*/
+                            .style("stroke", "black")
+                            .style("stroke-width", 1.5);
+                        });
                         
-                        
-                          
-
                     /* --------- x-axis --------- */
                     g.append("g")
                         .attr("class", "axis")
@@ -220,19 +151,88 @@
                     .selectAll("g")
                     .data(keys.slice().reverse())
                     .enter().append("g")
+                    //------------- Add Class and fill legendClassArray-------------
+                    .attr("class", function (d) {
+						legendClassArray.push(d); 
+						return "legend";
+					})
                     .attr("transform", function(d, i) { return "translate(0," + i * 20 + ")"; });
 
-                    legend.append("rect")  // Rectangles of legend
-                        .attr("x", width - 50)  //The bigger the -x the farther the rectangles go inside towards y-axis
-                        .attr("width", 19)
-                        .attr("height", 19)
-                        .attr("fill", z);
+                legendClassArray = legendClassArray.reverse();
 
-                    legend.append("text") // Text of legends 
-                        .attr("x", width - 60)  // Same -x moves it closer to y-axis
-                        .attr("y", 9.5)         //The higher the x the farther down it goes (closer to x-axis)
-                        .attr("dy", "0.32em")
-                        .text(function(d) { return d; });
+                legend.append("rect")  // Rectangles of legend
+                    .attr("x", width - 50)  
+                    .attr("width", 19)
+                    .attr("height", 19)
+                    .attr("fill", z)
+                    //------------- Add Id-------------
+                    .attr("id", function (d, i) {
+                        console.log("id" + d);
+                        return ("id" + d);
+                    })
+                    .on("mouseover", function(d){ 
+                        d3.select(this)
+                        .attr("stroke","purple")
+                        .attr("stroke-width",0.8)
+                        .style("cursor", "pointer");
+                        
+                    })
+                    .on("mouseout", function(d){
+                        d3.select(this)
+                        .attr("stroke","pink")
+                        .attr("stroke-width",0.2);
+                        //.style("cursor", "auto");
+                    })
+                    .on("click", function(d){
+                        if (active_link === "0"){
+                            d3.select(this)           
+                            .style("stroke", "black")
+                            .style("stroke-width", 1);
+
+                            active_link = this.id.split("id").pop();
+                            plotSingle(this);
+
+                            for (i = 0; i < legendClassArray.length; i++) {
+                                if (legendClassArray[i] != active_link) {
+                                    d3.select("#id" + legendClassArray[i])
+                                    .style("opacity", 0.5);
+                                }
+                            }
+                        }
+                        else if (active_link === this.id.split("id").pop()) {
+                            d3.select(this)           
+                            .style("stroke", "none");
+
+                            active_link = "0"; 
+
+                            for (i = 0; i < legendClassArray.length; i++) {              
+                                d3.select("#id" + legendClassArray[i])
+                                .style("opacity", 1);
+                            }
+                        }
+                    });
+
+                legend.append("text") // Text of legends 
+                    .attr("x", width - 60)  // Same -x moves it closer to y-axis
+                    .attr("y", 9.5)         //The higher the x the farther down it goes (closer to x-axis)
+                    .attr("dy", "0.32em")
+                    .text(function(d) { return d; });
+
+                function plotSingle(d) {
+                    
+                    class_keep = d.id.split("id").pop();
+                    idx = legendClassArray.indexOf(class_keep);    
+
+                    //erase all but selected bars by setting opacity to 0
+                    for (i = 0; i < legendClassArray.length; i++) {
+                        if (legendClassArray[i] != class_keep) {
+                            d3.selectAll(".class" + legendClassArray[i])
+                            .transition()
+                            .duration(1000)          
+                            .style("opacity", 0);
+                        }
+                    }
+                } 
             });
         </script>
     </body>
