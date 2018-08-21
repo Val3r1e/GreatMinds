@@ -25,11 +25,13 @@ button:hover{
 	margin-left: 600px;
 	margin-right: 100px;
 	position: absolute;
-	top: 700px;
+	top: 600px;
 	right: 20px;
 	height:66.67vh;
 	width:60%;
 	min-height:150px;
+	overflow: scroll;
+	max-height: 600px;
 }
 /* #LetterDivTitle{
 	margin-left: 400px;

@@ -11,7 +11,6 @@ var openPerson;
 
 //------- toggle between opened and closed years and names in the List of Letters:
 function toggle(id, name, year, steps){
-    currentWordcloud = [name, year, steps]; //to remember the whole wc in case only one word is selected
     var requestOpenPerson = false;
     var requestOpenYear = false;
     
@@ -154,6 +153,7 @@ function Remove(){
 
 //------------- create the wordclouds ---------------
 function create_wordcloud(name, year, steps){
+    console.log("Create Wordcloud");
     Remove();
     var thisName = get_name(name);
     var thisYear = get_year(year);
@@ -222,6 +222,9 @@ function create_wordcloud(name, year, steps){
             height: '100%', 
             width: '100%'
         });
+        
+        currentWordcloud = [name, year, steps]; //to remember the whole wc in case only one word is selected
+
         zingchart.bind('LetterDiv','label_click', function(p){
         
             var letterIndexURL = "../../wordcloud/Text/wordindex/word-letter_index.json";
@@ -259,6 +262,7 @@ function create_wordcloud(name, year, steps){
 
 //---------------- show only the selected word --------------------
 function single_word_wc(word){
+    console.log("Singe WC");
     Remove();
     var singleConfig = myConfig;
     delete singleConfig.options.words;
