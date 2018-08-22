@@ -19,14 +19,13 @@ function bars(data,version){
     var z = d3.scaleOrdinal()
         //      FSchiller, CSchiller, CStein, CGoethe
         .range(["#9fa8da", "#7b1fa2", "#5c6bc0", "#9575cd"]);
-        //Old color style
-        //d3.scaleOrdinal(d3.schemeCategory10);
 
     var tooltip = d3.select("body").append("div").attr("class", "toolTip");
 
     var active_link = "0";
     var legendClassArray = [];
-    var rectangleClassArray = [];
+    var active = "0";
+    //var rectangleClassArray = [];
 
     d3.csv(data, function(d, i, columns){
         for (i = 1, t = 0; i < columns.length; ++i) t += d[columns[i]] = +d[columns[i]];
@@ -84,7 +83,20 @@ function bars(data,version){
                     tooltip
                     .style("display","none");
                 })
-                .on("click", function(d){ 
+                .on("click", function(d){
+                    if (active === "0"){
+                        d3.select(this)
+                        .style("stroke", "black")
+                        .style("stroke-width", 1.5);
+                        active = d.data.Year;
+                    }
+                    else if (active === d.data.Year){
+                        d3.select(this)           
+                        .style("stroke", "none");
+                        active = "0";
+                    }
+                })
+                .on("dblclick", function(d){ 
                     d3.select(this)
                     .style("stroke", "black")
                     .style("stroke-width", 1.5);
@@ -127,7 +139,6 @@ function bars(data,version){
                 .attr("text-anchor", "start")   // text position
                 .text("Amount");    // Text
 
-
         /* --------- Legend in top right corner --------- */
         var legend = g.append("g")
             .attr("font-family", "sans-serif") // Schriftart
@@ -153,7 +164,6 @@ function bars(data,version){
             .attr("fill", z)
             //------------- Add Id-------------
             .attr("id", function (d, i) {
-                //console.log("id" + d);
                 return ("id" + d);
             })
             .on("mouseover", function(d){ 
@@ -167,7 +177,6 @@ function bars(data,version){
                 d3.select(this)
                 .attr("stroke","pink")
                 .attr("stroke-width",0.2);
-                //.style("cursor", "auto");
             })
             .on("click", function(d){
                 if (active_link === "0"){
@@ -178,14 +187,14 @@ function bars(data,version){
                     active_link = this.id.split("id").pop();
                     plotSingle(this);
 
-                    for (i = 0; i < legendClassArray.length; i++) {
+                    for (i = 0; i < legendClassArray.length; i++){
                         if (legendClassArray[i] != active_link) {
                             d3.select("#id" + legendClassArray[i])
                             .style("opacity", 0.5);
                         }
                     }
                 }
-                else if (active_link === this.id.split("id").pop()) {
+                else if (active_link === this.id.split("id").pop()){
                     d3.select(this)           
                     .style("stroke", "none");
 
@@ -221,9 +230,8 @@ function bars(data,version){
     });
 }
 
+//-------------------------- Call visualization with specified data ------------------------------
 function init(version){
-
-    // bars("data/vis_data_5.csv", 5);
 
     if(version === 1){
         d3.select("svg").selectAll("*").remove();
@@ -233,24 +241,9 @@ function init(version){
         d3.select("svg").selectAll("*").remove();
         bars("data/vis_data_5.csv",version);
     }
-
-    d3.select("#data1")
-    .on("click", function(d,i){
-        version = 1;
-        d3.select("svg").selectAll("*").remove();
-        bars("data/vis_data_1.csv",version);
-    })
-
-    d3.select("#data5")
-    .on("click", function(d,i){
-        version = 5;
-        d3.select("svg").selectAll("*").remove();
-        bars("data/vis_data_5.csv",version);
-    })
 }
 
-
-//--------------------------------------------------------
+//-------------------------- Variables ------------------------------
 
 
 var wordClicked = false;
@@ -388,11 +381,6 @@ function bar(i,id){
     .attr("class", "divchart")
     .style("background-color", function(d){ return color(d)})
     .text(function(d) { return d; });
-}
-
-//---------------- Just a try, won't stay! -------------------
-function text(i){
-    document.getElementById("try").innerHTML = "--Here should be a bar--";
 }
 
 //------------- Load the letters --------------

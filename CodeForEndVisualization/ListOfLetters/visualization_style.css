@@ -45,11 +45,11 @@ button:hover{
 	color: grey;
 }
 #LetterDiv{
-	margin-left: 600px;
-	margin-right: 100px;
+	margin-left: 700px;
+	margin-right: 50px;
 	position: absolute;
 	top: 600px;
-	right: 20px;
+	right: 10px;
 	height:66.67vh;
 	width:60%;
 	min-height:150px;
