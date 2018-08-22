@@ -1,4 +1,4 @@
-
+var legendClicked = false; //to be able to return to the wordcloud shown before you clicked on a name in the legend
 function bars(data,version){
 
     var svg = d3.select("svg"),
@@ -95,21 +95,18 @@ function bars(data,version){
                         .style("stroke", "none");
                         active = "0";
                     }
+                    //'whole' is just a placeholder until we figure out how to get the actual name:
+                    create_wordcloud('whole', d.data.Year, version);
                 })
                 .on("dblclick", function(d){ 
                     d3.select(this)
                     .style("stroke", "black")
                     .style("stroke-width", 1.5);
                     if(version === 5){
-                        //'whole' is just a placeholder until we figure out how to get the actual name:
-                        console.log(version);
-                        create_wordcloud('whole', d.data.Year, version);
                         version = 1;
                         init(version);
                     }
                     else if(version === 1){
-                        console.log(version);
-                        create_wordcloud('whole', d.data.Year, version);
                         version = 5;
                         init(version);
                     }
@@ -180,6 +177,7 @@ function bars(data,version){
             })
             .on("click", function(d){
                 if (active_link === "0"){
+                    legendClicked = true;
                     d3.select(this)           
                     .style("stroke", "black")
                     .style("stroke-width", 1);
@@ -193,8 +191,10 @@ function bars(data,version){
                             .style("opacity", 0.5);
                         }
                     }
+                    create_wordcloud(this.id.split("id").pop(), 1111, 0) //creates the wordcloud of the person over all the letters
                 }
                 else if (active_link === this.id.split("id").pop()){
+                    legendClicked = false;
                     d3.select(this)           
                     .style("stroke", "none");
 
@@ -204,6 +204,7 @@ function bars(data,version){
                         d3.select("#id" + legendClassArray[i])
                         .style("opacity", 1);
                     }
+                    create_wordcloud(currentWordcloud[0], currentWordcloud[1], currentWordcloud[2]);
                 }
             });
 
@@ -466,8 +467,10 @@ function create_wordcloud(name, year, steps){
             height: '100%', 
             width: '100%'
         });
-        
-        currentWordcloud = [name, year, steps]; //to remember the whole wc in case only one word is selected
+
+        if(!legendClicked){
+            currentWordcloud = [name, year, steps]; //to remember the whole wc in case only one word is selected
+        }
 
         zingchart.bind('LetterDiv','label_click', function(p){
         
