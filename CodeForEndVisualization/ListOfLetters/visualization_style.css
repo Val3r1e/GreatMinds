@@ -1,3 +1,26 @@
+.axis .domain {
+	display: none;
+}
+.bar{
+	cursor: pointer;
+}
+.donut{
+	cursor: pointer;
+}
+.toolTip {
+	position: absolute;
+	display: none;
+	min-width: 50px;
+	height: auto;
+	background: none; 
+	border: 2px solid #6F257F;
+	padding: 10px;
+	text-align: center;
+	font-weight: bold;
+}
+#data1,#data5{
+	display: inline;
+}
 html, body {
 	height:100%;
 	width:100%;
@@ -31,7 +54,7 @@ button:hover{
 	width:60%;
 	min-height:150px;
 	overflow: scroll;
-	max-height: 600px;
+	max-height: 1000px;
 }
 /* #LetterDivTitle{
 	margin-left: 400px;

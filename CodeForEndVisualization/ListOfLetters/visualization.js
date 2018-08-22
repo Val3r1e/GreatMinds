@@ -134,11 +134,6 @@ function bar(i,id){
     .text(function(d) { return d; });
 }
 
-//---------------- Just a try, won't stay! -------------------
-function text(i){
-    document.getElementById("try").innerHTML = "--Here should be a bar--";
-}
-
 //------------- Load the letters --------------
 function Load(clickedButton){
     Remove();

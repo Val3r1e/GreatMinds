@@ -84,7 +84,7 @@
 			var legendClassArray = []; //store legend classes to select bars in plotSingle()
 			var y_orig; //to store original y-posn
 
-			d3.csv("data/vis_data_1.csv", function(error, data){
+			d3.csv("../data/vis_data_1.csv", function(error, data){
 				if (error) throw error;
 
 				color.domain(d3.keys(data[0]).filter(function(key){ return key !== "Year"; }));
