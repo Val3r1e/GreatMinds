@@ -3,16 +3,17 @@ var wordClicked = false;
 var clickedWord = "";
 var myConfig;
 var currentWordcloud;
-var id_names = ["CStein", "CSchiller", "CGoethe", "FSchiller"];
+// var id_names = ["CStein", "CSchiller", "CGoethe", "FSchiller"];
 var yearOpen = false;
 var personOpen = false;
 var openYear;
 var openPerson;
+var visibleLetters;
 
 //------- toggle between opened and closed years and names in the List of Letters:
 function toggle(id, name, year, steps){
-    var requestOpenPerson = false;
-    var requestOpenYear = false;
+    var requestOnPerson = false;
+    var requestOnYear = false;
     
     if(name == 'whole'){
         requestOnPerson = false;
@@ -132,6 +133,11 @@ function bar(i,id){
     .attr("class", "divchart")
     .style("background-color", function(d){ return color(d)})
     .text(function(d) { return d; });
+}
+
+//---------------- Just a try, won't stay! -------------------
+function text(i){
+    document.getElementById("try").innerHTML = "--Here should be a bar--";
 }
 
 //------------- Load the letters --------------
@@ -286,13 +292,15 @@ function single_word_wc(word){
             create_wordcloud(currentWordcloud[0], currentWordcloud[1], currentWordcloud[2]);
             //make all letters visible again:
             var letterIndex = letterIndexRequest.response;
-            var letters = letterIndex[word];
+            //var letters = letterIndex[word];
             var allButtons = document.getElementsByClassName("openLetterButton");
                 for(i = 0; i < allButtons.length; i++){
-                    for(j = 0; j < letters.length; j++){
+                    //for(j = 0; j < letters.length; j++){
                         var thisButton = allButtons[i]
-                        thisButton.style.display ="block"
-                    }
+                        // console.log(thisButton);
+                        thisButton.style.display ="block";
+                        //visibleLetters[((thisButton.id).split("_"))[0]] = counter;
+                    //}
                 }
         }
     });
