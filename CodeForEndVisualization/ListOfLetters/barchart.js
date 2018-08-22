@@ -1,4 +1,23 @@
-var legendClicked = false; //to be able to return to the wordcloud shown before you clicked on a name in the legend
+//-------------------------- Global Variables ------------------------------
+
+var wordClicked = false;
+//var clickedWords; //to remember, which word was clicked last, maybe for multiselect??
+var clickedWord = "";
+var myConfig;
+var yearOpen = false;
+var personOpen = false;
+var openYear;
+var openPerson;
+var visibleLetters;
+var barSelected = false; //to be able to return to the wordcloud shown before you clicked on something
+var legendSelected = false; 
+var wcBeforeBarSelected;
+var wcBeforeLegendSelected;
+var wcBeforeWordSelected;
+
+
+//-------------------- Barchart -----------------------
+
 function bars(data,version){
 
     var svg = d3.select("svg"),
@@ -84,19 +103,24 @@ function bars(data,version){
                     .style("display","none");
                 })
                 .on("click", function(d){
+                    //nothing was selected before
                     if (active === "0"){
+                        barSelected = true;
                         d3.select(this)
                         .style("stroke", "black")
                         .style("stroke-width", 1.5);
                         active = d.data.Year;
+                        //'whole' is just a placeholder until we figure out how to get the actual name:
+                        create_wordcloud('whole', d.data.Year, version);
                     }
+                    //to deselect: same one clicked again
                     else if (active === d.data.Year){
+                        barSelected = false;
                         d3.select(this)           
                         .style("stroke", "none");
                         active = "0";
+                        create_wordcloud(wcBeforeBarSelected[0], wcBeforeBarSelected[1], wcBeforeBarSelected[2]);
                     }
-                    //'whole' is just a placeholder until we figure out how to get the actual name:
-                    create_wordcloud('whole', d.data.Year, version);
                 })
                 .on("dblclick", function(d){ 
                     d3.select(this)
@@ -176,8 +200,9 @@ function bars(data,version){
                 .attr("stroke-width",0.2);
             })
             .on("click", function(d){
+                //nothing was selected before
                 if (active_link === "0"){
-                    legendClicked = true;
+                    legendSelected = true;
                     d3.select(this)           
                     .style("stroke", "black")
                     .style("stroke-width", 1);
@@ -193,8 +218,9 @@ function bars(data,version){
                     }
                     create_wordcloud(this.id.split("id").pop(), 1111, 0) //creates the wordcloud of the person over all the letters
                 }
+                //to deselect: click the same one again
                 else if (active_link === this.id.split("id").pop()){
-                    legendClicked = false;
+                    legendSelected = false;
                     d3.select(this)           
                     .style("stroke", "none");
 
@@ -204,7 +230,7 @@ function bars(data,version){
                         d3.select("#id" + legendClassArray[i])
                         .style("opacity", 1);
                     }
-                    create_wordcloud(currentWordcloud[0], currentWordcloud[1], currentWordcloud[2]);
+                    create_wordcloud(wcBeforeLegendSelected[0], wcBeforeLegendSelected[1], wcBeforeLegendSelected[2]);
                 }
             });
 
@@ -244,20 +270,27 @@ function init(version){
     }
 }
 
-//-------------------------- Variables ------------------------------
+// ---------------- Code for small bars to show letter amount -----------------
+function bar(i,id){
 
+    var data = [i];
+  
+    //var body = d3.select("body");
 
-var wordClicked = false;
-//var clickedWords; //to remember, which word was clicked last, maybe for multiselect??
-var clickedWord = "";
-var myConfig;
-var currentWordcloud;
-// var id_names = ["CStein", "CSchiller", "CGoethe", "FSchiller"];
-var yearOpen = false;
-var personOpen = false;
-var openYear;
-var openPerson;
-var visibleLetters;
+    var divs = d3.select("#"+id).selectAll("div")
+    .data(data)
+    .enter().append("div");
+        
+    var color = d3.scaleLinear()
+    .domain([0, 300])
+    .range(["powderblue", "midnightblue"]);
+        
+    divs.style("width", function(d) { return d + "px"; })
+    .attr("class", "divchart")
+    .style("background-color", function(d){ return color(d)})
+    .text(function(d) { return d; });
+}
+
 
 //------- toggle between opened and closed years and names in the List of Letters:
 function toggle(id, name, year, steps){
@@ -363,26 +396,6 @@ function toggle(id, name, year, steps){
     }
 }
 
-// ---------------- Code for bars to show letter amount -----------------
-function bar(i,id){
-
-    var data = [i];
-  
-    //var body = d3.select("body");
-
-    var divs = d3.select("#"+id).selectAll("div")
-    .data(data)
-    .enter().append("div");
-        
-    var color = d3.scaleLinear()
-    .domain([0, 300])
-    .range(["powderblue", "midnightblue"]);
-        
-    divs.style("width", function(d) { return d + "px"; })
-    .attr("class", "divchart")
-    .style("background-color", function(d){ return color(d)})
-    .text(function(d) { return d; });
-}
 
 //------------- Load the letters --------------
 function Load(clickedButton){
@@ -398,7 +411,6 @@ function Remove(){
 
 //------------- create the wordclouds ---------------
 function create_wordcloud(name, year, steps){
-    console.log("Create Wordcloud");
     Remove();
     var thisName = get_name(name);
     var thisYear = get_year(year);
@@ -468,9 +480,16 @@ function create_wordcloud(name, year, steps){
             width: '100%'
         });
 
-        if(!legendClicked){
-            currentWordcloud = [name, year, steps]; //to remember the whole wc in case only one word is selected
+        // In order to return to wordclouds shown before you selected something:
+        if(!legendSelected){
+            wcBeforeLegendSelected = [name, year, steps];
         }
+        if(!barSelected){
+            wcBeforeBarSelected = [name, year, steps];
+        }
+
+        wcBeforeWordSelected = [name, year, steps]; //to remember the whole wc in case only one word is selected
+        
 
         zingchart.bind('LetterDiv','label_click', function(p){
         
@@ -502,7 +521,7 @@ function create_wordcloud(name, year, steps){
                         }
                     }
                 }
-                }
+            }
         });
     }
 }
@@ -535,18 +554,14 @@ function single_word_wc(word){
             wordClicked = false;
             clickedWord = "";
             Remove();
-            create_wordcloud(currentWordcloud[0], currentWordcloud[1], currentWordcloud[2]);
+            create_wordcloud(wcBeforeWordSelected[0], wcBeforeWordSelected[1], wcBeforeWordSelected[2]);
             //make all letters visible again:
             var letterIndex = letterIndexRequest.response;
             //var letters = letterIndex[word];
             var allButtons = document.getElementsByClassName("openLetterButton");
                 for(i = 0; i < allButtons.length; i++){
-                    //for(j = 0; j < letters.length; j++){
-                        var thisButton = allButtons[i]
-                        // console.log(thisButton);
-                        thisButton.style.display ="block";
-                        //visibleLetters[((thisButton.id).split("_"))[0]] = counter;
-                    //}
+                    var thisButton = allButtons[i]
+                    thisButton.style.display ="block";
                 }
         }
     });
@@ -554,7 +569,7 @@ function single_word_wc(word){
 
 
 
-//Just in case we manage to place the title in a place where it's readable:
+//-------------- Just in case we manage to place the title in a place where it's readable: ----------
 function get_year(year){
     if (year == "1111"){
         var thisYear = "";
