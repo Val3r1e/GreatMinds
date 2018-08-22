@@ -8,7 +8,8 @@ var yearOpen = false;
 var personOpen = false;
 var openYear;
 var openPerson;
-var visibleLetters;
+var visibleLetters = {};
+var visibleLettersPerson = {};
 var barSelected = false; //to be able to return to the wordcloud shown before you clicked on something
 var legendSelected = false; 
 var wcBeforeBarSelected;
@@ -262,20 +263,36 @@ function init(version){
 
     if(version === 1){
         d3.select("svg").selectAll("*").remove();
-        bars("data/vis_data_1.csv",version);
+        bars("data/vis_data_1.csv", version);
     }
     else if(version === 5){
         d3.select("svg").selectAll("*").remove();
-        bars("data/vis_data_5.csv",version);
+        bars("data/vis_data_5.csv", version);
+    }
+}
+
+//----------------------- Create the first wordcloud and the first small bars next to the years ----------------
+function init_page(name, year, steps){
+    create_wordcloud(name, year, steps);
+    create_small_bars();
+}
+
+function create_small_bars(){
+    count_visible_letters();
+    console.log(visibleLetters);
+    d3.select("div").selectAll("divchart").remove();
+    var allBars = document.getElementsByClassName("spanYear");
+    for(i = 0; i < allBars.length; i++){
+        var id = allBars[i].id;
+        small_bar(0, id);
     }
 }
 
 // ---------------- Code for small bars to show letter amount -----------------
-function bar(i,id){
+function small_bar(i,id){
 
-    var data = [i];
-  
-    //var body = d3.select("body");
+    var barYear = id.split("_")[1];
+    var data = [visibleLetters[barYear]];
 
     var divs = d3.select("#"+id).selectAll("div")
     .data(data)
@@ -409,11 +426,56 @@ function Remove(){
     zingchart.exec("LetterDiv", "destroy");
 }
 
+//--- count all visible letters so the small bars can be adjusted and years/persons with no letters can be hidden ---
+function count_visible_letters(){
+    visibleLetters = {};
+    var allButtons = document.getElementsByClassName("openLetterButton");
+    for(i = 0; i < allButtons.length; i++){
+        var thisButton = allButtons[i];
+        var thisStyle = getStyle(thisButton, 'display');
+        if(thisStyle == "block"){
+            letterYear = thisButton.id.split("_")[0];
+            letterName = thisButton.id.split("_")[1];
+            if(visibleLettersPerson[letterYear] == undefined){
+                visibleLettersPerson[letterYear] = letterName;
+            }
+            if(visibleLettersPerson[letterYear][letterName] == undefined){
+                visibleLettersPerson[letterYear][letterName] = 1;
+            }else{
+                visibleLettersPerson[letterYear][letterName] += 1;
+            }
+            if(visibleLetters[letterYear] == undefined){
+                visibleLetters[letterYear] = 1;
+
+            }else{
+                visibleLetters[letterYear] += 1;
+            }
+             
+        }
+    }
+}
+
+function getStyle(element, style){
+    var result;
+    if(element.currentStyle){
+        result = element.currentStyle(style);
+    }else if(window.getComputedStyle){
+        result = document.defaultView.getComputedStyle(element, null).getPropertyValue(style);
+
+    }else{
+        result = 'unknown';
+    }
+    //console.log(result);
+    return result;
+}
+
 //------------- create the wordclouds ---------------
 function create_wordcloud(name, year, steps){
     Remove();
     var thisName = get_name(name);
     var thisYear = get_year(year);
+
+    count_visible_letters();
 
     var cloudDataURL = "cloud_data_tf-idf/" + name + "/" + steps + "/" + name + "_" + year + "_" + steps + ".json";
     var cloudDataRequest = new XMLHttpRequest();
@@ -521,6 +583,16 @@ function create_wordcloud(name, year, steps){
                         }
                     }
                 }
+                create_small_bars();
+                //hide years and people in case they have no corresponding letters:
+                // var allPeople = document.getElementsByClassName();
+                for(var year in visibleLettersPerson){
+                    for(var person in visibleLettersPerson[year]){
+                        if(visibleLettersPerson[year][person] == 0){
+                            //do sth. to hide them
+                        }
+                    }
+                }
             }
         });
     }
@@ -528,7 +600,6 @@ function create_wordcloud(name, year, steps){
 
 //---------------- show only the selected word --------------------
 function single_word_wc(word){
-    console.log("Singe WC");
     Remove();
     var singleConfig = myConfig;
     delete singleConfig.options.words;
@@ -559,10 +630,11 @@ function single_word_wc(word){
             var letterIndex = letterIndexRequest.response;
             //var letters = letterIndex[word];
             var allButtons = document.getElementsByClassName("openLetterButton");
-                for(i = 0; i < allButtons.length; i++){
-                    var thisButton = allButtons[i]
-                    thisButton.style.display ="block";
-                }
+            for(i = 0; i < allButtons.length; i++){
+                var thisButton = allButtons[i]
+                thisButton.style.display ="block";
+            }
+            count_visible_letters();
         }
     });
 }
