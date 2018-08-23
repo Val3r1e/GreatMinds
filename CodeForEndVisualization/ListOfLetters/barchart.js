@@ -295,9 +295,14 @@ function small_bar(i,id){
     var data = [visibleLetters[barYear]];
 
     var divs = d3.select("#"+id).selectAll("div")
+    .data(data);
+
+    var newdivs = d3.select("#"+id).selectAll("div")
     .data(data)
     .enter().append("div");
-        
+
+    divs = divs.merge(newdivs);
+
     var color = d3.scaleLinear()
     .domain([0, 300])
     .range(["powderblue", "midnightblue"]);
@@ -585,7 +590,29 @@ function create_wordcloud(name, year, steps){
                 }
                 create_small_bars();
                 //hide years and people in case they have no corresponding letters:
-                // var allPeople = document.getElementsByClassName();
+                var allClosed = document.getElementsByClassName("closed");
+                var allOpened = document.getElementsByClassName("open");
+                var years = {};
+                var people = [];
+                var id;
+                for(i = 0; i < allClosed.length; i++){
+                    id = (allClosed[i].id).split("_")[1];
+                    if(isNaN(id)){
+                        people[id] = allClosed[i];
+                    }else{
+                        years[id] = allClosed[i];
+                    }
+                }
+                for(i = 0; i < allOpened.length; i++){
+                    id = (allOpened[i].id).split("_")[1];
+                    if(isNaN(id)){
+                        people.push(allOpened[i]);
+                    }else{
+                        years.push(allOpened[i]);
+                    }
+                }
+                console.log(years);
+
                 for(var year in visibleLettersPerson){
                     for(var person in visibleLettersPerson[year]){
                         if(visibleLettersPerson[year][person] == 0){
