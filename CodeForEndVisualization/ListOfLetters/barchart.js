@@ -8,8 +8,8 @@ var yearOpen = false;
 var personOpen = false;
 var openYear;
 var openPerson;
-var visibleLetters = {};
-var visibleLettersPerson = {};
+var visibleLetters;
+var visibleLettersPeople;
 var barSelected = false; //to be able to return to the wordcloud shown before you clicked on something
 var legendSelected = false; 
 var wcBeforeBarSelected;
@@ -277,6 +277,8 @@ function init_page(name, year, steps){
     create_small_bars();
 }
 
+
+// ---------------- Code for small bars to show letter amount -----------------
 function create_small_bars(){
     count_visible_letters();
     console.log(visibleLetters);
@@ -284,12 +286,11 @@ function create_small_bars(){
     var allBars = document.getElementsByClassName("spanYear");
     for(i = 0; i < allBars.length; i++){
         var id = allBars[i].id;
-        small_bar(0, id);
+        small_bar(id);
     }
 }
 
-// ---------------- Code for small bars to show letter amount -----------------
-function small_bar(i,id){
+function small_bar(id){
 
     var barYear = id.split("_")[1];
     var data = [visibleLetters[barYear]];
@@ -434,20 +435,25 @@ function Remove(){
 //--- count all visible letters so the small bars can be adjusted and years/persons with no letters can be hidden ---
 function count_visible_letters(){
     visibleLetters = {};
+    visibleLettersPeople = {};
     var allButtons = document.getElementsByClassName("openLetterButton");
     for(i = 0; i < allButtons.length; i++){
         var thisButton = allButtons[i];
         var thisStyle = getStyle(thisButton, 'display');
+        var letterYear = thisButton.id.split("_")[0];
+        var letterName = thisButton.id.split("_")[1];
         if(thisStyle == "block"){
-            letterYear = thisButton.id.split("_")[0];
-            letterName = thisButton.id.split("_")[1];
-            if(visibleLettersPerson[letterYear] == undefined){
-                visibleLettersPerson[letterYear] = letterName;
+            //visibleLettersPeople = { year : {name:count, otherName:count,...}, otherYear : {name:count, otherName:count,...},...}
+            if(visibleLettersPeople[letterYear] == undefined){
+                visibleLettersPeople[letterYear] = {};
+                visibleLettersPeople[letterYear][letterName] = 0;
             }
-            if(visibleLettersPerson[letterYear][letterName] == undefined){
-                visibleLettersPerson[letterYear][letterName] = 1;
-            }else{
-                visibleLettersPerson[letterYear][letterName] += 1;
+            if(visibleLettersPeople[letterYear][letterName] == undefined){
+                visibleLettersPeople[letterYear][letterName] = 0;
+            }
+       
+            else{
+                visibleLettersPeople[letterYear][letterName] += 1;
             }
             if(visibleLetters[letterYear] == undefined){
                 visibleLetters[letterYear] = 1;
@@ -456,8 +462,21 @@ function count_visible_letters(){
                 visibleLetters[letterYear] += 1;
             }
              
+        }else{ //add the invisible ones with counter 0 so they can later be matched for styling reasons
+            if(visibleLettersPeople[letterYear] == undefined){
+                visibleLettersPeople[letterYear] = {};
+                visibleLettersPeople[letterYear][letterName] = 0;
+            }
+            if(visibleLettersPeople[letterYear][letterName] == undefined){
+                visibleLettersPeople[letterYear][letterName] = 0;
+            }
+       
+            if(visibleLetters[letterYear] == undefined){
+                visibleLetters[letterYear] = 0;
+            }
         }
     }
+    // console.log(visibleLettersPeople);
 }
 
 function getStyle(element, style){
@@ -472,6 +491,43 @@ function getStyle(element, style){
     }
     //console.log(result);
     return result;
+}
+
+function hide_empty_sections(){
+    //hide years and people in case they have no corresponding letters:
+    var toggleYears = document.getElementsByClassName("toggle_year");
+    var togglePeople = document.getElementsByClassName("toggle_person");
+    var years = {};
+    var people = {};
+    var id;
+
+    for(i = 0; i < togglePeople.length; i++){
+        id = togglePeople[i].id.split("_");
+        var name = id[0];
+        var year = id[1];
+        if(people[year] == undefined){
+            people[year] = {};
+        }
+        people[year][name] = togglePeople[i];
+    }
+    for(var year in people){
+        for(var name in people[year]){
+            if(visibleLettersPeople[year][name] == 0){
+                people[year][name].style.display = "none";
+            }
+        }
+    }
+
+    for(i = 0; i < toggleYears.length; i++){
+        id = toggleYears[i].id.split("_");
+        var year = id[1];
+        years[year] = toggleYears[i];
+    }
+    for(var year in years){
+        if (visibleLetters[year] == 0){
+            years[year].style.display = "none";
+        }
+    }
 }
 
 //------------- create the wordclouds ---------------
@@ -581,7 +637,7 @@ function create_wordcloud(name, year, steps){
                 for(i = 0; i < allButtons.length; i++){
                     for(j = 0; j < letters.length; j++){
                         var thisButton = allButtons[i]
-                        thisButton.style.display ="none"
+                        thisButton.style.display ="none";
                         if(thisButton.id == letters[j]){
                             thisButton.style.display = "block";
                             break;
@@ -589,37 +645,7 @@ function create_wordcloud(name, year, steps){
                     }
                 }
                 create_small_bars();
-                //hide years and people in case they have no corresponding letters:
-                var allClosed = document.getElementsByClassName("closed");
-                var allOpened = document.getElementsByClassName("open");
-                var years = {};
-                var people = [];
-                var id;
-                for(i = 0; i < allClosed.length; i++){
-                    id = (allClosed[i].id).split("_")[1];
-                    if(isNaN(id)){
-                        people[id] = allClosed[i];
-                    }else{
-                        years[id] = allClosed[i];
-                    }
-                }
-                for(i = 0; i < allOpened.length; i++){
-                    id = (allOpened[i].id).split("_")[1];
-                    if(isNaN(id)){
-                        people.push(allOpened[i]);
-                    }else{
-                        years.push(allOpened[i]);
-                    }
-                }
-                console.log(years);
-
-                for(var year in visibleLettersPerson){
-                    for(var person in visibleLettersPerson[year]){
-                        if(visibleLettersPerson[year][person] == 0){
-                            //do sth. to hide them
-                        }
-                    }
-                }
+                hide_empty_sections();
             }
         });
     }
@@ -661,7 +687,19 @@ function single_word_wc(word){
                 var thisButton = allButtons[i]
                 thisButton.style.display ="block";
             }
-            count_visible_letters();
+            create_small_bars();
+            //bring back all years and people:
+            var toggleYears = document.getElementsByClassName("toggle_year");
+            var togglePeople = document.getElementsByClassName("toggle_person");
+
+            for(i = 0; i < togglePeople.length; i++){
+                togglePeople[i].style.display = "block";
+            }
+
+            for(i = 0; i < toggleYears.length; i++){
+                toggleYears[i].style.display = "block";
+                
+            }
         }
     });
 }
