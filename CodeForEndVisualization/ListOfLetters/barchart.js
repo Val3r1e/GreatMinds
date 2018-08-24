@@ -46,6 +46,8 @@ function bars(data,version){
     var legendClassArray = [];
     var active = "0";
     var rectangleClassArray = ["FSchiller","CSchiller", "CStein", "CGoethe"];
+    var yearArray = [];
+    var wanted = "0";
 
     d3.csv(data, function(d, i, columns){
         for (i = 1, t = 0; i < columns.length; ++i) t += d[columns[i]] = +d[columns[i]];
@@ -75,12 +77,30 @@ function bars(data,version){
                 .selectAll("rect")
                 .data(function(d) { return d;})
                 .enter().append("rect")
-                .attr("x", function(d) { return x(d.data.Year); })
+                .attr("x", function(d) { return x(d.data.Year);})
+                .attr("id", function(d,i){
+                    yearArray.push(d.data.Year);
+                    console.log("id" + d.data.Year + "-" + rectangleClassArray[i])
+                    return ("id" + d.data.Year + "-" + rectangleClassArray[i]);
+                })
                 .attr("y", function(d) { return y(d[1]); })
                 .attr("height", function(d) { return y(d[0]) - y(d[1]); })
                 .attr("width", x.bandwidth()) // Width of bars -1 smaller +1 bigger etc
-            
                 .on("mouseover", function(d,i){ 
+
+                    /*wanted = this.id.split("id").pop();
+                    wanted = wanted.slice(0,4);
+                    console.log(wanted);
+
+                    for (i = 0; i < yearArray.length; i++){
+                        if (yearArray[i] === wanted) {
+                            d3.select("#id" + yearArray[i] + "-" + rectangleClassArray[i])
+                            .style("cursor", "pointer")
+                            .attr("stroke","purple")
+                            .attr("stroke-width",0.8);
+                        }
+                    }*/
+
                     d3.select(this)
                     .style("cursor", "pointer")
                     .attr("stroke","purple")
@@ -102,7 +122,7 @@ function bars(data,version){
                     tooltip
                     .style("display","none");
                 })
-                .on("click", function(d){
+                .on("click", function(d,i){
                     //nothing was selected before
                     if (active === "0"){
                         barSelected = true;
@@ -209,7 +229,7 @@ function bars(data,version){
                     .style("stroke-width", 1);
 
                     active_link = this.id.split("id").pop();
-                    plotSingle(this);
+                    erase(this);
 
                     for (i = 0; i < legendClassArray.length; i++){
                         if (legendClassArray[i] != active_link) {
@@ -232,7 +252,7 @@ function bars(data,version){
                         .style("opacity", 1);
                     }
 
-                    restorePlot(d);
+                    putBack(d);
                     create_wordcloud(wcBeforeLegendSelected[0], wcBeforeLegendSelected[1], wcBeforeLegendSelected[2]);
                 }
             });
@@ -243,11 +263,12 @@ function bars(data,version){
             .attr("dy", "0.32em")
             .text(function(d) { return d; });
 
-        function plotSingle(d){
+        function erase(d){
             
             class_keep = d.id.split("id").pop();
             idx = legendClassArray.indexOf(class_keep); 
             
+            //Give selected bars black frame
             for (i = 0; i < legendClassArray.length; i++) {
                 if (legendClassArray[i] == class_keep) {
                     d3.selectAll(".class" + legendClassArray[i])
@@ -256,6 +277,7 @@ function bars(data,version){
                 }
             }
 
+            //Make all other bars less visible
             for (i = 0; i < legendClassArray.length; i++) {
                 if (legendClassArray[i] != class_keep) {
                     d3.selectAll(".class" + legendClassArray[i])
@@ -266,8 +288,9 @@ function bars(data,version){
             }
         } 
 
-        function restorePlot(d){
+        function putBack(d){
 
+            //take black frame away
             for (i = 0; i < legendClassArray.length; i++) {
                 if (legendClassArray[i] == class_keep) {
                     d3.selectAll(".class" + legendClassArray[i])
@@ -275,12 +298,13 @@ function bars(data,version){
                 }
             }
 
+            //make other bars visible again
             for (i = 0; i < legendClassArray.length; i++) {
                 if (legendClassArray[i] != class_keep){
                     d3.selectAll(".class" + legendClassArray[i])
                     .transition()
                     .duration(1000)
-                    .delay(750)
+                    //.delay(750)
                     .style("opacity", 1);
                 }
             }
