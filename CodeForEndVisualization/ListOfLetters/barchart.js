@@ -45,7 +45,8 @@ function bars(data,version){
     var active_link = "0";
     var legendClassArray = [];
     var active = "0";
-    //var rectangleClassArray = [];
+    //var rectangleClassArray = ["FSchiller","CSchiller", "CStein", "CGoethe"];
+    var rectangleClassArray = ["CGoethe","CStein", "CSchiller", "FSchiller"];
 
     d3.csv(data, function(d, i, columns){
         for (i = 1, t = 0; i < columns.length; ++i) t += d[columns[i]] = +d[columns[i]];
@@ -69,6 +70,11 @@ function bars(data,version){
                 .data(d3.stack().keys(keys)(data))      // Stack function, stacks bars
                 .enter().append("g")
                 .attr("fill", function(d,i){ return z(i); })     // Coloring the bars, z-axis
+                .attr("class", function(d,i){
+                    classLabel = rectangleClassArray[i];
+                    console.log(classLabel);
+                    return "class" + classLabel;
+                })
                 .selectAll("rect")
                 .data(function(d) { return d;})
                 .enter().append("rect")
@@ -76,10 +82,7 @@ function bars(data,version){
                 .attr("y", function(d) { return y(d[1]); })
                 .attr("height", function(d) { return y(d[0]) - y(d[1]); })
                 .attr("width", x.bandwidth()) // Width of bars -1 smaller +1 bigger etc
-                .attr("class", function(d){
-                    classLabel = d.name;
-                    return "class" + classLabel;
-                })
+            
                 .on("mouseover", function(d){ 
                     d3.select(this)
                     .style("cursor", "pointer")
@@ -173,6 +176,7 @@ function bars(data,version){
             //------------- Add Class and fill legendClassArray-------------
             .attr("class", function (d) {
                 legendClassArray.push(d); 
+                console.log("legend" + legendClassArray)
                 return "legend";
             })
             .attr("transform", function(d, i) { return "translate(0," + i * 20 + ")"; });
@@ -260,6 +264,17 @@ function bars(data,version){
 
 //-------------------------- Call visualization with specified data ------------------------------
 function init(version){
+
+    d3.select("#data1")
+        .on("click", function(d,i) {
+            d3.select("svg").selectAll("*").remove();
+            bars("data/vis_data_1.csv", version);
+        })
+    d3.select("#data5")
+        .on("click", function(d,i) {
+            d3.select("svg").selectAll("*").remove();
+            bars("data/vis_data_5.csv", version);
+        })
 
     if(version === 1){
         d3.select("svg").selectAll("*").remove();
