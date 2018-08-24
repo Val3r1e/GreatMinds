@@ -45,8 +45,7 @@ function bars(data,version){
     var active_link = "0";
     var legendClassArray = [];
     var active = "0";
-    //var rectangleClassArray = ["FSchiller","CSchiller", "CStein", "CGoethe"];
-    var rectangleClassArray = ["CGoethe","CStein", "CSchiller", "FSchiller"];
+    var rectangleClassArray = ["FSchiller","CSchiller", "CStein", "CGoethe"];
 
     d3.csv(data, function(d, i, columns){
         for (i = 1, t = 0; i < columns.length; ++i) t += d[columns[i]] = +d[columns[i]];
@@ -64,7 +63,6 @@ function bars(data,version){
             y.domain([0, d3.max(data, function(d) { return d.total; })]).nice();
             z.domain(keys);
 
-            l = 0;
             g.append("g")
                 .selectAll("g")
                 .data(d3.stack().keys(keys)(data))      // Stack function, stacks bars
@@ -72,7 +70,6 @@ function bars(data,version){
                 .attr("fill", function(d,i){ return z(i); })     // Coloring the bars, z-axis
                 .attr("class", function(d,i){
                     classLabel = rectangleClassArray[i];
-                    console.log(classLabel);
                     return "class" + classLabel;
                 })
                 .selectAll("rect")
@@ -83,14 +80,14 @@ function bars(data,version){
                 .attr("height", function(d) { return y(d[0]) - y(d[1]); })
                 .attr("width", x.bandwidth()) // Width of bars -1 smaller +1 bigger etc
             
-                .on("mouseover", function(d){ 
+                .on("mouseover", function(d,i){ 
                     d3.select(this)
                     .style("cursor", "pointer")
                     .attr("stroke","purple")
                     .attr("stroke-width",0.8);
-                    //.style("opacity", 0.5);
 
                     var amount = d[1] - d[0];
+
                     tooltip
                     .style("left", d3.event.pageX - 50 + "px")
                     .style("top", d3.event.pageY - 70 + "px")
@@ -101,7 +98,6 @@ function bars(data,version){
                     d3.select(this)
                     .attr("stroke","pink")
                     .attr("stroke-width",0.2);
-                    //.style("opacity", 1);
 
                     tooltip
                     .style("display","none");
@@ -235,6 +231,8 @@ function bars(data,version){
                         d3.select("#id" + legendClassArray[i])
                         .style("opacity", 1);
                     }
+
+                    restorePlot(d);
                     create_wordcloud(wcBeforeLegendSelected[0], wcBeforeLegendSelected[1], wcBeforeLegendSelected[2]);
                 }
             });
@@ -245,10 +243,18 @@ function bars(data,version){
             .attr("dy", "0.32em")
             .text(function(d) { return d; });
 
-        function plotSingle(d) {
+        function plotSingle(d){
             
             class_keep = d.id.split("id").pop();
-            idx = legendClassArray.indexOf(class_keep);    
+            idx = legendClassArray.indexOf(class_keep); 
+            
+            for (i = 0; i < legendClassArray.length; i++) {
+                if (legendClassArray[i] == class_keep) {
+                    d3.selectAll(".class" + legendClassArray[i])
+                    .style("stroke", "black")
+                    .style("stroke-width", 1);
+                }
+            }
 
             for (i = 0; i < legendClassArray.length; i++) {
                 if (legendClassArray[i] != class_keep) {
@@ -259,6 +265,26 @@ function bars(data,version){
                 }
             }
         } 
+
+        function restorePlot(d){
+
+            for (i = 0; i < legendClassArray.length; i++) {
+                if (legendClassArray[i] == class_keep) {
+                    d3.selectAll(".class" + legendClassArray[i])
+                    .style("stroke", "none");
+                }
+            }
+
+            for (i = 0; i < legendClassArray.length; i++) {
+                if (legendClassArray[i] != class_keep){
+                    d3.selectAll(".class" + legendClassArray[i])
+                    .transition()
+                    .duration(1000)
+                    .delay(750)
+                    .style("opacity", 1);
+                }
+            }
+        }
     });
 }
 
