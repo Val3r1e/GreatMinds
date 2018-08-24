@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<meta charset="utf-8" />
+<style>
+    .axis {
+      font: 10px sans-serif;
+    }
+    .axis path,
+    .axis line {
+      fill: none;
+      stroke: #000;
+      shape-rendering: crispEdges;
+    }
+    .brush .extent {
+      stroke: #fff;
+      fill-opacity: .125;
+      shape-rendering: crispEdges;
+    }
+</style>
+<svg width = "2000" height = "800"></svg>
+<body>
+<script src="http://d3js.org/d3.v4.min.js"></script>
+<script>
+
+    // sizing information, including margins so there is space for labels, etc
+    var svg = d3.select("svg"),
+        margin =  { top: 20, right: 20, bottom: 30, left: 40 },
+        width = +svg.attr("width") - margin.left - margin.right,
+        height = +svg.attr("height") - margin.top - margin.bottom,
+        marginOverview = { top: 430, right: margin.right, bottom: 20,  left: margin.left },
+        heightOverview = 500 - marginOverview.top - marginOverview.bottom,
+        g = svg.append("g").attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+    // set up a date parsing function for future use
+    var parseDate = d3.timeParse("%Y");
+
+    // some colours to use for the bars
+    var z = d3.scaleOrdinal(d3.schemeCategory10);;
+
+    // mathematical scales for the x and y axes
+    var x = d3.scaleBand()
+            .rangeRound([0, width])
+            .paddingInner(0.1)      //Makes Barchart bigger/smaller
+            .align(0.3);            //Moves barchart closer/further away from y-axis
+
+    var y = d3.scaleLinear()
+            .rangeRound([height, 0]);
+    var xOverview = d3.scaleLinear().range([0, width]);
+    var yOverview = d3.scaleLinear().range([heightOverview, 0]);
+
+    // rendering for the x and y axes
+    var xAxis = d3.axisBottom(x);
+    var yAxis = d3.axisLeft(y);
+    var xAxisOverview = d3.axisBottom(xOverview);
+
+    // something for us to render the chart into
+    var svg = d3.select("body")
+                    .append("svg") // the overall space
+                        .attr("width", width + margin.left + margin.right)
+                        .attr("height", height + margin.top + margin.bottom);
+    var main = svg.append("g")
+                    .attr("class", "main")
+                    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+    var overview = svg.append("g")
+                        .attr("class", "overview")
+                        .attr("transform", "translate(" + marginOverview.left + "," + marginOverview.top + ")");
+
+    // brush tool to let us zoom and pan using the overview chart
+    var brush = d3.brushX()
+        .extent([[0, 0], [width, height]])
+        .on("brush end", brushed);
+
+    var zoom = d3.zoom()
+        .scaleExtent([1, Infinity])
+        .translateExtent([[0, 0], [width, height]])
+        .extent([[0, 0], [width, height]])
+        .on("zoom", zoomed);
+
+    var dataSource = "vis_data_10.csv",
+        dataSource2 = "vis_data_5.csv",
+        dataSource3 = "vis_data_1.csv";
+
+
+    function updateChart(sourcefile) {
+    // setup complete, let's get some data!
+        d3.csv(sourcefile,  function(d, i, columns) {
+            for (i = 1, t = 0; i < columns.length; ++i) t += d[columns[i]] = +d[columns[i]];
+            d.total = t;
+            return d;
+        }, 
+        function(error, data) {
+            if (error) throw error; 
+
+            var keys = data.columns.slice(1);
+
+            //data.sort(function(a, b) { return b.total - a.total; });      //Sorts it by size
+            x.domain(data.map(function(d) { return d.Year; }));
+            y.domain([0, d3.max(data, function(d) { return d.total; })]).nice();
+            z.domain(keys);
+
+            g.append("g")
+                .selectAll("g")
+                .data(d3.stack().keys(keys)(data))      // Stack function, stacks bars
+                .enter().append("g")
+                .attr("fill", function(d) { return z(d.key); })     // Coloring the bars, z-axis
+                .selectAll("rect")
+                .data(function(d) { return d; })
+                .enter().append("rect")
+                .attr("x", function(d) { return x(d.data.Year); })
+                .attr("y", function(d) { return y(d[1]); })
+                .attr("height", function(d) { return y(d[0]) - y(d[1]); })
+                .attr("width", x.bandwidth());    // Width of bars -1 smaller +1 bigger etc
+
+            /* --------- x-axis --------- */
+            g.append("g")
+                .attr("class", "axis")
+                .attr("transform", "translate(0," + height + ")")
+                .attr("font-weight", "bold")        // Bold Years
+                .call(d3.axisBottom(x));
+
+
+            /* --------- y-axis --------- */
+            g.append("g")
+                .attr("class", "axis")
+                .attr("font-weight", "bold")        // Bold y-axis
+                .call(d3.axisLeft(y));
+
+
+            /* -------- Amount tag on the top left -------- */
+            g.append("g")
+                .attr("class", "axis")
+                .call(d3.axisLeft(y).ticks(null, "s"))
+                .append("text")
+                .attr("x", 2)       // Hight x-axis
+                .attr("y", y(y.ticks().pop()) + 0.5)    // Hight y-axis
+                .attr("dy", "0.32em")
+                .attr("fill", "#000")
+                .attr("font-weight", "bold")    // bold text
+                .attr("text-anchor", "start")   // text position
+                .text("Amount");    // Text
+
+            overview.append("g")
+                        .attr("class", "bars")
+                .selectAll(".bar")
+                .data(data)
+                .enter().append("rect")
+                    .attr("class", "bar")
+                    .attr("x", function(d) { return xOverview(d.Year) - 3; })
+                    .attr("width", 6)
+                    .attr("y", function(d) { return yOverview(d.total); })
+                    .attr("height", function(d) { return heightOverview - yOverview(d.total); });
+
+            // add the brush target area on the overview chart
+            overview.append("g")
+                        .attr("class", "x brush")
+                        .call(brush)
+                        .selectAll("rect")
+                            // -6 is magic number to offset positions for styling/interaction to feel right
+                            .attr("y", -6)
+                            // need to manually set the height because the brush has
+                            // no y scale, i.e. we should see the extent being marked
+                            // over the full height of the overview chart
+                            .attr("height", heightOverview + 7);  // +7 is magic number for styling
+
+            /* --------- Legend in top right corner --------- */
+            var legend = g.append("g")
+                        .attr("font-family", "sans-serif") // Schriftart
+                        .attr("font-size", 10)  // Schriftgröße
+                        .attr("font-weight", "bold")
+                        .attr("text-anchor", "end")
+                        .selectAll("g")
+                        .data(keys.slice().reverse())
+                        .enter().append("g")
+                        .attr("transform", function(d, i) { return "translate(0," + i * 20 + ")"; });
+
+                legend.append("rect")  // Rectangles of legend
+                        .attr("x", width - 50)  //The bigger the -x the farther the rectangles go inside towards y-axis
+                        .attr("width", 19)
+                        .attr("height", 19)
+                        .attr("fill", z);
+
+                legend.append("text") // Text of legends 
+                        .attr("x", width - 60)  // Same -x moves it closer to y-axis
+                        .attr("y", 9.5)         //The higher the x the farther down it goes (closer to x-axis)
+                        .attr("dy", "0.32em")
+                        .text(function(d) { return d; });
+        });
+    }
+    //updateChart(dataSource3);
+    xOverview.onclick = function() {
+        if (sourcefile == dataSource)
+            updateChart(dataSource2)
+        if(sourcefile == dataSource2)
+            updateChart(dataSource3)
+        if(sourcefile == dataSource3)
+            updateChart(dataSource)
+    };
+    // by habit, cleaning/parsing the data and return a new object to ensure/clarify data object structure
+    function parse(d) {
+        var value = { Year: parseDate(d.Year) }; // turn the date string into a date object
+
+        // adding calculated data to each count in preparation for stacking
+        var y0 = 0; // keeps track of where the "previous" value "ended"
+        value.counts = ["NumberSchiller", "NumberFrauSchiller", "NumberStein", "NumberChristiane"].map(function(name) {
+            return { name: name,
+                     y0: y0,
+                     // add this count on to the previous "end" to create a range, and update the "previous end" for the next iteration
+                     y1: y0 += +d[name]
+                   };
+        });
+        // quick way to get the total from the previous calculations
+        value.total = value.counts[value.counts.length - 1].y1;
+        return value;
+    }
+
+    // zooming/panning behaviour for overview chart
+    function brushed() {
+        // update the main chart's x axis data range
+        x.domain(brush.empty() ? xOverview.domain() : brush.extent());
+        // redraw the bars on the main chart
+        main.selectAll(".barStack")
+                .attr("transform", function(d) { return "translate(" + x(d.Year) + ",0)"; })
+        // redraw the x axis of the main chart
+        main.select(".xAxis").call(xAxis);
+    }
+
+    function zoomed() {
+        if (d3.event.sourceEvent && d3.event.sourceEvent.type === "brush") return; // ignore zoom-by-brush
+        var t = d3.event.transform;
+        x.domain(t.rescaleX(x2).domain());
+        main.selectAll(".barStack")
+                .attr("transform", function(d) { return "translate(" + x(d.Year) + ",0)"; })
+        // redraw the x axis of the main chart
+        main.select(".xAxis").call(xAxis);
+    }
+
+
+</script>
+</body>
