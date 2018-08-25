@@ -20,6 +20,9 @@
 }
 #data1,#data5{
 	display: inline;
+	font: 11px sans-serif;
+	margin-left: 20px;
+	font-weight: bold;
 }
 html, body {
 	height:100%;

@@ -80,7 +80,7 @@ function bars(data,version){
                 .attr("x", function(d) { return x(d.data.Year);})
                 .attr("id", function(d,i){
                     yearArray.push(d.data.Year);
-                    console.log("id" + d.data.Year + "-" + rectangleClassArray[i])
+                    //console.log("id" + d.data.Year + "-" + rectangleClassArray[i])
                     return ("id" + d.data.Year + "-" + rectangleClassArray[i]);
                 })
                 .attr("y", function(d) { return y(d[1]); })
@@ -142,7 +142,7 @@ function bars(data,version){
                         create_wordcloud(wcBeforeBarSelected[0], wcBeforeBarSelected[1], wcBeforeBarSelected[2]);
                     }
                 })
-                .on("dblclick", function(d){ 
+                /*.on("dblclick", function(d){ 
                     d3.select(this)
                     .style("stroke", "black")
                     .style("stroke-width", 1.5);
@@ -157,7 +157,7 @@ function bars(data,version){
                     tooltip
                     .style("display","none");
                     
-                });
+                });*/
                 
             /* --------- x-axis --------- */
             g.append("g")
@@ -192,7 +192,6 @@ function bars(data,version){
             //------------- Add Class and fill legendClassArray-------------
             .attr("class", function (d) {
                 legendClassArray.push(d); 
-                console.log("legend" + legendClassArray)
                 return "legend";
             })
             .attr("transform", function(d, i) { return "translate(0," + i * 20 + ")"; });
@@ -315,25 +314,52 @@ function bars(data,version){
 //-------------------------- Call visualization with specified data ------------------------------
 function init(version){
 
+    bars("data/vis_data_5.csv", version);
+
     d3.select("#data1")
+        .attr("font-family", "sans-serif") 
+        .attr("font-size", 10)
+        .text("Every year")
+        .on("mouseover", function(d){
+            d3.select(this)
+            .style("opacity", 0.5)
+            .style("cursor", "pointer");
+        })
+        .on("mouseout", function(d){
+            d3.select(this)
+            .style("opacity", 1);
+        })
         .on("click", function(d,i) {
             d3.select("svg").selectAll("*").remove();
             bars("data/vis_data_1.csv", version);
         })
+
     d3.select("#data5")
+        .attr("font-family", "sans-serif") 
+        .attr("font-size", 10)
+        .text("Every 5 years")
+        .on("mouseover", function(d){
+            d3.select(this)
+            .style("opacity", 0.5)
+            .style("cursor", "pointer");
+        })
+        .on("mouseout", function(d){
+            d3.select(this)
+            .style("opacity", 1);
+        })
         .on("click", function(d,i) {
             d3.select("svg").selectAll("*").remove();
             bars("data/vis_data_5.csv", version);
         })
 
-    if(version === 1){
+    /*if(version === 1){
         d3.select("svg").selectAll("*").remove();
         bars("data/vis_data_1.csv", version);
     }
     else if(version === 5){
         d3.select("svg").selectAll("*").remove();
         bars("data/vis_data_5.csv", version);
-    }
+    }*/
 }
 
 //----------------------- Create the first wordcloud and the first small bars next to the years ----------------
