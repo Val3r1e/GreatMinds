@@ -308,6 +308,43 @@ function bars(data,version){
                 }
             }
         }
+
+        //make line chart
+        var line = d3.line()
+            .x(function (d) { return x(d.Year); })
+            .y(function (d) { return y(d.FSchiller + d.CSchiller + d.CStein + d.CGoethe); });
+
+        g.append("path")
+            .datum(data)
+            .attr("class", "line") //---- Way to add to a class for css
+            .attr("fill", "none")
+            .attr("stroke", "red")
+            .attr("stroke-linejoin", "round")
+            .attr("stroke-linecap", "round")
+            .attr("stroke-width", 1.5)
+            .attr("d", line);
+            .on("mouseover", function (d) {
+            d3.select(this)
+                .style("cursor", "pointer")
+                .attr("stroke", "black")
+                .attr("stroke-width", 2);
+
+                var amount1 = d[1] - d[0];
+
+                tooltip
+                .style("left", d3.event.pageX - 50 + "px")
+                .style("top", d3.event.pageY - 70 + "px")
+                .style("display", "inline-block")
+                .html(d.data.Year + ":" + amount1);
+            })
+            .on("mouseout", function (d) {
+                d3.select(this)
+                    .attr("stroke", "red")
+                    .attr("stroke-width", 1.5);
+
+                tooltip
+                    .style("display", "none");
+            })
     });
 }
 
