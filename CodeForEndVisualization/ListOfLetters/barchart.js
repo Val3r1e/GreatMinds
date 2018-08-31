@@ -86,39 +86,49 @@ function bars(data,version){
                 .attr("y", function(d) { return y(d[1]); })
                 .attr("height", function(d) { return y(d[0]) - y(d[1]); })
                 .attr("width", x.bandwidth()) // Width of bars -1 smaller +1 bigger etc
-                .on("mouseover", function(d,i){ 
+                .on("mouseover", function (d, i) {
 
-                    /*wanted = this.id.split("id").pop();
-                    wanted = wanted.slice(0,4);
+                    wanted = this.id.split("id").pop();
+                    wanted = wanted.slice(0, 4);
                     console.log(wanted);
 
-                    for (i = 0; i < yearArray.length; i++){
+                    for (j = 0; j < rectangleClassArray.length; j++) {
                         if (yearArray[i] === wanted) {
-                            d3.select("#id" + yearArray[i] + "-" + rectangleClassArray[i])
-                            .style("cursor", "pointer")
-                            .attr("stroke","purple")
-                            .attr("stroke-width",0.8);
+                            console.log(j);
+                            console.log(rectangleClassArray[j]);
+                            console.log("#id" + yearArray[i] + "-" + rectangleClassArray[j]);
+                            console.log(d3.select("#id" + yearArray[i] + "-" + rectangleClassArray[j]));
+                            d3.select("#id" + yearArray[i] + "-" + rectangleClassArray[j])
+                                .style("cursor", "pointer")
+                                .attr("stroke", "purple")
+                                .attr("stroke-width", 0.8);
                         }
-                    }*/
+                    }
 
                     d3.select(this)
-                    .style("cursor", "pointer")
-                    .attr("stroke","purple")
-                    .attr("stroke-width",0.8);
+                        .style("cursor", "pointer")
+                        .attr("stroke", "purple")
+                        .attr("stroke-width", 0.8);
 
                     var amount = d[1] - d[0];
 
                     tooltip
-                    .style("left", d3.event.pageX - 50 + "px")
-                    .style("top", d3.event.pageY - 70 + "px")
-                    .style("display", "inline-block")
-                    .html(d.data.Year + ": " + amount);
+                        .style("left", d3.event.pageX - 50 + "px")
+                        .style("top", d3.event.pageY - 70 + "px")
+                        .style("display", "inline-block")
+                        .html(d.data.Year + ": " + amount);
                 })
-                .on("mouseout", function(d){
-                    d3.select(this)
-                    .attr("stroke","pink")
-                    .attr("stroke-width",0.2);
-
+                .on("mouseout", function (d, i) {
+                    for (j = 0; j < rectangleClassArray.length; j++) {
+                        console.log(j);
+                        console.log(rectangleClassArray[j]);
+                        console.log("#id" + yearArray[i] + "-" + rectangleClassArray[j]);
+                        console.log(d3.select("#id" + yearArray[i] + "-" + rectangleClassArray[j]));
+                        d3.select("#id" + yearArray[i] + "-" + rectangleClassArray[j])
+                            .style("cursor", "none")
+                            .attr("stroke", "pink")
+                            .attr("stroke-width", 0.2);
+                    }
                     tooltip
                     .style("display","none");
                 })
@@ -308,43 +318,6 @@ function bars(data,version){
                 }
             }
         }
-
-        //make line chart
-        var line = d3.line()
-            .x(function (d) { return x(d.Year); })
-            .y(function (d) { return y(d.FSchiller + d.CSchiller + d.CStein + d.CGoethe); });
-
-        g.append("path")
-            .datum(data)
-            .attr("class", "line") //---- Way to add to a class for css
-            .attr("fill", "none")
-            .attr("stroke", "red")
-            .attr("stroke-linejoin", "round")
-            .attr("stroke-linecap", "round")
-            .attr("stroke-width", 1.5)
-            .attr("d", line);
-            .on("mouseover", function (d) {
-            d3.select(this)
-                .style("cursor", "pointer")
-                .attr("stroke", "black")
-                .attr("stroke-width", 2);
-
-                var amount1 = d[1] - d[0];
-
-                tooltip
-                .style("left", d3.event.pageX - 50 + "px")
-                .style("top", d3.event.pageY - 70 + "px")
-                .style("display", "inline-block")
-                .html(d.data.Year + ":" + amount1);
-            })
-            .on("mouseout", function (d) {
-                d3.select(this)
-                    .attr("stroke", "red")
-                    .attr("stroke-width", 1.5);
-
-                tooltip
-                    .style("display", "none");
-            })
     });
 }
 
