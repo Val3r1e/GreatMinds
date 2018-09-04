@@ -94,14 +94,12 @@ function bars(data,version){
 
                     for (j = 0; j < rectangleClassArray.length; j++) {
                         if (yearArray[i] === wanted) {
-                            console.log(j);
-                            console.log(rectangleClassArray[j]);
-                            console.log("#id" + yearArray[i] + "-" + rectangleClassArray[j]);
-                            console.log(d3.select("#id" + yearArray[i] + "-" + rectangleClassArray[j]));
                             d3.select("#id" + yearArray[i] + "-" + rectangleClassArray[j])
                                 .style("cursor", "pointer")
                                 .attr("stroke", "purple")
                                 .attr("stroke-width", 0.8);
+
+                                total_letters = d[1];
                         }
                     }
 
@@ -116,14 +114,10 @@ function bars(data,version){
                         .style("left", d3.event.pageX - 50 + "px")
                         .style("top", d3.event.pageY - 70 + "px")
                         .style("display", "inline-block")
-                        .html(d.data.Year + ": " + amount);
+                        .html(d.data.Year + ": " + amount + "</br>" + "Total: " + total_letters);
                 })
                 .on("mouseout", function (d, i) {
                     for (j = 0; j < rectangleClassArray.length; j++) {
-                        console.log(j);
-                        console.log(rectangleClassArray[j]);
-                        console.log("#id" + yearArray[i] + "-" + rectangleClassArray[j]);
-                        console.log(d3.select("#id" + yearArray[i] + "-" + rectangleClassArray[j]));
                         d3.select("#id" + yearArray[i] + "-" + rectangleClassArray[j])
                             .style("cursor", "none")
                             .attr("stroke", "pink")
