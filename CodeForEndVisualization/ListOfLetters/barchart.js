@@ -3,6 +3,7 @@
 var wordClicked = false;
 //var clickedWords; //to remember, which word was clicked last, maybe for multiselect??
 var clickedWord = "";
+var wordId;
 var myConfig;
 var yearOpen = false;
 var personOpen = false;
@@ -385,7 +386,7 @@ function init_page(name, year, steps){
 // ---------------- Code for small bars to show letter amount -----------------
 function create_small_bars(){
     count_visible_letters();
-    console.log(visibleLetters);
+    //console.log(visibleLetters);
     d3.select("div").selectAll("divchart").remove();
     var allBars = document.getElementsByClassName("spanYear");
     for(i = 0; i < allBars.length; i++){
@@ -674,6 +675,8 @@ function create_wordcloud(name, year, steps){
                 //['#D32F2F','#1976D2','#9E9E9E','#E53935','#1E88E5','#7E57C2','#F44336','#2196F3','#A1887F'],
             
                 style: {
+                    // backgroundColor: '#24F211',
+                    // borderRadius: 10,
                     fontFamily: 'Marcellus SC',
                     padding:"3px",
                     
@@ -688,7 +691,6 @@ function create_wordcloud(name, year, steps){
                         visible: true,
                         alpha: 0.8,
                         backgroundColor: 'lightgrey',
-                        //backgroundColor: 'none',
                         borderColor: 'none',
                         borderRadius: 6,
                         fontColor: 'black',
@@ -731,6 +733,8 @@ function create_wordcloud(name, year, steps){
                 //letterIndex contains an Index like this: {'Word1':[list of all letters containing Word1], 'Word2':[...],...}
                 var letterIndex = letterIndexRequest.response;
                 var word = p.text;
+                // wordId = "LetterDiv-graph-id0-label-" + p.labelid;
+                // console.log(wordId);
                 wordClicked = true;
                 clickedWord = word;
 
@@ -776,6 +780,18 @@ function selected_wordcloud(word){
             height:'100%',
             width:'100%'
         });
+
+        var allWCWords = document.getElementsByTagName("tspan");
+        for(i = 0; i < allWCWords.length; i++){
+            if(allWCWords[i].innerHTML == word){
+                wordId = allWCWords[i].parentNode.id //+ "-path";
+                document.getElementById(wordId).childNodes[0].style.fill = "#fd00ff";
+                //allWCWords[i].parentNode.style.backgroundColor = "#B6B6B6";
+                break;
+            }
+        }
+        //document.getElementById(wordId).style.fill = "#f394f4";
+        
 
         zingchart.bind('LetterDiv','label_click', function(p){
 
