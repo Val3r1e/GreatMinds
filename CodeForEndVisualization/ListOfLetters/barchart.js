@@ -455,7 +455,8 @@ function toggle(id, name, year, steps){
             create_wordcloud(name, year, steps);
         }else{
             //if one word selected: only show selected word
-            single_word_wc(clickedWord); 
+            //single_word_wc(clickedWord);
+            selected_wordcloud(clickedWord);
         }
     }
 
@@ -472,7 +473,8 @@ function toggle(id, name, year, steps){
                 create_wordcloud('whole', year, steps);
             }
         }else{
-            single_word_wc(clickedWord);
+            //single_word_wc(clickedWord);
+            selected_wordcloud(clickedWord);
         }
     }
 
@@ -733,8 +735,8 @@ function create_wordcloud(name, year, steps){
                 clickedWord = word;
 
                 //show selected word instead of wordcloud:
-                single_word_wc(clickedWord);
-                //selected_wordcloud(clickedWord)
+                //single_word_wc(clickedWord);
+                selected_wordcloud(clickedWord)
                 
                 //show only corresponding letters in list:
                 var letters = letterIndex[word];
@@ -756,16 +758,16 @@ function create_wordcloud(name, year, steps){
     }
 }
 
-//If a word was clicked: show a new word cloud depicting only the letters containing that word (it's not working yet)
+//---- If a word was clicked: show a new word cloud depicting only the letters containing that word ------
 function selected_wordcloud(word){
-
+    Remove();
     var selectedCloudDataURL = "data/noun_wc_data/" + word + ".json";
     var selectedCloudDataRequest = new XMLHttpRequest();
     selectedCloudDataRequest.open('GET', selectedCloudDataURL);
     selectedCloudDataRequest.responseType = 'json';
     selectedCloudDataRequest.send();
     selectedCloudDataRequest.onload = function(){
-        var selectedText = selectedCloudDataRequest;
+        var selectedText = selectedCloudDataRequest.response;
         var selectedConfig = myConfig;
         selectedConfig.options.words = selectedText;
         zingchart.render({
@@ -774,10 +776,54 @@ function selected_wordcloud(word){
             height:'100%',
             width:'100%'
         });
+
+        zingchart.bind('LetterDiv','label_click', function(p){
+
+            var selectedWord = p.text;
+            if(selectedWord == word){
+                var letterIndexURL = "../../wordcloud/Text/wordindex/word-letter_index.json";
+                var letterIndexRequest = new XMLHttpRequest();
+                letterIndexRequest.open('GET', letterIndexURL);
+                letterIndexRequest.responseType = 'json';
+                letterIndexRequest.send();
+                letterIndexRequest.onload = function(){
+                    //return to normal
+                    wordClicked = false;
+                    clickedWord = "";
+                    Remove();
+                    create_wordcloud(wcBeforeWordSelected[0], wcBeforeWordSelected[1], wcBeforeWordSelected[2]);
+                    //make all letters visible again:
+                    var letterIndex = letterIndexRequest.response;
+                    //var letters = letterIndex[word];
+                    var allButtons = document.getElementsByClassName("openLetterButton");
+                    for(i = 0; i < allButtons.length; i++){
+                        var thisButton = allButtons[i]
+                        thisButton.style.display ="block";
+                    }
+                    create_small_bars();
+                    //bring back all years and people:
+                    var toggleYears = document.getElementsByClassName("toggle_year");
+                    var togglePeople = document.getElementsByClassName("toggle_person");
+        
+                    for(i = 0; i < togglePeople.length; i++){
+                        togglePeople[i].style.display = "block";
+                    }
+        
+                    for(i = 0; i < toggleYears.length; i++){
+                        toggleYears[i].style.display = "block";
+                        
+                    }
+                }
+            }else{
+                selected_wordcloud(selectedWord);
+            }
+
+            
+        });
     }
 }
 
-//---------------- show only the selected word --------------------
+//---------------- show only the selected word (we are not supposed to use it but I like^^) --------------------
 function single_word_wc(word){
     Remove();
     var singleConfig = myConfig;
