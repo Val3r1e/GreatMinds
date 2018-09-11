@@ -7,6 +7,7 @@ import re
 import nltk
 from nltk.corpus import PlaintextCorpusReader as PCR
 import json
+import pickle
 
 def get_all_words():
 
@@ -29,8 +30,13 @@ def get_all_words():
             words.add(word.casefold())
 
     words = sorted(words)
-    #json.dump(words, open("words.json", 'w'))
-    return words
+    #print(words)
+    print(len(words))
+    # json.dump(words, open("../all_nouns.json", 'w'))
+    # with open('../all_nouns_set.pickle', 'wb') as f:
+    #     pickle.dump(words, f)
+
+    #return words
 
 def create_word_index():
 
@@ -62,8 +68,8 @@ def create_word_index():
 
 def main():
     
-    create_word_index()
-    #get_all_words()
+    #create_word_index()
+    get_all_words()
 
 if __name__ == '__main__':
     main()

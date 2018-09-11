@@ -642,7 +642,7 @@ function create_wordcloud(name, year, steps){
 
     count_visible_letters();
 
-    var cloudDataURL = "cloud_data_tf-idf/" + name + "/" + steps + "/" + name + "_" + year + "_" + steps + ".json";
+    var cloudDataURL = "data/cloud_data_tf-idf/" + name + "/" + steps + "/" + name + "_" + year + "_" + steps + ".json";
     var cloudDataRequest = new XMLHttpRequest();
     cloudDataRequest.open('GET', cloudDataURL);
     cloudDataRequest.responseType = 'json';
@@ -734,6 +734,7 @@ function create_wordcloud(name, year, steps){
 
                 //show selected word instead of wordcloud:
                 single_word_wc(clickedWord);
+                //selected_wordcloud(clickedWord)
                 
                 //show only corresponding letters in list:
                 var letters = letterIndex[word];
@@ -751,6 +752,27 @@ function create_wordcloud(name, year, steps){
                 create_small_bars();
                 hide_empty_sections();
             }
+        });
+    }
+}
+
+//If a word was clicked: show a new word cloud depicting only the letters containing that word (it's not working yet)
+function selected_wordcloud(word){
+
+    var selectedCloudDataURL = "data/noun_wc_data/" + word + ".json";
+    var selectedCloudDataRequest = new XMLHttpRequest();
+    selectedCloudDataRequest.open('GET', selectedCloudDataURL);
+    selectedCloudDataRequest.responseType = 'json';
+    selectedCloudDataRequest.send();
+    selectedCloudDataRequest.onload = function(){
+        var selectedText = selectedCloudDataRequest;
+        var selectedConfig = myConfig;
+        selectedConfig.options.words = selectedText;
+        zingchart.render({
+            id:'LetterDiv',
+            data:selectedConfig,
+            height:'100%',
+            width:'100%'
         });
     }
 }
