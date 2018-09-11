@@ -88,20 +88,20 @@ function bars(data,version){
                 .attr("width", x.bandwidth()) // Width of bars -1 smaller +1 bigger etc
                 .on("mouseover", function (d, i) {
 
-                    wanted = this.id.split("id").pop();
+                    /*wanted = this.id.split("id").pop();
                     wanted = wanted.slice(0, 4);
                     console.log(wanted);
 
                     for (j = 0; j < rectangleClassArray.length; j++) {
-                        if (yearArray[i] === wanted) {
-                            d3.select("#id" + yearArray[i] + "-" + rectangleClassArray[j])
+                        if (yearArray[j] === wanted) {
+                            d3.select("#id" + yearArray[j] + "-" + rectangleClassArray[j])
                                 .style("cursor", "pointer")
                                 .attr("stroke", "purple")
                                 .attr("stroke-width", 0.8);
 
                                 total_letters = d[1];
                         }
-                    }
+                    }*/
 
                     d3.select(this)
                         .style("cursor", "pointer")
@@ -114,15 +114,22 @@ function bars(data,version){
                         .style("left", d3.event.pageX - 50 + "px")
                         .style("top", d3.event.pageY - 70 + "px")
                         .style("display", "inline-block")
-                        .html(d.data.Year + ": " + amount + "</br>" + "Total: " + total_letters);
+                        .html(d.data.Year + ": " + amount /*+ "</br>" + "Total: " + total_letters*/);
                 })
                 .on("mouseout", function (d, i) {
-                    for (j = 0; j < rectangleClassArray.length; j++) {
+
+                    /*for (j = 0; j < rectangleClassArray.length; j++) {
                         d3.select("#id" + yearArray[i] + "-" + rectangleClassArray[j])
                             .style("cursor", "none")
                             .attr("stroke", "pink")
                             .attr("stroke-width", 0.2);
-                    }
+                    }*/
+
+                    d3.select(this)
+                    .style("cursor", "none")
+                    .attr("stroke", "pink")
+                    .attr("stroke-width", 0.2);
+
                     tooltip
                     .style("display","none");
                 })
@@ -135,6 +142,7 @@ function bars(data,version){
                         .style("stroke-width", 1.5);
                         active = d.data.Year;
                         //'whole' is just a placeholder until we figure out how to get the actual name:
+                        // Mit rectangleClassArray[i] solltest du eigentlich auf den jeweiligen Namen zugreifen können
                         create_wordcloud('whole', d.data.Year, version);
                     }
                     //to deselect: same one clicked again
@@ -271,14 +279,15 @@ function bars(data,version){
             class_keep = d.id.split("id").pop();
             idx = legendClassArray.indexOf(class_keep); 
             
+            //DOESNT WORK IF BAR HAS BEEN HOVERED ABOVE BEFORE
             //Give selected bars black frame
-            for (i = 0; i < legendClassArray.length; i++) {
+            /*for (i = 0; i < legendClassArray.length; i++) {
                 if (legendClassArray[i] == class_keep) {
                     d3.selectAll(".class" + legendClassArray[i])
                     .style("stroke", "black")
                     .style("stroke-width", 1);
                 }
-            }
+            }*/
 
             //Make all other bars less visible
             for (i = 0; i < legendClassArray.length; i++) {
@@ -294,12 +303,12 @@ function bars(data,version){
         function putBack(d){
 
             //take black frame away
-            for (i = 0; i < legendClassArray.length; i++) {
+            /*for (i = 0; i < legendClassArray.length; i++) {
                 if (legendClassArray[i] == class_keep) {
                     d3.selectAll(".class" + legendClassArray[i])
                     .style("stroke", "none");
                 }
-            }
+            }*/
 
             //make other bars visible again
             for (i = 0; i < legendClassArray.length; i++) {
