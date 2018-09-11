@@ -16,6 +16,10 @@ var legendSelected = false;
 var wcBeforeBarSelected;
 var wcBeforeLegendSelected;
 var wcBeforeWordSelected;
+var s_person = [];
+var s_year = [];
+var s_steps = [];
+var currentWordCloud = [s_person, s_year, s_steps];
 
 
 //-------------------- Barchart -----------------------
@@ -249,7 +253,10 @@ function bars(data,version){
                             .style("opacity", 0.5);
                         }
                     }
-                    create_wordcloud(this.id.split("id").pop(), 1111, 0) //creates the wordcloud of the person over all the letters
+                    if(!wordClicked){
+                        create_wordcloud(this.id.split("id").pop(), 1111, 0) //creates the wordcloud of the person over all the letters
+                    }
+                    
                 }
                 //to deselect: click the same one again
                 else if (active_link === this.id.split("id").pop()){
@@ -265,7 +272,9 @@ function bars(data,version){
                     }
 
                     putBack(d);
-                    create_wordcloud(wcBeforeLegendSelected[0], wcBeforeLegendSelected[1], wcBeforeLegendSelected[2]);
+                    if(!wordClicked){
+                        create_wordcloud(wcBeforeLegendSelected[0], wcBeforeLegendSelected[1], wcBeforeLegendSelected[2]);
+                    }
                 }
             });
 
@@ -382,7 +391,6 @@ function init_page(name, year, steps){
     create_small_bars();
 }
 
-
 // ---------------- Code for small bars to show letter amount -----------------
 function create_small_bars(){
     count_visible_letters();
@@ -395,6 +403,7 @@ function create_small_bars(){
     }
 }
 
+//---- creates the specific small bar, called from the for-Loop --------
 function small_bar(id){
 
     var barYear = id.split("_")[1];
@@ -419,22 +428,8 @@ function small_bar(id){
     .text(function(d) { return d; });
 }
 
-
 //------- toggle between opened and closed years and names in the List of Letters:
 function toggle(id, name, year, steps){
-    var requestOnPerson = false;
-    var requestOnYear = false;
-    
-    if(name == 'whole'){
-        requestOnPerson = false;
-        requestOnYear = true;
-    }else{
-        requestOnPerson = true;
-        requestOnYear = false;
-    }
-
-    ulElement = load_ul(id);
-    imgElement = load_img(id);
 
     function load_ul(id){
         ul = "ul_" + id;
@@ -447,6 +442,9 @@ function toggle(id, name, year, steps){
     }
 
     function open(element_id){
+        currentWordCloud[0].push(name);
+        currentWordCloud[1].push(year);
+        currentWordCloud[2].push(steps);
         this_ulElement = load_ul(element_id);
         this_imgElement = load_img(element_id);
         this_ulElement.className = "open";
@@ -462,6 +460,9 @@ function toggle(id, name, year, steps){
     }
 
     function close(element_id){
+        currentWordCloud[0].pop();
+        currentWordCloud[1].pop();
+        currentWordCloud[2].pop();
         this_ulElement = load_ul(element_id);
         this_imgElement = load_img(element_id);
         this_ulElement.className = "closed";
@@ -479,10 +480,26 @@ function toggle(id, name, year, steps){
         }
     }
 
+    var requestOnPerson = false;
+    var requestOnYear = false;
+    
+    if(name == 'whole'){
+        requestOnPerson = false;
+        requestOnYear = true;
+    }else{
+        requestOnPerson = true;
+        requestOnYear = false;
+    }
+
+    ulElement = load_ul(id);
+    imgElement = load_img(id);
+
+    //Beim schließen während ein Wort geklickt ist, beim Toggeln die "aktuelle Wordcloud" updaten!!!
+
     if (ulElement){
         //open
         if (ulElement.className == 'closed'){
-            //to ensure, only one year and max one person is open at the same time:
+            //to ensure, only one year and max. one person is open at the same time:
             if(requestOnYear){
                 if(!yearOpen){
                     yearOpen = true;
@@ -586,6 +603,7 @@ function count_visible_letters(){
     // console.log(visibleLettersPeople);
 }
 
+//-------- help to get the CSS style for another function ---------
 function getStyle(element, style){
     var result;
     if(element.currentStyle){
@@ -600,6 +618,50 @@ function getStyle(element, style){
     return result;
 }
 
+//---------- highlight the selected word, highlighting the background doesn't work --------
+function highlight_word(word){
+    var allWCWords = document.getElementsByTagName("tspan");
+        for(i = 0; i < allWCWords.length; i++){
+            if(allWCWords[i].innerHTML == word){
+                wordId = allWCWords[i].parentNode.id //+ "-path";
+                document.getElementById(wordId).childNodes[0].style.fill = "#fd00ff";
+                //allWCWords[i].parentNode.style.backgroundColor = "#B6B6B6";
+                break;
+            }
+        }
+        //document.getElementById(wordId).style.fill = "#f394f4";
+}
+
+//----------- only show corresponding letters in list -----------
+function show_corresponding_letters(word){
+    var letterIndexURL = "../../wordcloud/Text/wordindex/word-letter_index.json";
+    var letterIndexRequest = new XMLHttpRequest();
+    letterIndexRequest.open('GET', letterIndexURL);
+    letterIndexRequest.responseType = 'json';
+    letterIndexRequest.send();
+    letterIndexRequest.onload = function(){
+        //letterIndex contains an Index like this: {'Word1':[list of all letters containing Word1], 'Word2':[...],...}
+        var letterIndex = letterIndexRequest.response;
+
+        var letters = letterIndex[word];
+        var allButtons = document.getElementsByClassName("openLetterButton");
+        for(i = 0; i < allButtons.length; i++){
+            for(j = 0; j < letters.length; j++){
+                var thisButton = allButtons[i]
+                thisButton.style.display ="none";
+                if(thisButton.id == letters[j]){
+                    thisButton.style.display = "block";
+                    break;
+                }
+            }
+        }
+        create_small_bars();
+        hide_empty_sections();
+    }
+
+}
+
+//----------- hide a year or person if there is no letter left to show -------------
 function hide_empty_sections(){
     //hide years and people in case they have no corresponding letters:
     var toggleYears = document.getElementsByClassName("toggle_year");
@@ -639,10 +701,10 @@ function hide_empty_sections(){
 
 //------------- create the wordclouds ---------------
 function create_wordcloud(name, year, steps){
+    // var thisName = get_name(name);
+    // var thisYear = get_year(year);
+    console.log(name, year, steps);
     Remove();
-    var thisName = get_name(name);
-    var thisYear = get_year(year);
-
     count_visible_letters();
 
     var cloudDataURL = "data/cloud_data_tf-idf/" + name + "/" + steps + "/" + name + "_" + year + "_" + steps + ".json";
@@ -654,14 +716,14 @@ function create_wordcloud(name, year, steps){
         var myText = cloudDataRequest.response;
         myConfig = {
             type: 'wordcloud',
-            title:{
-                text: thisName + " " + thisYear,
-                visible:false,
-                width:150, 
-                height: 50,
-                paddingBottom: "20px",
-                margin:"20px"
-            },
+            // title:{
+            //     text: thisName + " " + thisYear,
+            //     visible:false,
+            //     width:150, 
+            //     height: 50,
+            //     paddingBottom: "20px",
+            //     margin:"20px"
+            // },
             options: {
                 words : myText,
                 minLength: 4,
@@ -723,48 +785,22 @@ function create_wordcloud(name, year, steps){
         
 
         zingchart.bind('LetterDiv','label_click', function(p){
-        
-            var letterIndexURL = "../../wordcloud/Text/wordindex/word-letter_index.json";
-            var letterIndexRequest = new XMLHttpRequest();
-            letterIndexRequest.open('GET', letterIndexURL);
-            letterIndexRequest.responseType = 'json';
-            letterIndexRequest.send();
-            letterIndexRequest.onload = function(){
-                //letterIndex contains an Index like this: {'Word1':[list of all letters containing Word1], 'Word2':[...],...}
-                var letterIndex = letterIndexRequest.response;
-                var word = p.text;
-                // wordId = "LetterDiv-graph-id0-label-" + p.labelid;
-                // console.log(wordId);
-                wordClicked = true;
-                clickedWord = word;
+            var word = p.text;
+            wordClicked = true;
+            clickedWord = word;
 
-                //show selected word instead of wordcloud:
-                //single_word_wc(clickedWord);
-                selected_wordcloud(clickedWord)
-                
-                //show only corresponding letters in list:
-                var letters = letterIndex[word];
-                var allButtons = document.getElementsByClassName("openLetterButton");
-                for(i = 0; i < allButtons.length; i++){
-                    for(j = 0; j < letters.length; j++){
-                        var thisButton = allButtons[i]
-                        thisButton.style.display ="none";
-                        if(thisButton.id == letters[j]){
-                            thisButton.style.display = "block";
-                            break;
-                        }
-                    }
-                }
-                create_small_bars();
-                hide_empty_sections();
-            }
+            //show selected word instead of wordcloud:
+            //single_word_wc(clickedWord);
+            selected_wordcloud(clickedWord)
         });
     }
 }
 
 //---- If a word was clicked: show a new word cloud depicting only the letters containing that word ------
 function selected_wordcloud(word){
+    //change tooltip for one word!
     Remove();
+    //create the new wordcloud:
     var selectedCloudDataURL = "data/noun_wc_data/" + word + ".json";
     var selectedCloudDataRequest = new XMLHttpRequest();
     selectedCloudDataRequest.open('GET', selectedCloudDataURL);
@@ -780,22 +816,14 @@ function selected_wordcloud(word){
             height:'100%',
             width:'100%'
         });
-
-        var allWCWords = document.getElementsByTagName("tspan");
-        for(i = 0; i < allWCWords.length; i++){
-            if(allWCWords[i].innerHTML == word){
-                wordId = allWCWords[i].parentNode.id //+ "-path";
-                document.getElementById(wordId).childNodes[0].style.fill = "#fd00ff";
-                //allWCWords[i].parentNode.style.backgroundColor = "#B6B6B6";
-                break;
-            }
-        }
-        //document.getElementById(wordId).style.fill = "#f394f4";
         
-
+        highlight_word(word);
+        show_corresponding_letters(word);
+        
         zingchart.bind('LetterDiv','label_click', function(p){
 
             var selectedWord = p.text;
+            //click on the same word = deselect
             if(selectedWord == word){
                 var letterIndexURL = "../../wordcloud/Text/wordindex/word-letter_index.json";
                 var letterIndexRequest = new XMLHttpRequest();
@@ -808,6 +836,7 @@ function selected_wordcloud(word){
                     clickedWord = "";
                     Remove();
                     create_wordcloud(wcBeforeWordSelected[0], wcBeforeWordSelected[1], wcBeforeWordSelected[2]);
+                    //create_wordcloud(currentWordCloud[0].slice(-1)[0], currentWordCloud[1].slice(-1)[0], currentWordCloud[2].slice(-1)[0]);
                     //make all letters visible again:
                     var letterIndex = letterIndexRequest.response;
                     //var letters = letterIndex[word];
@@ -838,6 +867,9 @@ function selected_wordcloud(word){
         });
     }
 }
+
+// --------------------- END ----------------------- END ------------------------ END ------------------------
+// (But maybe I still need the rest, so please don't delete it for now :))
 
 //---------------- show only the selected word (we are not supposed to use it but I like^^) --------------------
 function single_word_wc(word){
