@@ -3917,7 +3917,7 @@
                             </ul>
                         </li>
                     </ul>
-                </li>
+                </li> 
                 <li class="toggle_year" id="a_1814">
                     <a onclick="toggle('1814', 'whole', 1814, 1);">
                     <img alt="" border="0" class="toggle_img" id="img_1814" src="closed.gif" style="height:2ex;width:2ex"/>
@@ -4016,5 +4016,8 @@
 
         <!-- ...............Letters and wordclouds get displayed in div............... -->
         <div id="LetterDiv"></div>
+
+        <!-- ...... This ones only purpose is to deliver a message in order to avoid recursion: ..... -->
+        <div style="display:none" id="herr_made" onchange="trigger_new_cloud()"></div>
     </body>
 </html>

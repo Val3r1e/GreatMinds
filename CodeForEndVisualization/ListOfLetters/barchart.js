@@ -13,13 +13,12 @@ var visibleLetters;
 var visibleLettersPeople;
 var barSelected = false; //to be able to return to the wordcloud shown before you clicked on something
 var legendSelected = false; 
+var selectedPerson = 'whole';
+var selectedYear;
 var wcBeforeBarSelected;
 var wcBeforeLegendSelected;
 var wcBeforeWordSelected;
-var s_person = [];
-var s_year = [];
-var s_steps = [];
-var currentWordCloud = [s_person, s_year, s_steps];
+var currentWC;
 
 
 //-------------------- Barchart -----------------------
@@ -148,7 +147,11 @@ function bars(data,version){
                         active = d.data.Year;
                         //'whole' is just a placeholder until we figure out how to get the actual name:
                         // Mit rectangleClassArray[i] solltest du eigentlich auf den jeweiligen Namen zugreifen können
-                        create_wordcloud('whole', d.data.Year, version);
+                        if(!wordClicked){
+                            Remove();
+                            create_wordcloud('whole', d.data.Year, version);
+                        }
+                        
                     }
                     //to deselect: same one clicked again
                     else if (active === d.data.Year){
@@ -156,7 +159,11 @@ function bars(data,version){
                         d3.select(this)           
                         .style("stroke", "none");
                         active = "0";
-                        create_wordcloud(wcBeforeBarSelected[0], wcBeforeBarSelected[1], wcBeforeBarSelected[2]);
+                        if(!wordClicked){
+                            Remove();
+                            create_wordcloud(wcBeforeBarSelected[0], wcBeforeBarSelected[1], wcBeforeBarSelected[2]);
+
+                        }
                     }
                 })
                 /*.on("dblclick", function(d){ 
@@ -254,7 +261,12 @@ function bars(data,version){
                         }
                     }
                     if(!wordClicked){
-                        create_wordcloud(this.id.split("id").pop(), 1111, 0) //creates the wordcloud of the person over all the letters
+                        Remove();
+                        var my_name_here = this.id.split("id").pop();
+                        selectedPerson = my_name_here;
+                        console.log(my_name_here);
+                        show_letters_from(my_name_here);
+                        create_wordcloud(my_name_here, 1111, 0) //creates the wordcloud of the person over all the letters
                     }
                     
                 }
@@ -273,6 +285,9 @@ function bars(data,version){
 
                     putBack(d);
                     if(!wordClicked){
+                        selectedPerson = 'whole';
+                        Remove();
+                        show_letters_from('whole');
                         create_wordcloud(wcBeforeLegendSelected[0], wcBeforeLegendSelected[1], wcBeforeLegendSelected[2]);
                     }
                 }
@@ -387,6 +402,7 @@ function init(version){
 
 //----------------------- Create the first wordcloud and the first small bars next to the years ----------------
 function init_page(name, year, steps){
+    currentWC = [name, year, steps];
     create_wordcloud(name, year, steps);
     create_small_bars();
 }
@@ -428,57 +444,37 @@ function small_bar(id){
     .text(function(d) { return d; });
 }
 
+function trigger_new_cloud(){
+    word = document.getElementById("herr_made").innerHTML;
+    
+    if(word != "Wunschpunsch"){
+        Remove();
+        selected_wordcloud(word);
+    }else{
+        Remove();
+        create_wordcloud(currentWC[0],currentWC[1], currentWC[2]);
+
+        // --- alternative way to get the current wordcloud: ----
+        // var current = document.getElementsByClassName("open");
+        // if(current.length > 1){
+        //     var this_wc = current[current.length-1].id;
+        //     var elements = this_wc.split("_");
+        //     if(elements.length == 2){
+        //         create_wordcloud('whole', elements[1], 1);
+        //     }else{
+        //         create_wordcloud(elements[1], elements[2], 1);
+        //     }
+        // }else{
+        //     create_wordcloud('whole', 1111, 0);
+        // }
+    }
+}
+
 //------- toggle between opened and closed years and names in the List of Letters:
 function toggle(id, name, year, steps){
-
-    function load_ul(id){
-        ul = "ul_" + id;
-        return document.getElementById(ul);
-    }
-
-    function load_img(id){
-        img = "img_" + id;
-        return document.getElementById(img);
-    }
-
-    function open(element_id){
-        currentWordCloud[0].push(name);
-        currentWordCloud[1].push(year);
-        currentWordCloud[2].push(steps);
-        this_ulElement = load_ul(element_id);
-        this_imgElement = load_img(element_id);
-        this_ulElement.className = "open";
-        this_imgElement.src = "opened.gif";
-        if(!wordClicked){
-            //if no word selected: create normal wc
-            create_wordcloud(name, year, steps);
-        }else{
-            //if one word selected: only show selected word
-            //single_word_wc(clickedWord);
-            selected_wordcloud(clickedWord);
-        }
-    }
-
-    function close(element_id){
-        currentWordCloud[0].pop();
-        currentWordCloud[1].pop();
-        currentWordCloud[2].pop();
-        this_ulElement = load_ul(element_id);
-        this_imgElement = load_img(element_id);
-        this_ulElement.className = "closed";
-        this_imgElement.src = "closed.gif";
-        if(!wordClicked){
-            if (name == 'whole'){
-                create_wordcloud(name, 1111, 0);
-            }
-            else{
-                create_wordcloud('whole', year, steps);
-            }
-        }else{
-            //single_word_wc(clickedWord);
-            selected_wordcloud(clickedWord);
-        }
-    }
+    // if(selectedPerson != 'whole'){
+    //     name = selectedPerson;
+    // }
 
     var requestOnPerson = false;
     var requestOnYear = false;
@@ -494,7 +490,57 @@ function toggle(id, name, year, steps){
     ulElement = load_ul(id);
     imgElement = load_img(id);
 
-    //Beim schließen während ein Wort geklickt ist, beim Toggeln die "aktuelle Wordcloud" updaten!!!
+    function load_ul(id){
+        ul = "ul_" + id;
+        return document.getElementById(ul);
+    }
+
+    function load_img(id){
+        img = "img_" + id;
+        return document.getElementById(img);
+    }
+
+    function open(element_id){
+        this_ulElement = load_ul(element_id);
+        this_imgElement = load_img(element_id);
+        this_ulElement.className = "open";
+        this_imgElement.src = "opened.gif";
+        if(!wordClicked){
+            currentWC = [name, year, steps];
+            Remove();
+            create_wordcloud(name, year, steps);
+        }else{
+            currentWC = [name, year, steps];
+            Remove();
+            selected_wordcloud(clickedWord);
+        }
+    }
+
+    function close(element_id){
+        this_ulElement = load_ul(element_id);
+        this_imgElement = load_img(element_id);
+        this_ulElement.className = "closed";
+        this_imgElement.src = "closed.gif";
+        if(requestOnPerson){ //Request to close a person
+            currentWC = ['whole', year, steps];
+            if(!wordClicked){
+                Remove();
+                create_wordcloud(currentWC[0], currentWC[1], currentWC[2]);
+            }else{
+                Remove();
+                selected_wordcloud(clickedWord);
+            }
+        }else{ //meaning: it's a request to close a year
+            currentWC = [name, 1111, 0];
+            if(!wordClicked){
+                Remove();
+                create_wordcloud(name, 1111, 0);
+            }else{
+                Remove();
+                selected_wordcloud(clickedWord);
+            }
+        }
+    }
 
     if (ulElement){
         //open
@@ -542,7 +588,6 @@ function toggle(id, name, year, steps){
         }
     }
 }
-
 
 //------------- Load the letters --------------
 function Load(clickedButton){
@@ -632,6 +677,28 @@ function highlight_word(word){
         //document.getElementById(wordId).style.fill = "#f394f4";
 }
 
+//-------- if a name in the legend gets selected ------------
+function show_letters_from(name){
+    var allButtons = document.getElementsByClassName("openLetterButton");
+    if(name == 'whole'){
+        for(i = 0; i < allButtons.length; i++){
+            var thisButton = allButtons[i];
+            thisButton.style.display ="block";
+        }
+        return_to_normal();
+    }else{
+        for(i = 0; i < allButtons.length; i++){
+            var thisButton = allButtons[i];
+            thisButton.style.display ="none";
+            if(thisButton.id.split("_")[1] == name){
+                thisButton.style.display = "block";
+            }
+        }
+        create_small_bars();
+        hide_empty_sections();
+    }
+}
+
 //----------- only show corresponding letters in list -----------
 function show_corresponding_letters(word){
     var letterIndexURL = "../../wordcloud/Text/wordindex/word-letter_index.json";
@@ -699,12 +766,37 @@ function hide_empty_sections(){
     }
 }
 
+ //---------- bring back all years and people -------------
+function show_all_sections(){
+    var toggleYears = document.getElementsByClassName("toggle_year");
+    var togglePeople = document.getElementsByClassName("toggle_person");
+
+    for(i = 0; i < togglePeople.length; i++){
+        togglePeople[i].style.display = "block";
+    }
+    for(i = 0; i < toggleYears.length; i++){
+        toggleYears[i].style.display = "block";  
+    }
+}
+
+//--------- After a word is deselected: bring back all hidden elements -----------
+function return_to_normal(){
+    //bring back all the Letters
+    var allButtons = document.getElementsByClassName("openLetterButton");
+    for(i = 0; i < allButtons.length; i++){
+        var thisButton = allButtons[i]
+        thisButton.style.display ="block";
+    }
+    //update the small bars
+    create_small_bars();
+    show_all_sections();
+}
+
 //------------- create the wordclouds ---------------
 function create_wordcloud(name, year, steps){
     // var thisName = get_name(name);
     // var thisYear = get_year(year);
     console.log(name, year, steps);
-    Remove();
     count_visible_letters();
 
     var cloudDataURL = "data/cloud_data_tf-idf/" + name + "/" + steps + "/" + name + "_" + year + "_" + steps + ".json";
@@ -749,7 +841,7 @@ function create_wordcloud(name, year, steps){
                         fontColor: 'grey'
                     },
                     tooltip: {
-                        text: "'%text'\n tf-idf index: %hits \n Click to show a list\nof corresponding letters",
+                        text: "'%text'\n tf-idf index: %hits \n Click me!",
                         visible: true,
                         alpha: 0.8,
                         backgroundColor: 'lightgrey',
@@ -780,27 +872,21 @@ function create_wordcloud(name, year, steps){
         if(!barSelected){
             wcBeforeBarSelected = [name, year, steps];
         }
-
-        wcBeforeWordSelected = [name, year, steps]; //to remember the whole wc in case only one word is selected
-        
+        //wcBeforeWordSelected = [name, year, steps]; //to remember the whole wc in case only one word is selected
 
         zingchart.bind('LetterDiv','label_click', function(p){
             var word = p.text;
             wordClicked = true;
             clickedWord = word;
-
-            //show selected word instead of wordcloud:
-            //single_word_wc(clickedWord);
-            selected_wordcloud(clickedWord)
+            document.getElementById("herr_made").innerHTML = clickedWord;
+            document.getElementById("herr_made").onchange();
         });
     }
 }
 
 //---- If a word was clicked: show a new word cloud depicting only the letters containing that word ------
 function selected_wordcloud(word){
-    //change tooltip for one word!
-    Remove();
-    //create the new wordcloud:
+    //console.log("create cloud with " + word);
     var selectedCloudDataURL = "data/noun_wc_data/" + word + ".json";
     var selectedCloudDataRequest = new XMLHttpRequest();
     selectedCloudDataRequest.open('GET', selectedCloudDataURL);
@@ -825,45 +911,30 @@ function selected_wordcloud(word){
             var selectedWord = p.text;
             //click on the same word = deselect
             if(selectedWord == word){
+                //console.log("deselect "+ word);
                 var letterIndexURL = "../../wordcloud/Text/wordindex/word-letter_index.json";
                 var letterIndexRequest = new XMLHttpRequest();
                 letterIndexRequest.open('GET', letterIndexURL);
                 letterIndexRequest.responseType = 'json';
                 letterIndexRequest.send();
                 letterIndexRequest.onload = function(){
+                    var letterIndex = letterIndexRequest.response;
                     //return to normal
                     wordClicked = false;
                     clickedWord = "";
-                    Remove();
-                    create_wordcloud(wcBeforeWordSelected[0], wcBeforeWordSelected[1], wcBeforeWordSelected[2]);
-                    //create_wordcloud(currentWordCloud[0].slice(-1)[0], currentWordCloud[1].slice(-1)[0], currentWordCloud[2].slice(-1)[0]);
-                    //make all letters visible again:
-                    var letterIndex = letterIndexRequest.response;
-                    //var letters = letterIndex[word];
-                    var allButtons = document.getElementsByClassName("openLetterButton");
-                    for(i = 0; i < allButtons.length; i++){
-                        var thisButton = allButtons[i]
-                        thisButton.style.display ="block";
-                    }
-                    create_small_bars();
-                    //bring back all years and people:
-                    var toggleYears = document.getElementsByClassName("toggle_year");
-                    var togglePeople = document.getElementsByClassName("toggle_person");
-        
-                    for(i = 0; i < togglePeople.length; i++){
-                        togglePeople[i].style.display = "block";
-                    }
-        
-                    for(i = 0; i < toggleYears.length; i++){
-                        toggleYears[i].style.display = "block";
-                        
-                    }
+                    return_to_normal();
+                    //trigger the new cloud to avoid recursion
+                    document.getElementById("herr_made").innerHTML = "Wunschpunsch";
+                    document.getElementById("herr_made").onchange();
+                    
                 }
-            }else{
-                selected_wordcloud(selectedWord);
-            }
-
-            
+            }else{ //click on another word: that word gets selected
+                //console.log("selected "+ selectedWord);
+                wordClicked = true;
+                clickedWord = selectedWord;
+                document.getElementById("herr_made").innerHTML = selectedWord ;
+                document.getElementById("herr_made").onchange();
+            }  
         });
     }
 }
