@@ -52,6 +52,8 @@ function bars(data,version){
     var rectangleClassArray = ["FSchiller","CSchiller", "CStein", "CGoethe"];
     var yearArray = [];
     var wanted = "0";
+    var otherActive = "0";
+    var someActive = "0";
 
     d3.csv(data, function(d, i, columns){
         for (i = 1, t = 0; i < columns.length; ++i) t += d[columns[i]] = +d[columns[i]];
@@ -92,48 +94,66 @@ function bars(data,version){
 
                     yearArray.push(d.data.Year);
 
-                    console.log("id" + d.data.Year + "-" + rectangleClassArray[a])
-                    //console.log(yearArray);
-                    //return ("id" + d.data.Year + "-" + rectangleClassArray[Math.floor(counter/9)]);
                     return ("id" + d.data.Year + "-" + rectangleClassArray[a]);
-                    //return ("id" + d.data.Year + "-" + rectangleClassArray[i]);
                 })
                 .attr("y", function(d) { return y(d[1]); })
                 .attr("height", function(d) { return y(d[0]) - y(d[1]); })
                 .attr("width", x.bandwidth()) // Width of bars -1 smaller +1 bigger etc
-                .on("mouseover", function (d, i) {
+                .on("mouseover", function (d) {
 
                     wanted = this.id.split("id").pop();
                     wanted = wanted.slice(0, 4);
 
-                    for (j = 0; j < rectangleClassArray.length; j++){
-                        d3.select("#id" + wanted + "-" + rectangleClassArray[j])
-                            .style("cursor", "pointer")
-                            .style("stroke", "purple")
-                            .style("stroke-width", 0.8);
-                    }   
+                    otherActive = active_link;
 
-                    tooltip
-                    .style("left", d3.event.pageX - 50 + "px")
-                    .style("top", d3.event.pageY - 70 + "px")
-                    .style("display", "inline-block")
-                    .html(d.data.Year + ": " + d.data.total);
+                    if(active != d.data.Year && active_link === "0"){
+
+                        for (j = 0; j < rectangleClassArray.length; j++){
+                            d3.select("#id" + wanted + "-" + rectangleClassArray[j])
+                                .style("cursor", "pointer")
+                                .style("stroke", "purple")
+                                .style("stroke-width", 0.8);
+                        }   
+                    }
+                    else{
+                        d3.select("#id" + wanted + "-" + active_link)
+                        .style("cursor", "pointer");
+                    }
+
+                    if(active_link === "0"){
+                        tooltip
+                        .style("left", d3.event.pageX - 50 + "px")
+                        .style("top", d3.event.pageY - 70 + "px")
+                        .style("display", "inline-block")
+                        .html(d.data.Year + ": " + d.data.total);
+                    }
+                    /*else{
+                        tooltip
+                        .style("left", d3.event.pageX - 50 + "px")
+                        .style("top", d3.event.pageY - 70 + "px")
+                        .style("display", "inline-block")
+                        .html(d.data.Year + ": " + d.data.total); 
+                    }*/
                 })
-                .on("mouseout", function (d, i) {
+                .on("mouseout", function (d) {
 
-                    for (j = 0; j < rectangleClassArray.length; j++){
-                        d3.select("#id" + wanted + "-" + rectangleClassArray[j])
-                        .style("cursor", "none")
-                        .style("stroke", "pink")
-                        .style("stroke-width", 0.2);
+                    if(active != d.data.Year && active_link === "0"){
+
+                        for (j = 0; j < rectangleClassArray.length; j++){
+                            d3.select("#id" + wanted + "-" + rectangleClassArray[j])
+                            .style("cursor", "none")
+                            .style("stroke", "pink")
+                            .style("stroke-width", 0.2);
+                        }
                     }
 
                     tooltip
                     .style("display","none");
                 })
-                .on("click", function(d,i){
+                .on("click", function(d){
+
                     //nothing was selected before
-                    if (active === "0"){
+                    if (active === "0" && active_link === "0"){
                         barSelected = true;
 
                         for (j = 0; j < rectangleClassArray.length; j++) {
@@ -142,20 +162,14 @@ function bars(data,version){
                             .style("stroke-width", 1.5);
                         }
 
-                        /*d3.select(this)
-                        .style("stroke", "black")
-                        .style("stroke-width", 1.5);*/
-
                         active = d.data.Year;
-                        console.log("The Year: "+active);
 
                         //'whole' is just a placeholder until we figure out how to get the actual name:
-                        // Mit rectangleClassArray[i] solltest du eigentlich auf den jeweiligen Namen zugreifen können
+                        // Mit rectangleClassArray[a] solltest du eigentlich auf den jeweiligen Namen zugreifen können
                         if(!wordClicked){
                             Remove();
                             create_wordcloud('whole', d.data.Year, version);
                         }
-                        
                     }
                     //to deselect: same one clicked again
                     else if (active === d.data.Year){
@@ -166,9 +180,6 @@ function bars(data,version){
                             .style("stroke", "none");
                         }
 
-                        /*d3.select(this)           
-                        .style("stroke", "none");*/
-
                         active = "0";
 
                         if(!wordClicked){
@@ -176,6 +187,12 @@ function bars(data,version){
                             create_wordcloud(wcBeforeBarSelected[0], wcBeforeBarSelected[1], wcBeforeBarSelected[2]);
 
                         }
+                    }
+                    else{
+                        //someActive = d.data.Year;
+                        d3.select("#id" + wanted + "-" + active_link)
+                        .style("stroke", "black")
+                        .style("stroke-width", 1.5);
                     }
                 })
                 /*.on("dblclick", function(d){ 
@@ -240,20 +257,23 @@ function bars(data,version){
             .attr("height", 19)
             .attr("fill", z)
             //------------- Add Id-------------
-            .attr("id", function (d, i) {
+            .attr("id", function (d) {
                 return ("id" + d);
             })
-            .on("mouseover", function(d){ 
-                d3.select(this)
-                .style("stroke","purple")
-                .style("stroke-width",0.8)
-                .style("cursor", "pointer");
-                
+            .on("mouseover", function(){ 
+                if (active_link === "0"){
+                    d3.select(this)
+                    .style("stroke","purple")
+                    .style("stroke-width",0.8)
+                    .style("cursor", "pointer");
+                }
             })
-            .on("mouseout", function(d){
-                d3.select(this)
-                .style("stroke","pink")
-                .style("stroke-width",0.2);
+            .on("mouseout", function(){
+                if (active_link === "0"){
+                    d3.select(this)
+                    .style("stroke","pink")
+                    .style("stroke-width",0.2);
+                }
             })
             .on("click", function(d){
                 //nothing was selected before
