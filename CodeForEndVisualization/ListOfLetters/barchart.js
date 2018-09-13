@@ -83,56 +83,50 @@ function bars(data,version){
                 .enter().append("rect")
                 .attr("x", function(d) { return x(d.data.Year);})
                 .attr("id", function(d,i){
+                    var a = 0;
+                    for(f=0; f<yearArray.length; f++){
+                        if(d.data.Year == yearArray[f]){
+                            a += 1;
+                        }
+                    }
+
                     yearArray.push(d.data.Year);
-                    //console.log("id" + d.data.Year + "-" + rectangleClassArray[i])
-                    return ("id" + d.data.Year + "-" + rectangleClassArray[i]);
+
+                    console.log("id" + d.data.Year + "-" + rectangleClassArray[a])
+                    //console.log(yearArray);
+                    //return ("id" + d.data.Year + "-" + rectangleClassArray[Math.floor(counter/9)]);
+                    return ("id" + d.data.Year + "-" + rectangleClassArray[a]);
+                    //return ("id" + d.data.Year + "-" + rectangleClassArray[i]);
                 })
                 .attr("y", function(d) { return y(d[1]); })
                 .attr("height", function(d) { return y(d[0]) - y(d[1]); })
                 .attr("width", x.bandwidth()) // Width of bars -1 smaller +1 bigger etc
                 .on("mouseover", function (d, i) {
 
-                    /*wanted = this.id.split("id").pop();
+                    wanted = this.id.split("id").pop();
                     wanted = wanted.slice(0, 4);
-                    console.log(wanted);
 
-                    for (j = 0; j < rectangleClassArray.length; j++) {
-                        if (yearArray[j] === wanted) {
-                            d3.select("#id" + yearArray[j] + "-" + rectangleClassArray[j])
-                                .style("cursor", "pointer")
-                                .attr("stroke", "purple")
-                                .attr("stroke-width", 0.8);
-
-                                total_letters = d[1];
-                        }
-                    }*/
-
-                    d3.select(this)
-                        .style("cursor", "pointer")
-                        .attr("stroke", "purple")
-                        .attr("stroke-width", 0.8);
-
-                    var amount = d[1] - d[0];
+                    for (j = 0; j < rectangleClassArray.length; j++){
+                        d3.select("#id" + wanted + "-" + rectangleClassArray[j])
+                            .style("cursor", "pointer")
+                            .style("stroke", "purple")
+                            .style("stroke-width", 0.8);
+                    }   
 
                     tooltip
-                        .style("left", d3.event.pageX - 50 + "px")
-                        .style("top", d3.event.pageY - 70 + "px")
-                        .style("display", "inline-block")
-                        .html(d.data.Year + ": " + amount /*+ "</br>" + "Total: " + total_letters*/);
+                    .style("left", d3.event.pageX - 50 + "px")
+                    .style("top", d3.event.pageY - 70 + "px")
+                    .style("display", "inline-block")
+                    .html(d.data.Year + ": " + d.data.total);
                 })
                 .on("mouseout", function (d, i) {
 
-                    /*for (j = 0; j < rectangleClassArray.length; j++) {
-                        d3.select("#id" + yearArray[i] + "-" + rectangleClassArray[j])
-                            .style("cursor", "none")
-                            .attr("stroke", "pink")
-                            .attr("stroke-width", 0.2);
-                    }*/
-
-                    d3.select(this)
-                    .style("cursor", "none")
-                    .attr("stroke", "pink")
-                    .attr("stroke-width", 0.2);
+                    for (j = 0; j < rectangleClassArray.length; j++){
+                        d3.select("#id" + wanted + "-" + rectangleClassArray[j])
+                        .style("cursor", "none")
+                        .style("stroke", "pink")
+                        .style("stroke-width", 0.2);
+                    }
 
                     tooltip
                     .style("display","none");
@@ -141,10 +135,20 @@ function bars(data,version){
                     //nothing was selected before
                     if (active === "0"){
                         barSelected = true;
-                        d3.select(this)
+
+                        for (j = 0; j < rectangleClassArray.length; j++) {
+                            d3.select("#id" + wanted + "-" + rectangleClassArray[j])
+                            .style("stroke", "black")
+                            .style("stroke-width", 1.5);
+                        }
+
+                        /*d3.select(this)
                         .style("stroke", "black")
-                        .style("stroke-width", 1.5);
+                        .style("stroke-width", 1.5);*/
+
                         active = d.data.Year;
+                        console.log("The Year: "+active);
+
                         //'whole' is just a placeholder until we figure out how to get the actual name:
                         // Mit rectangleClassArray[i] solltest du eigentlich auf den jeweiligen Namen zugreifen können
                         if(!wordClicked){
@@ -156,9 +160,17 @@ function bars(data,version){
                     //to deselect: same one clicked again
                     else if (active === d.data.Year){
                         barSelected = false;
-                        d3.select(this)           
-                        .style("stroke", "none");
+
+                        for (j = 0; j < rectangleClassArray.length; j++) {
+                            d3.select("#id" + wanted + "-" + rectangleClassArray[j])
+                            .style("stroke", "none");
+                        }
+
+                        /*d3.select(this)           
+                        .style("stroke", "none");*/
+
                         active = "0";
+
                         if(!wordClicked){
                             Remove();
                             create_wordcloud(wcBeforeBarSelected[0], wcBeforeBarSelected[1], wcBeforeBarSelected[2]);
@@ -233,15 +245,15 @@ function bars(data,version){
             })
             .on("mouseover", function(d){ 
                 d3.select(this)
-                .attr("stroke","purple")
-                .attr("stroke-width",0.8)
+                .style("stroke","purple")
+                .style("stroke-width",0.8)
                 .style("cursor", "pointer");
                 
             })
             .on("mouseout", function(d){
                 d3.select(this)
-                .attr("stroke","pink")
-                .attr("stroke-width",0.2);
+                .style("stroke","pink")
+                .style("stroke-width",0.2);
             })
             .on("click", function(d){
                 //nothing was selected before
@@ -304,15 +316,14 @@ function bars(data,version){
             class_keep = d.id.split("id").pop();
             idx = legendClassArray.indexOf(class_keep); 
             
-            //DOESNT WORK IF BAR HAS BEEN HOVERED ABOVE BEFORE
             //Give selected bars black frame
-            /*for (i = 0; i < legendClassArray.length; i++) {
+            for (i = 0; i < legendClassArray.length; i++) {
                 if (legendClassArray[i] == class_keep) {
                     d3.selectAll(".class" + legendClassArray[i])
                     .style("stroke", "black")
                     .style("stroke-width", 1);
                 }
-            }*/
+            }
 
             //Make all other bars less visible
             for (i = 0; i < legendClassArray.length; i++) {
@@ -328,12 +339,12 @@ function bars(data,version){
         function putBack(d){
 
             //take black frame away
-            /*for (i = 0; i < legendClassArray.length; i++) {
+            for (i = 0; i < legendClassArray.length; i++) {
                 if (legendClassArray[i] == class_keep) {
                     d3.selectAll(".class" + legendClassArray[i])
                     .style("stroke", "none");
                 }
-            }*/
+            }
 
             //make other bars visible again
             for (i = 0; i < legendClassArray.length; i++) {
@@ -669,7 +680,7 @@ function highlight_word(word){
         for(i = 0; i < allWCWords.length; i++){
             if(allWCWords[i].innerHTML == word){
                 wordId = allWCWords[i].parentNode.id //+ "-path";
-                document.getElementById(wordId).childNodes[0].style.fill = "#fd00ff";
+                document.getElementById(wordId).childNodes[0].style.fill = "#b81b34";
                 //allWCWords[i].parentNode.style.backgroundColor = "#B6B6B6";
                 break;
             }
@@ -825,9 +836,9 @@ function create_wordcloud(name, year, steps){
                 rotate: false,
                 
                 colorType: 'palette',
-                palette: ["#7b1fa2", "#512da8", "#283593", "#6a1b9a", "#0d47a1", "#1565c0", "#01579b", "#0288d1", "#0d47a1", "#6200ea", "#8e24aa"],
-                //['#D32F2F','#1976D2','#9E9E9E','#E53935','#1E88E5','#7E57C2','#F44336','#2196F3','#A1887F'],
-            
+                palette: ["#283593"],
+                //["#7b1fa2", "#512da8", "#283593", "#6a1b9a", "#0d47a1", "#1565c0", "#01579b", "#0288d1", "#0d47a1", "#6200ea", "#8e24aa"],
+                
                 style: {
                     // backgroundColor: '#24F211',
                     // borderRadius: 10,
