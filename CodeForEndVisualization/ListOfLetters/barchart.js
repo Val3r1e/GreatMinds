@@ -723,7 +723,7 @@ function highlight_word(word){
         for(i = 0; i < allWCWords.length; i++){
             if(allWCWords[i].innerHTML == word){
                 wordId = allWCWords[i].parentNode.id //+ "-path";
-                document.getElementById(wordId).childNodes[0].style.fill = "#b81b34";
+                document.getElementById(wordId).childNodes[0].style.fill = "#fd00ff"; //"#b81b34";
                 //allWCWords[i].parentNode.style.backgroundColor = "#B6B6B6";
                 break;
             }
@@ -975,7 +975,7 @@ function render_selected_wordcloud(cloudData){
 
 //---- create the wordclouds in which one word is selected -----------------
 function selected_wordcloud(word, name, year, steps){
-    console.log("create cloud with " + word + name + year);
+    //console.log("create cloud with " + word + name + year);
     // var selectedText = [];
     // if(year == 1111){
     //     //load from file (faster and more accurate)
@@ -997,7 +997,7 @@ function selected_wordcloud(word, name, year, steps){
         var cloudData = [];
 
         function load_letter_Index(callback){
-            var httpRequestURL = "../../wordcloud/Text/wordindex/word-letter_index.json";
+            var httpRequestURL = "data/word-letter_index.json";
             var httpRequest = new XMLHttpRequest();
             httpRequest.onload = function(){
                 callback(httpRequest.response);
@@ -1007,7 +1007,7 @@ function selected_wordcloud(word, name, year, steps){
         }
 
         function load_noun_frequencies(callback){
-            var httpRequestURL = "../../wordcloud/Text/noun_frequencies/whole.json";
+            var httpRequestURL = "data/noun_frequencies.json";
             var httpRequest = new XMLHttpRequest();
             httpRequest.onload = function(){
                 callback(httpRequest.response);
