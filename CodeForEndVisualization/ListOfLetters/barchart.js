@@ -433,7 +433,7 @@ function init(version){
 
 //----------------------- Create the first wordcloud and the first small bars next to the years ----------------
 function init_page(name, year, steps){
-    currentWC = [name, year, steps];
+    //currentWC = [name, year, steps];
     create_wordcloud(name, year, steps);
     create_small_bars();
 }
@@ -476,36 +476,43 @@ function small_bar(id){
 }
 
 function trigger_new_cloud(){
+    Remove();
     word = document.getElementById("herr_made").innerHTML;
-    
-    if(word != "Wunschpunsch"){
-        Remove();
-        selected_wordcloud(word);
+    var current = document.getElementsByClassName("open");
+    if(current.length > 1){ 
+        //something is open
+        var this_wc = current[current.length-1].id;
+        var elements = this_wc.split("_"); //it's either "ul_year" or "ul_name_year"
+        if(elements.length == 2){
+            //year is open, no person
+            if(word != "Wunschpunsch"){
+                selected_wordcloud(word, 'whole', elements[1], 1);
+            }else{
+                create_wordcloud('whole', elements[1], 1);
+            }
+        }else{
+            //person is open
+            if(word != "Wunschpunsch"){
+                selected_wordcloud(word, elements[1], elements[2], 1);
+            }else{
+                create_wordcloud(elements[1], elements[2], 1);
+            }
+        }
     }else{
-        Remove();
-        create_wordcloud(currentWC[0],currentWC[1], currentWC[2]);
-
-        // --- alternative way to get the current wordcloud: ----
-        // var current = document.getElementsByClassName("open");
-        // if(current.length > 1){
-        //     var this_wc = current[current.length-1].id;
-        //     var elements = this_wc.split("_");
-        //     if(elements.length == 2){
-        //         create_wordcloud('whole', elements[1], 1);
-        //     }else{
-        //         create_wordcloud(elements[1], elements[2], 1);
-        //     }
-        // }else{
-        //     create_wordcloud('whole', 1111, 0);
-        // }
+        //Wordcloud of everything
+        if(word != "Wunschpunsch"){
+            selected_wordcloud(word, 'whole', 1111, 0);
+        }else{
+            create_wordcloud('whole', 1111, 0);
+        }   
+        //--- alternative way to get the current wordcloud: ----
+        //create_wordcloud(currentWC[0],currentWC[1], currentWC[2]);
+        
     }
 }
 
 //------- toggle between opened and closed years and names in the List of Letters:
 function toggle(id, name, year, steps){
-    // if(selectedPerson != 'whole'){
-    //     name = selectedPerson;
-    // }
 
     var requestOnPerson = false;
     var requestOnYear = false;
@@ -516,6 +523,10 @@ function toggle(id, name, year, steps){
     }else{
         requestOnPerson = true;
         requestOnYear = false;
+    }
+
+    if(selectedPerson != 'whole'){
+        name = selectedPerson;
     }
 
     ulElement = load_ul(id);
@@ -537,13 +548,17 @@ function toggle(id, name, year, steps){
         this_ulElement.className = "open";
         this_imgElement.src = "opened.gif";
         if(!wordClicked){
-            currentWC = [name, year, steps];
-            Remove();
-            create_wordcloud(name, year, steps);
+            // currentWC = [name, year, steps];
+            // Remove();
+            // create_wordcloud(name, year, steps);
+            document.getElementById("herr_made").innerHTML = "Wunschpunsch";
+            document.getElementById("herr_made").onchange();
         }else{
-            currentWC = [name, year, steps];
-            Remove();
-            selected_wordcloud(clickedWord);
+            //currentWC = [name, year, steps];
+            // Remove();
+            // selected_wordcloud(clickedWord);
+            document.getElementById("herr_made").innerHTML = clickedWord;
+            document.getElementById("herr_made").onchange();
         }
     }
 
@@ -553,22 +568,30 @@ function toggle(id, name, year, steps){
         this_ulElement.className = "closed";
         this_imgElement.src = "closed.gif";
         if(requestOnPerson){ //Request to close a person
-            currentWC = ['whole', year, steps];
+            //currentWC = ['whole', year, steps];
             if(!wordClicked){
-                Remove();
-                create_wordcloud(currentWC[0], currentWC[1], currentWC[2]);
+                // Remove();
+                // create_wordcloud(currentWC[0], currentWC[1], currentWC[2]);
+                document.getElementById("herr_made").innerHTML = "Wunschpunsch";
+                document.getElementById("herr_made").onchange();
             }else{
-                Remove();
-                selected_wordcloud(clickedWord);
+                // Remove();
+                // selected_wordcloud(clickedWord);
+                document.getElementById("herr_made").innerHTML = clickedWord;
+                document.getElementById("herr_made").onchange();
             }
         }else{ //meaning: it's a request to close a year
-            currentWC = [name, 1111, 0];
+            //currentWC = [name, 1111, 0];
             if(!wordClicked){
-                Remove();
-                create_wordcloud(name, 1111, 0);
+                // Remove();
+                // create_wordcloud(name, 1111, 0);
+                document.getElementById("herr_made").innerHTML = "Wunschpunsch";
+                document.getElementById("herr_made").onchange();
             }else{
-                Remove();
-                selected_wordcloud(clickedWord);
+                // Remove();
+                // selected_wordcloud(clickedWord);
+                document.getElementById("herr_made").innerHTML = clickedWord;
+                document.getElementById("herr_made").onchange();
             }
         }
     }
@@ -827,7 +850,7 @@ function return_to_normal(){
 function create_wordcloud(name, year, steps){
     // var thisName = get_name(name);
     // var thisYear = get_year(year);
-    console.log(name, year, steps);
+    //console.log(name, year, steps);
     count_visible_letters();
 
     var cloudDataURL = "data/cloud_data_tf-idf/" + name + "/" + steps + "/" + name + "_" + year + "_" + steps + ".json";
@@ -856,9 +879,9 @@ function create_wordcloud(name, year, steps){
                 rotate: false,
                 
                 colorType: 'palette',
-                palette: ["#283593"],
-                //["#7b1fa2", "#512da8", "#283593", "#6a1b9a", "#0d47a1", "#1565c0", "#01579b", "#0288d1", "#0d47a1", "#6200ea", "#8e24aa"],
-                
+                palette: ["#7b1fa2"],// "#512da8", "#283593", "#6a1b9a", "#0d47a1", "#1565c0", "#01579b", "#0288d1", "#0d47a1", "#6200ea", "#8e24aa"],
+                //['#D32F2F','#1976D2','#9E9E9E','#E53935','#1E88E5','#7E57C2','#F44336','#2196F3','#A1887F'],
+            
                 style: {
                     // backgroundColor: '#24F211',
                     // borderRadius: 10,
@@ -915,59 +938,130 @@ function create_wordcloud(name, year, steps){
     }
 }
 
-//---- If a word was clicked: show a new word cloud depicting only the letters containing that word ------
-function selected_wordcloud(word){
-    //console.log("create cloud with " + word);
-    var selectedCloudDataURL = "data/noun_wc_data/" + word + ".json";
-    var selectedCloudDataRequest = new XMLHttpRequest();
-    selectedCloudDataRequest.open('GET', selectedCloudDataURL);
-    selectedCloudDataRequest.responseType = 'json';
-    selectedCloudDataRequest.send();
-    selectedCloudDataRequest.onload = function(){
-        var selectedText = selectedCloudDataRequest.response;
-        var selectedConfig = myConfig;
-        selectedConfig.options.words = selectedText;
-        zingchart.render({
-            id:'LetterDiv',
-            data:selectedConfig,
-            height:'100%',
-            width:'100%'
-        });
-        
-        highlight_word(word);
-        show_corresponding_letters(word);
-        
-        zingchart.bind('LetterDiv','label_click', function(p){
+//------------ render the wordclouds in which one word is selected --------------
+function render_selected_wordcloud(cloudData){
+    var selectedConfig = myConfig;
+    selectedConfig.options.words = cloudData;
+    zingchart.render({
+        id:'LetterDiv',
+        data: selectedConfig,
+        height:'100%',
+        width:'100%'
+    });
+    
+    highlight_word(word);
+    show_corresponding_letters(word);
+    
+    zingchart.bind('LetterDiv','label_click', function(p){
+        var selectedWord = p.text;
+        //click on the same word = deselect
+        if(selectedWord == word){
+            wordClicked = false;
+            clickedWord = "";
+            return_to_normal();
+            //trigger the new cloud instead of calling it here
+            //to avoid recursion
+            document.getElementById("herr_made").innerHTML = "Wunschpunsch";
+            document.getElementById("herr_made").onchange();
+        }else{ 
+            //click on another word: that word gets selected
+            wordClicked = true;
+            clickedWord = selectedWord;
+            document.getElementById("herr_made").innerHTML = selectedWord ;
+            document.getElementById("herr_made").onchange();
+        }  
+    });
+}
 
-            var selectedWord = p.text;
-            //click on the same word = deselect
-            if(selectedWord == word){
-                //console.log("deselect "+ word);
-                var letterIndexURL = "../../wordcloud/Text/wordindex/word-letter_index.json";
-                var letterIndexRequest = new XMLHttpRequest();
-                letterIndexRequest.open('GET', letterIndexURL);
-                letterIndexRequest.responseType = 'json';
-                letterIndexRequest.send();
-                letterIndexRequest.onload = function(){
-                    var letterIndex = letterIndexRequest.response;
-                    //return to normal
-                    wordClicked = false;
-                    clickedWord = "";
-                    return_to_normal();
-                    //trigger the new cloud to avoid recursion
-                    document.getElementById("herr_made").innerHTML = "Wunschpunsch";
-                    document.getElementById("herr_made").onchange();
-                    
+//---- create the wordclouds in which one word is selected -----------------
+function selected_wordcloud(word, name, year, steps){
+    console.log("create cloud with " + word + name + year);
+    // var selectedText = [];
+    // if(year == 1111){
+    //     //load from file (faster and more accurate)
+    //     var selectedCloudDataURL = "data/noun_wc_data/" + word + ".json";
+    //     var selectedCloudDataRequest = new XMLHttpRequest();
+    //     selectedCloudDataRequest.open('GET', selectedCloudDataURL);
+    //     selectedCloudDataRequest.responseType = 'json';
+    //     selectedCloudDataRequest.send();
+    //     selectedCloudDataRequest.onload = function(){
+    //         selectedText = selectedCloudDataRequest.response;
+    //         render_selected_wordcloud(selectedText);
+    //     }
+
+    // }else{
+        //compute the tf-idf scores on the fly
+        var toGet = [];
+        var data = {};
+        var words = {};
+        var cloudData = [];
+
+        function load_letter_Index(callback){
+            var httpRequestURL = "../../wordcloud/Text/wordindex/word-letter_index.json";
+            var httpRequest = new XMLHttpRequest();
+            httpRequest.onload = function(){
+                callback(httpRequest.response);
+            };
+            httpRequest.open('GET', httpRequestURL);
+            httpRequest.send();
+        }
+
+        function load_noun_frequencies(callback){
+            var httpRequestURL = "../../wordcloud/Text/noun_frequencies/whole.json";
+            var httpRequest = new XMLHttpRequest();
+            httpRequest.onload = function(){
+                callback(httpRequest.response);
+            };
+            httpRequest.open('GET', httpRequestURL);
+            httpRequest.send();
+        }
+
+        //toGet is a list of the names of all the letters 
+        //that match the request
+        load_letter_Index(function(letterInd){
+            var letterIndex = JSON.parse(letterInd);
+            var letters = letterIndex[word];
+            for(i = 0; i < letters.length; i++){
+                var parameters = letters[i].split("_");
+                if(year == 1111){
+                    toGet.push(letters[i]);
+                }else if(name == 'whole'){
+                    if(parameters[0] == year){
+                        toGet.push(letters[i]);
+                    }
+                }else{
+                    if((parameters[0] == year) && (parameters[1] == name)){
+                        toGet.push(letters[i]);
+                    }
                 }
-            }else{ //click on another word: that word gets selected
-                //console.log("selected "+ selectedWord);
-                wordClicked = true;
-                clickedWord = selectedWord;
-                document.getElementById("herr_made").innerHTML = selectedWord ;
-                document.getElementById("herr_made").onchange();
-            }  
+            }
+           
+            //noun_frequ is a map of {letter1:{noun1:x, noun2: y}, letter2:{...}, ...}
+            load_noun_frequencies(function(noun_freq){
+                var noun_frequencies = JSON.parse(noun_freq);
+                for(i = 0; i < toGet.length; i++){
+                    var noun_frequency = noun_frequencies[toGet[i]];
+                    //add up all the frequencies of all letters per noun:
+                    for(var key in noun_frequency){
+                        if(data[key] == undefined){
+                            data[key] = noun_frequency[key];
+                            words[key] = 1;
+                        }else{
+                            data[key] += noun_frequency[key];
+                            words[key] += 1;
+                        }
+                    }
+                }
+                //divide each sum by the number of letters the word is occuring in
+                //and create the data for the wordcloud
+                for(var key in data){
+                    data[key] = (data[key] / words[key]);
+                    cloudData.push({"text":key, "count":data[key]});
+                }
+                render_selected_wordcloud(cloudData);
+            });
         });
-    }
+    //}
 }
 
 // --------------------- END ----------------------- END ------------------------ END ------------------------
