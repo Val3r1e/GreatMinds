@@ -52,7 +52,7 @@ function bars(data,version){
     var rectangleClassArray = ["FSchiller","CSchiller", "CStein", "CGoethe"];
     var yearArray = [];
     var wanted = "0";
-    var otherActive = "0";
+    var activeName = "0";
     var someActive = "0";
 
     d3.csv(data, function(d, i, columns){
@@ -104,40 +104,134 @@ function bars(data,version){
                     wanted = this.id.split("id").pop();
                     wanted = wanted.slice(0, 4);
 
-                    otherActive = active_link;
+                    activeName = this.id.split("id").pop();
+                    activeName = activeName.slice(5);
 
-                    if(active != d.data.Year && active_link === "0"){
+                    //No Bar and nothing on legend selected
+                    if(active === "0" && active_link === "0"){
 
                         for (j = 0; j < rectangleClassArray.length; j++){
                             d3.select("#id" + wanted + "-" + rectangleClassArray[j])
-                                .style("cursor", "pointer")
-                                .style("stroke", "purple")
-                                .style("stroke-width", 0.8);
-                        }   
-                    }
-                    else{
-                        d3.select("#id" + wanted + "-" + active_link)
-                        .style("cursor", "pointer");
-                    }
-
-                    if(active_link === "0"){
-                        tooltip
-                        .style("left", d3.event.pageX - 50 + "px")
-                        .style("top", d3.event.pageY - 70 + "px")
-                        .style("display", "inline-block")
-                        .html(d.data.Year + ": " + d.data.total);
-                    }
-                    /*else{
+                            .style("cursor", "pointer")
+                            .style("stroke", "purple")
+                            .style("stroke-width", 1.3);
+                        }  
                         tooltip
                         .style("left", d3.event.pageX - 50 + "px")
                         .style("top", d3.event.pageY - 70 + "px")
                         .style("display", "inline-block")
                         .html(d.data.Year + ": " + d.data.total); 
-                    }*/
+                    }
+                    //One Bar and nothing on legend selected and hovering above selected Bar
+                    else if(active == d.data.Year && active_link === "0"){
+
+                        for (j = 0; j < rectangleClassArray.length; j++){
+                            d3.select("#id" + wanted + "-" + rectangleClassArray[j])
+                            .style("cursor", "pointer");
+                        }
+                        tooltip
+                        .style("left", d3.event.pageX - 50 + "px")
+                        .style("top", d3.event.pageY - 70 + "px")
+                        .style("display", "inline-block")
+                        .html(d.data.Year + ": " + d.data.total); 
+                    }
+                    //One Bar and nothing on legend selected and hovering above not selected Bar
+                    else if(active != d.data.Year && active_link === "0"){
+
+                        for (j = 0; j < rectangleClassArray.length; j++){
+                            d3.select("#id" + wanted + "-" + rectangleClassArray[j])
+                            .style("cursor", "default");
+                        }   
+                        tooltip
+                        .style("display","none");
+                    }
+                    //No Bar and one Person on legend selected and hovering above selected person bar
+                    else if(active === "0" && active_link == activeName){
+                        d3.select("#id" + wanted + "-" + activeName)
+                        .style("cursor", "pointer")
+                        .style("stroke", "purple")
+                        .style("stroke-width", 1.3);
+
+                        amount = d[1]-d[0];
+
+                        tooltip
+                        .style("left", d3.event.pageX - 50 + "px")
+                        .style("top", d3.event.pageY - 70 + "px")
+                        .style("display", "inline-block")
+                        .html(activeName + ": " + amount); 
+                    }
+                    //No Bar and one Person on legend selected and hovering above not selected person part
+                    else if(active === "0" && active_link != activeName){
+
+                        for (j = 0; j < rectangleClassArray.length; j++){
+                            d3.select("#id" + wanted + "-" + rectangleClassArray[j])
+                            .style("cursor", "default");
+                        } 
+                    }
+                    //First one Bar and then one Person on legend selected and hovering above selected person part
+                    else if(active == d.data.Year && active_link == activeName){
+
+                        d3.select(this)
+                        .style("cursor", "pointer");
+
+                        amount = d[1]-d[0];
+                        tooltip
+                        .style("left", d3.event.pageX - 50 + "px")
+                        .style("top", d3.event.pageY - 70 + "px")
+                        .style("display", "inline-block")
+                        .html(activeName + ":: " + amount); 
+                    }
+                    //First one Bar and then one Person on legend selected and hovering above not selected person part but on selected bar
+                    else if(active == d.data.Year && active_link != activeName){
+                        for (j = 0; j < rectangleClassArray.length; j++){
+                            d3.select("#id" + wanted + "-" + rectangleClassArray[j])
+                            .style("cursor", "default");
+                        } 
+                    }
+                    //First one Bar and then one Person on legend selected but hovering above not selected bar and parts
+                    else if(active != d.data.Year && active_link != activeName){
+                        for (j = 0; j < rectangleClassArray.length; j++){
+                            d3.select("#id" + wanted + "-" + rectangleClassArray[j])
+                            .style("cursor", "default");
+                        }
+                    }
+                    //First person on legend then one Bar selected and hovering above selected person part
+                    else if(active_link == activeName && active == d.data.Year){
+                        d3.select(this)
+                        .style("cursor", "pointer");
+                        
+                        amount = d[1]-d[0];
+                        tooltip
+                        .style("left", d3.event.pageX - 50 + "px")
+                        .style("top", d3.event.pageY - 70 + "px")
+                        .style("display", "inline-block")
+                        .html(activeName + ":: " + amount); 
+                    }
+                    //First person on legend then one Bar selected and hovering above not selected person part but on selected bar
+                    else if(active_link != activeName && active == d.data.Year){
+                        for (j = 0; j < rectangleClassArray.length; j++){
+                            d3.select("#id" + wanted + "-" + rectangleClassArray[j])
+                            .style("cursor", "default");
+                        }
+                    }
+                    //First person on legend then one Bar selected but hovering above not selected bar or parts
+                    else if(active_link != activeName && active != d.data.Year){
+                        for (j = 0; j < rectangleClassArray.length; j++){
+                            d3.select("#id" + wanted + "-" + rectangleClassArray[j])
+                            .style("cursor", "default");
+                        }
+                    }
+                    //First person on legend then one BAr selected but hovering above same name part but different year
+                    else if(active_link == activeName && active != d.data.Year){
+                        for (j = 0; j < rectangleClassArray.length; j++){
+                            d3.select("#id" + wanted + "-" + rectangleClassArray[j])
+                            .style("cursor", "default");
+                        }
+                    }
                 })
                 .on("mouseout", function (d) {
 
-                    if(active != d.data.Year && active_link === "0"){
+                    if(active != d.data.Year){
 
                         for (j = 0; j < rectangleClassArray.length; j++){
                             d3.select("#id" + wanted + "-" + rectangleClassArray[j])
@@ -153,7 +247,7 @@ function bars(data,version){
                 .on("click", function(d){
 
                     //nothing was selected before
-                    if (active === "0" && active_link === "0"){
+                    if (active === "0"){
                         barSelected = true;
 
                         for (j = 0; j < rectangleClassArray.length; j++) {
@@ -163,6 +257,15 @@ function bars(data,version){
                         }
 
                         active = d.data.Year;
+
+                        for(j=0; j<yearArray.length; j++){
+                            for(h=0; h<rectangleClassArray.length; h++){
+                                if(yearArray[j]!=active){
+                                    d3.select("#id" + yearArray[j] + "-" + rectangleClassArray[h])
+                                    .style("opacity", 0.5);
+                                }
+                            }
+                        }
 
                         //'whole' is just a placeholder until we figure out how to get the actual name:
                         // Mit rectangleClassArray[a] solltest du eigentlich auf den jeweiligen Namen zugreifen können
@@ -182,6 +285,13 @@ function bars(data,version){
 
                         active = "0";
 
+                        for(j=0; j<yearArray.length; j++){
+                            for(h=0; h<rectangleClassArray.length; h++){
+                                d3.select("#id" + yearArray[j] + "-" + rectangleClassArray[h])
+                                .style("opacity", 1);
+                            }
+                        }
+
                         if(!wordClicked){
                             Remove();
                             create_wordcloud(wcBeforeBarSelected[0], wcBeforeBarSelected[1], wcBeforeBarSelected[2]);
@@ -195,22 +305,6 @@ function bars(data,version){
                         .style("stroke-width", 1.5);
                     }
                 })
-                /*.on("dblclick", function(d){ 
-                    d3.select(this)
-                    .style("stroke", "black")
-                    .style("stroke-width", 1.5);
-                    if(version === 5){
-                        version = 1;
-                        init(version);
-                    }
-                    else if(version === 1){
-                        version = 5;
-                        init(version);
-                    }
-                    tooltip
-                    .style("display","none");
-                    
-                });*/
                 
             /* --------- x-axis --------- */
             g.append("g")
@@ -337,13 +431,13 @@ function bars(data,version){
             idx = legendClassArray.indexOf(class_keep); 
             
             //Give selected bars black frame
-            for (i = 0; i < legendClassArray.length; i++) {
+            /*for (i = 0; i < legendClassArray.length; i++) {
                 if (legendClassArray[i] == class_keep) {
                     d3.selectAll(".class" + legendClassArray[i])
                     .style("stroke", "black")
                     .style("stroke-width", 1);
                 }
-            }
+            }*/
 
             //Make all other bars less visible
             for (i = 0; i < legendClassArray.length; i++) {
@@ -359,12 +453,12 @@ function bars(data,version){
         function putBack(d){
 
             //take black frame away
-            for (i = 0; i < legendClassArray.length; i++) {
+            /*for (i = 0; i < legendClassArray.length; i++) {
                 if (legendClassArray[i] == class_keep) {
                     d3.selectAll(".class" + legendClassArray[i])
                     .style("stroke", "none");
                 }
-            }
+            }*/
 
             //make other bars visible again
             for (i = 0; i < legendClassArray.length; i++) {
