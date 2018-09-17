@@ -229,9 +229,18 @@ function bars(data,version){
                         }
                     }
                 })
-                .on("mouseout", function (d) {
+                .on("mouseout", function (d){
 
-                    if(active != d.data.Year){
+                    if(active === "0" && active_link === "0"){
+
+                        for (j = 0; j < rectangleClassArray.length; j++){
+                            d3.select("#id" + wanted + "-" + rectangleClassArray[j])
+                            .style("cursor", "none")
+                            .style("stroke", "pink")
+                            .style("stroke-width", 0.2);
+                        }
+                    }
+                    else if(active === "0" && active_link == activeName){
 
                         for (j = 0; j < rectangleClassArray.length; j++){
                             d3.select("#id" + wanted + "-" + rectangleClassArray[j])
@@ -246,9 +255,9 @@ function bars(data,version){
                 })
                 .on("click", function(d){
 
-                    //nothing was selected before
-                    if (active === "0"){
-                        barSelected = true;
+                    //No Bar or Person on legend is selected
+                    if (active === "0" && active_link === "0"){
+                        barSelected = true; //Why do we need this??
 
                         for (j = 0; j < rectangleClassArray.length; j++) {
                             d3.select("#id" + wanted + "-" + rectangleClassArray[j])
@@ -269,13 +278,14 @@ function bars(data,version){
 
                         //'whole' is just a placeholder until we figure out how to get the actual name:
                         // Mit rectangleClassArray[a] solltest du eigentlich auf den jeweiligen Namen zugreifen können
+                        // In "wanted" ist das Jahr und in "activeName" der eigene Name!
                         if(!wordClicked){
                             Remove();
-                            create_wordcloud('whole', d.data.Year, version);
+                            create_wordcloud(activeName, d.data.Year, version);
                         }
                     }
-                    //to deselect: same one clicked again
-                    else if (active === d.data.Year){
+                    //Bar is selected but no person on legend, clicking on selected part
+                    else if (active === d.data.Year && active_link === "0"){
                         barSelected = false;
 
                         for (j = 0; j < rectangleClassArray.length; j++) {
@@ -298,11 +308,20 @@ function bars(data,version){
 
                         }
                     }
-                    else{
-                        //someActive = d.data.Year;
-                        d3.select("#id" + wanted + "-" + active_link)
+                    //No bar but person on legend is selected, clicking on part of bar of that person
+                    else if(active === "0" && active_link == activeName){
+                        d3.select(this)
                         .style("stroke", "black")
                         .style("stroke-width", 1.5);
+
+                        active = d.data.Year;
+                    }
+                    //Bar and person on legend is selected, clicking on part of bar of that person
+                    else if(active === d.data.Year && active_link == activeName){
+                        d3.select(this)
+                        .style("stroke", "none");
+
+                        active = "0";
                     }
                 })
                 
