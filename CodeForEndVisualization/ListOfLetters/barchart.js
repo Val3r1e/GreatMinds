@@ -433,6 +433,8 @@ function bars(data,version){
                 }
                 //Person on legend was selected but no bar
                 else if(active_link === this.id.split("id").pop() && active === "0"){
+                    console.log("here");
+
                     legendSelected = false;
                     d3.select(this)           
                     .style("stroke", "none");
@@ -445,6 +447,17 @@ function bars(data,version){
                     }
 
                     putBack(d);
+
+                    //make other bars visible again
+                    for (j = 0; j < yearArray.length; j++) {
+                        for(h = 0; h < legendClassArray.length; h++){
+                            d3.select("#id" + yearArray[j] + "-" + legendClassArray[h])
+                            .transition()
+                            .duration(1000)
+                            //.delay(750)
+                            .style("opacity", 1);
+                        }
+                    }
 
                     if(!wordClicked){
                         selectedPerson = 'whole';
@@ -504,9 +517,9 @@ function bars(data,version){
 
                     active_link = "0";
                 }
-                else if(active === "0" && active_link == this.id.split("id").pop()){
+                /*else if(active === "0" && active_link == this.id.split("id").pop()){
                     console.log("Here");
-                }
+                }*/
             });
 
         legend.append("text") // Text of legends 
@@ -532,15 +545,17 @@ function bars(data,version){
 
         function putBack(d){
 
+            console.log("here2");
+
             //make other bars visible again
-            for (i = 0; i < legendClassArray.length; i++) {
-                if (legendClassArray[i] != class_keep){
-                    d3.selectAll(".class" + legendClassArray[i])
+            for (j = 0; j < legendClassArray.length; j++) {
+                //if (legendClassArray[j] != class_keep){
+                    d3.selectAll(".class" + legendClassArray[j])
                     .transition()
                     .duration(1000)
                     //.delay(750)
                     .style("opacity", 1);
-                }
+                //}
             }
         }
     });
