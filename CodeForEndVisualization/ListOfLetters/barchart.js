@@ -656,6 +656,7 @@ function small_bar(id){
     .text(function(d) { return d; });
 }
 
+//---- we need one main function to trigger a new cloud because otherwise it's a recursive mess --------
 function trigger_new_cloud(){
     Remove();
     word = document.getElementById("herr_made").innerHTML;
@@ -1064,14 +1065,10 @@ function create_wordcloud(name, year, steps){
                 //['#D32F2F','#1976D2','#9E9E9E','#E53935','#1E88E5','#7E57C2','#F44336','#2196F3','#A1887F'],
             
                 style: {
-                    // backgroundColor: '#24F211',
-                    // borderRadius: 10,
                     fontFamily: 'Marcellus SC',
                     padding:"3px",
                     
                     hoverState: {
-                        //backgroundColor: 'lightgrey',
-                        //borderColor: 'none',
                         borderRadius: 10,
                         fontColor: 'grey'
                     },
@@ -1174,8 +1171,13 @@ function selected_wordcloud(word, name, year, steps){
         //compute the tf-idf scores on the fly
         var toGet = [];
         var data = {};
-        var words = {};
+        var docs_containing_word = 0;
         var cloudData = [];
+        var doc_length = 0;
+        var yearCountMap = {};
+        var personCountMap = {};
+        var numberOfDocs = 1; //(1 to count the "open" part as well)
+
 
         function load_letter_Index(callback){
             var httpRequestURL = "data/word-letter_index.json";
@@ -1200,43 +1202,125 @@ function selected_wordcloud(word, name, year, steps){
         //toGet is a list of the names of all the letters 
         //that match the request
         load_letter_Index(function(letterInd){
-            var letterIndex = JSON.parse(letterInd);
-            var letters = letterIndex[word];
+            var letterIndex = JSON.parse(letterInd); // {word1:[letter1, letter2 ,...], word2[letterx, lettery,...],...}
+            var letters = letterIndex[word]; //List of all Letters containing that word
             for(i = 0; i < letters.length; i++){
                 var parameters = letters[i].split("_");
                 if(year == 1111){
-                    toGet.push(letters[i]);
-                }else if(name == 'whole'){
+                    toGet.push(letters[i]); //in this case we need all the letters
+                }else if(name == 'whole'){ //all the letters from the open year
                     if(parameters[0] == year){
                         toGet.push(letters[i]);
+                    }else{ 
+                        //to compute the amount of other "documents" of the same "type" (all letters per year) in D
+                        if(yearCountMap[parameters[0]] == undefined){
+                            yearCountMap[parameters[0]] = [];
+                        }
+                        yearCountMap[parameters[0]].push(letters[i]);
+                        
                     }
-                }else{
+                }else{ //year & person open -> year and person have to match
                     if((parameters[0] == year) && (parameters[1] == name)){
                         toGet.push(letters[i]);
-                    }
-                }
-            }
-           
-            //noun_frequ is a map of {letter1:{noun1:x, noun2: y}, letter2:{...}, ...}
-            load_noun_frequencies(function(noun_freq){
-                var noun_frequencies = JSON.parse(noun_freq);
-                for(i = 0; i < toGet.length; i++){
-                    var noun_frequency = noun_frequencies[toGet[i]];
-                    //add up all the frequencies of all letters per noun:
-                    for(var key in noun_frequency){
-                        if(data[key] == undefined){
-                            data[key] = noun_frequency[key];
-                            words[key] = 1;
+                    }else{
+                        // compute amount of "documents" in total (group them in year_person groups)
+                        if(personCountMap[parameters[0]] == undefined){
+                            personCountMap[parameters[0]] = {};
+                            personCountMap[parameters[0]][parameters[1]] = [letters[i]];
+                        }else if(personCountMap[parameters[0]][parameters[1]] == undefined){
+                            personCountMap[parameters[0]][parameters[1]] = [letters[i]];
                         }else{
-                            data[key] += noun_frequency[key];
-                            words[key] += 1;
+                            personCountMap[parameters[0]][parameters[1]].push(letters[i]);
                         }
                     }
                 }
-                //divide each sum by the number of letters the word is occuring in
-                //and create the data for the wordcloud
+            }
+            //var doc_number = letters.length; // number of docs that contain the selected word          
+            
+            load_noun_frequencies(function(noun_freq){
+
+                //---- function to compute the idf-part of the score
+                function compute_idf_score(keyword){
+                    if(year == 1111){
+                        docs_containing_word = 1;
+                    }else if(name == 'whole'){ //only a year is open
+                        for(var c_year in yearCountMap){
+                            var br = false;
+                            for(j = 0; j < yearCountMap[c_year].length; j++){
+                                var nounMap = noun_frequencies[yearCountMap[c_year][j]];
+                                for(var noun in nounMap){
+                                    if(noun == keyword){
+                                        docs_containing_word += 1;
+                                        br = true;
+                                        break;
+                                    }
+                                }
+                                if(br){break;}
+                            }
+                        }
+                    }else{ //year & person open
+                        for(var c_year in personCountMap){
+                            for(var c_person in personCountMap[c_year]){
+                                var br = false;
+                                for(j = 0; j < personCountMap[c_year][c_person].length; j++){
+                                    var nounMap = noun_frequencies[personCountMap[c_year][c_person][j]];
+                                    for(var noun in nounMap){
+                                        if(noun == keyword){
+                                            docs_containing_word += 1;
+                                            br = true;
+                                            break;
+                                        }
+                                    }
+                                    if(br){break;}
+                                }
+                            }
+                        }
+                    }
+                    var score = (-1) * Math.log(numberOfDocs / docs_containing_word);
+                    console.log(score);
+                    return score;
+                }
+
+                var noun_frequencies = JSON.parse(noun_freq); //{letter1:{noun1: x, noun2: y}, letter2:{...}, ...}
+
+                //get the number of "documents" in the set of docs containing the selected word
+                if(year == 1111){
+                    numberOfDocs = 1;
+                }else if(name == 'whole'){
+                    for(var key in yearCountMap){
+                        numberOfDocs += 1;
+                    }
+                }else{
+                    for(var key in personCountMap){
+                        for(var otherKey in personCountMap[key]){
+                            numberOfDocs +=1;
+                        }
+                    }
+                }
+
+                //---- get the Data for the tf-score: -----
+                //go through all the letters and all the nouns in it and compute the absolute number of
+                //occurences of each noun in data by adding up the frequencies
+                for(i = 0; i < toGet.length; i++){
+                    var noun_frequency = noun_frequencies[toGet[i]]; // map of all nouns letter x contains
+                    for(var key in noun_frequency){ //iterate through all nouns of each letter
+                        if(data[key] == undefined){ 
+                            data[key] = noun_frequency[key]; //Data: Map of all nouns with their absolute number
+                            //docs_containing_word[key] = 1;
+                        }else{
+                            data[key] += noun_frequency[key];
+                            //docs_containing_word[key] += 1;
+                        }
+                        doc_length += noun_frequency[key]; // sum of the number of words of all letters containing the selected word
+                    }
+                }
+                
+                //------ compute tf-idf score on the fly (not sure if this is the right way though^^) -----
                 for(var key in data){
-                    data[key] = (data[key] / words[key]);
+                    var idf_score = compute_idf_score(key);
+                    var tf_score = (data[key] / doc_length);
+
+                    data[key] = (tf_score * idf_score);
                     cloudData.push({"text":key, "count":data[key]});
                 }
                 render_selected_wordcloud(cloudData);
