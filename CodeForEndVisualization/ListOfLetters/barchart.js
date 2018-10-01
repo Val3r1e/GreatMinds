@@ -258,7 +258,7 @@ function bars(data,version){
 
                     //No Bar or Person on legend is selected
                     if (active === "0" && active_link === "0"){
-                        barSelected = true; //Why do we need this??
+                        barSelected = true;
 
                         for (j = 0; j < rectangleClassArray.length; j++) {
                             d3.select("#id" + wanted + "-" + rectangleClassArray[j])
@@ -276,14 +276,11 @@ function bars(data,version){
                                 }
                             }
                         }
-
-                        //'whole' is just a placeholder until we figure out how to get the actual name:
-                        // Mit rectangleClassArray[a] solltest du eigentlich auf den jeweiligen Namen zugreifen können
+                        document.getElementById("message_from_bar").innerHTML = d.data.Year;
+                        document.getElementById("report_steps").innerHTML = version;
+                        document.getElementById("message_from_bar").onchange();
                         // In "wanted" ist das Jahr und in "activeName" der eigene Name!
-                        if(!wordClicked){
-                            Remove();
-                            create_wordcloud(activeName, d.data.Year, version);
-                        }
+                      
                     }
                     //Bar is selected but no person on legend, clicking on selected part
                     else if (active === d.data.Year && active_link === "0"){
@@ -302,15 +299,12 @@ function bars(data,version){
                                 .style("opacity", 1);
                             }
                         }
-
-                        if(!wordClicked){
-                            Remove();
-                            create_wordcloud(wcBeforeBarSelected[0], wcBeforeBarSelected[1], wcBeforeBarSelected[2]);
-
-                        }
+                        document.getElementById("message_from_bar").onchange();
+                        
                     }
                     //No bar but person on legend is selected, clicking on part of bar of that person
                     else if(active === "0" && active_link == activeName){
+                        barSelected = true;
                         d3.select(this)
                         .style("stroke", "black")
                         .style("stroke-width", 1.5);
@@ -321,11 +315,17 @@ function bars(data,version){
                                 .style("opacity", 0.5);
                             }
                         }
-
                         active = d.data.Year;
+
+                        document.getElementById("message_from_bar").innerHTML = d.data.Year;
+                        document.getElementById("report_steps").innerHTML = version;
+                        document.getElementById("message_from_bar").onchange();
+
+                        
                     }
                     //Bar and person on legend is selected, clicking on part of bar of that person
                     else if(active === d.data.Year && active_link == activeName){
+                        barSelected = false;
                         d3.select(this)
                         .style("stroke", "none");
 
@@ -335,8 +335,8 @@ function bars(data,version){
                                 .style("opacity", 1);
                             }
                         }
-
                         active = "0";
+                        document.getElementById("message_from_bar").onchange();
                     }
                 })
                 
@@ -421,20 +421,12 @@ function bars(data,version){
                             .style("opacity", 0.5);
                         }
                     }
-                    if(!wordClicked){
-                        Remove();
-                        var my_name_here = this.id.split("id").pop();
-                        selectedPerson = my_name_here;
-                        console.log(my_name_here);
-                        show_letters_from(my_name_here);
-                        create_wordcloud(my_name_here, 1111, 0) //creates the wordcloud of the person over all the letters
-                    }
+                    document.getElementById("message_from_legend").innerHTML = active_link;
+                    document.getElementById("message_from_legend").onchange();
                     
                 }
                 //Person on legend was selected but no bar
                 else if(active_link === this.id.split("id").pop() && active === "0"){
-                    console.log("here");
-
                     legendSelected = false;
                     d3.select(this)           
                     .style("stroke", "none");
@@ -459,15 +451,12 @@ function bars(data,version){
                         }
                     }
 
-                    if(!wordClicked){
-                        selectedPerson = 'whole';
-                        Remove();
-                        show_letters_from('whole');
-                        create_wordcloud(wcBeforeLegendSelected[0], wcBeforeLegendSelected[1], wcBeforeLegendSelected[2]);
-                    }
+                    document.getElementById("message_from_legend").onchange();
+                        
                 }
                 //No person on legend but person on bar was selected  
                 else if(active_link === "0" && active != "0"){
+                    legendSelected = true;
                     
                     d3.select(this)           
                     .style("stroke", "black")
@@ -493,9 +482,12 @@ function bars(data,version){
                             .style("opacity", 0.5);
                         }
                     }
+                    document.getElementById("message_from_legend").innerHTML = active_link;
+                    document.getElementById("message_from_legend").onchange();
                 }
                 //Person on legend and bar selected 
                 else if(active_link == this.id.split("id").pop() && active != "0"){
+                    legendSelected = false;
 
                     d3.select(this)           
                     .style("stroke", "none");
@@ -516,6 +508,7 @@ function bars(data,version){
                     }
 
                     active_link = "0";
+                    document.getElementById("message_from_legend").onchange();
                 }
                 /*else if(active === "0" && active_link == this.id.split("id").pop()){
                     console.log("Here");
@@ -613,9 +606,9 @@ function init(version){
 }
 
 //----------------------- Create the first wordcloud and the first small bars next to the years ----------------
-function init_page(name, year, steps){
-    //currentWC = [name, year, steps];
-    create_wordcloud(name, year, steps);
+function init_page(){
+    document.getElementById("herr_made").innerHTML = "Wunschpunsch";
+    document.getElementById("herr_made").onchange();
     create_small_bars();
 }
 
@@ -660,6 +653,9 @@ function small_bar(id){
 function trigger_new_cloud(){
     Remove();
     word = document.getElementById("herr_made").innerHTML;
+    var year = document.getElementById("message_from_bar").innerHTML;
+    var name = document.getElementById("message_from_legend").innerHTML;
+    var steps = document.getElementById("report_steps").innerHTML;
     var current = document.getElementsByClassName("open");
     if(current.length > 1){ 
         //something is open
@@ -667,30 +663,59 @@ function trigger_new_cloud(){
         var elements = this_wc.split("_"); //it's either "ul_year" or "ul_name_year"
         if(elements.length == 2){
             //year is open, no person
+            if(!barSelected){
+                year = elements[1];
+                steps = 1;
+            }
+            if(!legendSelected){
+                name = 'whole';
+            }
             if(word != "Wunschpunsch"){
-                selected_wordcloud(word, 'whole', elements[1], 1);
+                console.log("selected cloud with " + name, year, steps);
+                selected_wordcloud(word, name, year, steps);
             }else{
-                create_wordcloud('whole', elements[1], 1);
+                console.log("cloud with " + name, year, steps);
+                create_wordcloud(name, year, steps);
             }
         }else{
             //person is open
+            if(!barSelected){
+                year = elements[2];
+                steps = 1;
+            }
+            if(!legendSelected){
+                name = elements[1];
+            }
             if(word != "Wunschpunsch"){
-                selected_wordcloud(word, elements[1], elements[2], 1);
+                console.log("selected cloud with " + name, year, steps);
+                selected_wordcloud(word, name, year, steps);
             }else{
-                create_wordcloud(elements[1], elements[2], 1);
+                console.log("cloud with " + name, year, steps);
+                create_wordcloud(name, year, steps);
             }
         }
     }else{
+        if(!barSelected){
+            year = 1111;
+            steps = 0;
+        }
+        if(!legendSelected){
+            name = 'whole';
+        }
         //Wordcloud of everything
         if(word != "Wunschpunsch"){
-            selected_wordcloud(word, 'whole', 1111, 0);
+            console.log("selected cloud with " + name, year, steps);
+            selected_wordcloud(word, name, year, steps);
         }else{
-            create_wordcloud('whole', 1111, 0);
+            console.log("cloud with " + name, year, steps);
+            create_wordcloud(name, year, steps);
         }   
         //--- alternative way to get the current wordcloud: ----
         //create_wordcloud(currentWC[0],currentWC[1], currentWC[2]);
         
     }
+    show_corresponding_letters(word);
+    
 }
 
 //------- toggle between opened and closed years and names in the List of Letters:
@@ -831,6 +856,27 @@ function Load(clickedButton){
     $("#LetterDiv").load("../../AllLetters/" + clickedButton + ".html")
 }
 
+//------------ callback functions to load JSON files ----------
+function load_letter_Index(callback){
+    var httpRequestURL = "data/word-letter_index.json";
+    var httpRequest = new XMLHttpRequest();
+    httpRequest.onload = function(){
+        callback(httpRequest.response);
+    };
+    httpRequest.open('GET', httpRequestURL);
+    httpRequest.send();
+}
+
+function load_noun_frequencies(callback){
+    var httpRequestURL = "data/noun_frequencies.json";
+    var httpRequest = new XMLHttpRequest();
+    httpRequest.onload = function(){
+        callback(httpRequest.response);
+    };
+    httpRequest.open('GET', httpRequestURL);
+    httpRequest.send();
+}
+
 //-------- Remove previous text/Letters from the div ---------
 function Remove(){
     $("#LetterDiv").empty();
@@ -913,54 +959,58 @@ function highlight_word(word){
         //document.getElementById(wordId).style.fill = "#f394f4";
 }
 
-//-------- if a name in the legend gets selected ------------
-function show_letters_from(name){
-    var allButtons = document.getElementsByClassName("openLetterButton");
-    if(name == 'whole'){
-        for(i = 0; i < allButtons.length; i++){
-            var thisButton = allButtons[i];
-            thisButton.style.display ="block";
-        }
-        return_to_normal();
-    }else{
-        for(i = 0; i < allButtons.length; i++){
-            var thisButton = allButtons[i];
-            thisButton.style.display ="none";
-            if(thisButton.id.split("_")[1] == name){
-                thisButton.style.display = "block";
-            }
-        }
-        create_small_bars();
-        hide_empty_sections();
-    }
-}
-
 //----------- only show corresponding letters in list -----------
 function show_corresponding_letters(word){
-    var letterIndexURL = "../../wordcloud/Text/wordindex/word-letter_index.json";
-    var letterIndexRequest = new XMLHttpRequest();
-    letterIndexRequest.open('GET', letterIndexURL);
-    letterIndexRequest.responseType = 'json';
-    letterIndexRequest.send();
-    letterIndexRequest.onload = function(){
-        //letterIndex contains an Index like this: {'Word1':[list of all letters containing Word1], 'Word2':[...],...}
-        var letterIndex = letterIndexRequest.response;
-
-        var letters = letterIndex[word];
+ 
+    //letterIndex contains an Index like this: {'Word1':[list of all letters containing Word1], 'Word2':[...],...}
+    load_letter_Index(function(letterInd){
+        var letterIndex = JSON.parse(letterInd);
         var allButtons = document.getElementsByClassName("openLetterButton");
-        for(i = 0; i < allButtons.length; i++){
-            for(j = 0; j < letters.length; j++){
-                var thisButton = allButtons[i]
-                thisButton.style.display ="none";
-                if(thisButton.id == letters[j]){
-                    thisButton.style.display = "block";
-                    break;
+        if(wordClicked){
+            var letters = letterIndex[word];
+            for(i = 0; i < allButtons.length; i++){
+                for(j = 0; j < letters.length; j++){
+                    var thisButton = allButtons[i]
+                    thisButton.style.display ="none";
+                    if(thisButton.id == letters[j]){
+                        thisButton.style.display = "block";
+                        break;
+                    }
+                }
+            }
+        }
+        if(!wordClicked){
+            return_to_normal();
+        }
+        if(barSelected){           
+            var year = document.getElementById("message_from_bar").innerHTML;
+            var steps = document.getElementById("report_steps").innerHTML;
+            for(i = 0; i < allButtons.length; i++){
+                var thisButton = allButtons[i];
+                var thisStyle = getStyle(thisButton, 'display');
+                if(thisStyle == "block"){
+                    if(!((thisButton.id.split("_")[0] >= year) && (thisButton.id.split("_")[0] < parseInt(year) + parseInt(steps)))){
+                        thisButton.style.display ="none";
+                    }
+                }
+            }
+        }
+        if(legendSelected){
+            var name = document.getElementById("message_from_legend").innerHTML;
+            for(i = 0; i < allButtons.length; i++){
+                var thisButton = allButtons[i];
+                var thisStyle = getStyle(thisButton, 'display');
+                if(thisStyle == "block"){
+                    if(thisButton.id.split("_")[1] != name){
+                        thisButton.style.display ="none";
+                    }
                 }
             }
         }
         create_small_bars();
         hide_empty_sections();
-    }
+
+    });
 
 }
 
@@ -1128,7 +1178,6 @@ function render_selected_wordcloud(cloudData){
     });
     
     highlight_word(word);
-    show_corresponding_letters(word);
     
     zingchart.bind('LetterDiv','label_click', function(p){
         var selectedWord = p.text;
@@ -1136,9 +1185,7 @@ function render_selected_wordcloud(cloudData){
         if(selectedWord == word){
             wordClicked = false;
             clickedWord = "";
-            return_to_normal();
-            //trigger the new cloud instead of calling it here
-            //to avoid recursion
+            //trigger the new cloud instead of calling it to avoid recursion
             document.getElementById("herr_made").innerHTML = "Wunschpunsch";
             document.getElementById("herr_made").onchange();
         }else{ 
@@ -1153,181 +1200,287 @@ function render_selected_wordcloud(cloudData){
 
 //---- create the wordclouds in which one word is selected -----------------
 function selected_wordcloud(word, name, year, steps){
-    //console.log("create cloud with " + word + name + year);
-    // var selectedText = [];
-    // if(year == 1111){
-    //     //load from file (faster and more accurate)
-    //     var selectedCloudDataURL = "data/noun_wc_data/" + word + ".json";
-    //     var selectedCloudDataRequest = new XMLHttpRequest();
-    //     selectedCloudDataRequest.open('GET', selectedCloudDataURL);
-    //     selectedCloudDataRequest.responseType = 'json';
-    //     selectedCloudDataRequest.send();
-    //     selectedCloudDataRequest.onload = function(){
-    //         selectedText = selectedCloudDataRequest.response;
-    //         render_selected_wordcloud(selectedText);
-    //     }
+    //compute the tf-idf scores on the fly
+    var toGet = []; //all the letters that are currently open and are depicted in the wordcloud
+    var tf_data = {};
+    var docs_containing_word = {}; //count how many documents contain each of the words the score is computed for
+    var cloudData = [];
+    var doc_length = 0;
+    var numberOfDocs = 0; //number of docs containing the selected word
 
-    // }else{
-        //compute the tf-idf scores on the fly
-        var toGet = [];
-        var data = {};
-        var docs_containing_word = 0;
-        var cloudData = [];
-        var doc_length = 0;
-        var yearCountMap = {};
-        var personCountMap = {};
-        var numberOfDocs = 1; //(1 to count the "open" part as well)
-
-
-        function load_letter_Index(callback){
-            var httpRequestURL = "data/word-letter_index.json";
-            var httpRequest = new XMLHttpRequest();
-            httpRequest.onload = function(){
-                callback(httpRequest.response);
-            };
-            httpRequest.open('GET', httpRequestURL);
-            httpRequest.send();
-        }
-
-        function load_noun_frequencies(callback){
-            var httpRequestURL = "data/noun_frequencies.json";
-            var httpRequest = new XMLHttpRequest();
-            httpRequest.onload = function(){
-                callback(httpRequest.response);
-            };
-            httpRequest.open('GET', httpRequestURL);
-            httpRequest.send();
-        }
-
-        //toGet is a list of the names of all the letters 
-        //that match the request
-        load_letter_Index(function(letterInd){
-            var letterIndex = JSON.parse(letterInd); // {word1:[letter1, letter2 ,...], word2[letterx, lettery,...],...}
-            var letters = letterIndex[word]; //List of all Letters containing that word
-            for(i = 0; i < letters.length; i++){
-                var parameters = letters[i].split("_");
-                if(year == 1111){
-                    toGet.push(letters[i]); //in this case we need all the letters
-                }else if(name == 'whole'){ //all the letters from the open year
-                    if(parameters[0] == year){
-                        toGet.push(letters[i]);
-                    }else{ 
-                        //to compute the amount of other "documents" of the same "type" (all letters per year) in D
-                        if(yearCountMap[parameters[0]] == undefined){
-                            yearCountMap[parameters[0]] = [];
-                        }
-                        yearCountMap[parameters[0]].push(letters[i]);
-                        
-                    }
-                }else{ //year & person open -> year and person have to match
-                    if((parameters[0] == year) && (parameters[1] == name)){
-                        toGet.push(letters[i]);
-                    }else{
-                        // compute amount of "documents" in total (group them in year_person groups)
-                        if(personCountMap[parameters[0]] == undefined){
-                            personCountMap[parameters[0]] = {};
-                            personCountMap[parameters[0]][parameters[1]] = [letters[i]];
-                        }else if(personCountMap[parameters[0]][parameters[1]] == undefined){
-                            personCountMap[parameters[0]][parameters[1]] = [letters[i]];
-                        }else{
-                            personCountMap[parameters[0]][parameters[1]].push(letters[i]);
-                        }
-                    }
+    //toGet is a list of the names of all the letters matching the requested word
+    load_letter_Index(function(letterInd){
+        var letterIndex = JSON.parse(letterInd); // {word1:[letter1, letter2 ,...], word2[letterx, lettery,...],...}
+        var letters = letterIndex[word]; //List of all Letters containing the selected word
+        console.log(word);
+        // console.log(letters);
+        for(i = 0; i < letters.length; i++){
+            var parameters = letters[i].split("_");
+            if(year == 1111){ //in this case we need all the letters
+                toGet.push(letters[i]); 
+            }else if(name == 'whole'){ //all the letters from the open year
+                if(parameters[0] == year){
+                    toGet.push(letters[i]);
+                }
+            }else{ //year & person open -> year and person have to match
+                if((parameters[0] == year) && (parameters[1] == name)){
+                    toGet.push(letters[i]);
                 }
             }
-            //var doc_number = letters.length; // number of docs that contain the selected word          
+        }
+        //console.log(toGet);
+        numberOfDocs = letters.length;          
+        
+        load_noun_frequencies(function(noun_freq){
+            var noun_frequencies = JSON.parse(noun_freq); //{letter1:{noun1: x, noun2: y}, letter2:{...}, ...}
+
+            //---- get the Data for the tf-score: -----
+            //go through all the letters and all the nouns in it and compute the absolute number of
+            //occurences of each noun in the data by adding up the frequencies
+            for(i = 0; i < toGet.length; i++){
+                var noun_frequency = noun_frequencies[toGet[i]]; // map of all nouns which letter x contains
+                for(var key in noun_frequency){ //iterate through all nouns of each letter
+                    if(tf_data[key] == undefined){ 
+                        tf_data[key] = noun_frequency[key]; //tf_data: Map of all nouns with their absolute number
+
+                        for(i = 0; i < letters.length; i++){
+                            var idf_nouns = noun_frequencies[letters[i]];
+                            for(var noun_key in idf_nouns){
+                                if(noun_key == key){
+                                    if (docs_containing_word[noun_key] == undefined){
+                                        docs_containing_word[noun_key] = 1;
+                                    }
+                                    else{
+                                        docs_containing_word[noun_key] += 1;
+                                    }
+                                    break;
+                                }
+                            }
+                        }
+                        // docs_containing_word[key] = 1;
+                        
+                    }else{
+                        tf_data[key] += noun_frequency[key];
+                        // docs_containing_word[key] += 1;
+                    }
+                    doc_length += noun_frequency[key]; //sum of the number of words of all letters containing the selected word
+                }
+            }
             
-            load_noun_frequencies(function(noun_freq){
+            //------ compute tf-idf score on the fly (not sure if this is the right way though^^) -----
+            for(var key in tf_data){
+                // var idf_score = compute_idf_score(key);
+                var idf_score = Math.log(numberOfDocs / docs_containing_word[key]);
+                var tf_score = (tf_data[key] / doc_length);
 
-                //---- function to compute the idf-part of the score
-                function compute_idf_score(keyword){
-                    if(year == 1111){
-                        docs_containing_word = 1;
-                    }else if(name == 'whole'){ //only a year is open
-                        for(var c_year in yearCountMap){
-                            var br = false;
-                            for(j = 0; j < yearCountMap[c_year].length; j++){
-                                var nounMap = noun_frequencies[yearCountMap[c_year][j]];
-                                for(var noun in nounMap){
-                                    if(noun == keyword){
-                                        docs_containing_word += 1;
-                                        br = true;
-                                        break;
-                                    }
-                                }
-                                if(br){break;}
-                            }
-                        }
-                    }else{ //year & person open
-                        for(var c_year in personCountMap){
-                            for(var c_person in personCountMap[c_year]){
-                                var br = false;
-                                for(j = 0; j < personCountMap[c_year][c_person].length; j++){
-                                    var nounMap = noun_frequencies[personCountMap[c_year][c_person][j]];
-                                    for(var noun in nounMap){
-                                        if(noun == keyword){
-                                            docs_containing_word += 1;
-                                            br = true;
-                                            break;
-                                        }
-                                    }
-                                    if(br){break;}
-                                }
-                            }
-                        }
-                    }
-                    var score = (-1) * Math.log(numberOfDocs / docs_containing_word);
-                    console.log(score);
-                    return score;
-                }
-
-                var noun_frequencies = JSON.parse(noun_freq); //{letter1:{noun1: x, noun2: y}, letter2:{...}, ...}
-
-                //get the number of "documents" in the set of docs containing the selected word
-                if(year == 1111){
-                    numberOfDocs = 1;
-                }else if(name == 'whole'){
-                    for(var key in yearCountMap){
-                        numberOfDocs += 1;
-                    }
-                }else{
-                    for(var key in personCountMap){
-                        for(var otherKey in personCountMap[key]){
-                            numberOfDocs +=1;
-                        }
-                    }
-                }
-
-                //---- get the Data for the tf-score: -----
-                //go through all the letters and all the nouns in it and compute the absolute number of
-                //occurences of each noun in data by adding up the frequencies
-                for(i = 0; i < toGet.length; i++){
-                    var noun_frequency = noun_frequencies[toGet[i]]; // map of all nouns letter x contains
-                    for(var key in noun_frequency){ //iterate through all nouns of each letter
-                        if(data[key] == undefined){ 
-                            data[key] = noun_frequency[key]; //Data: Map of all nouns with their absolute number
-                            //docs_containing_word[key] = 1;
-                        }else{
-                            data[key] += noun_frequency[key];
-                            //docs_containing_word[key] += 1;
-                        }
-                        doc_length += noun_frequency[key]; // sum of the number of words of all letters containing the selected word
-                    }
-                }
-                
-                //------ compute tf-idf score on the fly (not sure if this is the right way though^^) -----
-                for(var key in data){
-                    var idf_score = compute_idf_score(key);
-                    var tf_score = (data[key] / doc_length);
-
-                    data[key] = (tf_score * idf_score);
-                    cloudData.push({"text":key, "count":data[key]});
-                }
-                render_selected_wordcloud(cloudData);
-            });
+                tf_data[key] = (tf_score * idf_score);
+                cloudData.push({"text":key, "count":tf_data[key]});
+            }
+            render_selected_wordcloud(cloudData);
         });
-    //}
+    });
 }
+
+
+
+//---- create the wordclouds in which one word is selected -----------------
+// function selected_wordcloud(word, name, year, steps){
+//     //console.log("create cloud with " + word + name + year);
+//     // var selectedText = [];
+//     // if(year == 1111){
+//     //     //load from file (faster and more accurate)
+//     //     var selectedCloudDataURL = "data/noun_wc_data/" + word + ".json";
+//     //     var selectedCloudDataRequest = new XMLHttpRequest();
+//     //     selectedCloudDataRequest.open('GET', selectedCloudDataURL);
+//     //     selectedCloudDataRequest.responseType = 'json';
+//     //     selectedCloudDataRequest.send();
+//     //     selectedCloudDataRequest.onload = function(){
+//     //         selectedText = selectedCloudDataRequest.response;
+//     //         render_selected_wordcloud(selectedText);
+//     //     }
+
+//     // }else{
+//         //compute the tf-idf scores on the fly
+//         var toGet = [];
+//         var tf_data = {};
+//         // var docs_containing_word = 0;
+//         var docs_containing_word = {};
+//         var cloudData = [];
+//         var doc_length = 0;
+//         var yearCountMap = {};
+//         var personCountMap = {};
+//         //var numberOfDocs = 1; //(1 to count the "open" part as well)
+//         var numberOfDocs = 0;
+
+
+//         function load_letter_Index(callback){
+//             var httpRequestURL = "data/word-letter_index.json";
+//             var httpRequest = new XMLHttpRequest();
+//             httpRequest.onload = function(){
+//                 callback(httpRequest.response);
+//             };
+//             httpRequest.open('GET', httpRequestURL);
+//             httpRequest.send();
+//         }
+
+//         function load_noun_frequencies(callback){
+//             var httpRequestURL = "data/noun_frequencies.json";
+//             var httpRequest = new XMLHttpRequest();
+//             httpRequest.onload = function(){
+//                 callback(httpRequest.response);
+//             };
+//             httpRequest.open('GET', httpRequestURL);
+//             httpRequest.send();
+//         }
+
+//         //toGet is a list of the names of all the letters 
+//         //that match the request
+//         load_letter_Index(function(letterInd){
+//             var letterIndex = JSON.parse(letterInd); // {word1:[letter1, letter2 ,...], word2[letterx, lettery,...],...}
+//             var letters = letterIndex[word]; //List of all Letters containing that word
+//             for(i = 0; i < letters.length; i++){
+//                 var parameters = letters[i].split("_");
+//                 if(year == 1111){
+//                     toGet.push(letters[i]); //in this case we need all the letters
+//                 }else if(name == 'whole'){ //all the letters from the open year
+//                     if(parameters[0] == year){
+//                         toGet.push(letters[i]);
+//                     }else{ 
+//                         //to compute the amount of other "documents" of the same "type" (all letters per year) in D
+//                         if(yearCountMap[parameters[0]] == undefined){
+//                             yearCountMap[parameters[0]] = [];
+//                         }
+//                         yearCountMap[parameters[0]].push(letters[i]);
+                        
+//                     }
+//                 }else{ //year & person open -> year and person have to match
+//                     if((parameters[0] == year) && (parameters[1] == name)){
+//                         toGet.push(letters[i]);
+//                     }else{
+//                         // compute amount of "documents" in total (group them in year_person groups)
+//                         if(personCountMap[parameters[0]] == undefined){
+//                             personCountMap[parameters[0]] = {};
+//                             personCountMap[parameters[0]][parameters[1]] = [letters[i]];
+//                         }else if(personCountMap[parameters[0]][parameters[1]] == undefined){
+//                             personCountMap[parameters[0]][parameters[1]] = [letters[i]];
+//                         }else{
+//                             personCountMap[parameters[0]][parameters[1]].push(letters[i]);
+//                         }
+//                     }
+//                 }
+//             }
+//             //var doc_number = letters.length; // number of docs that contain the selected word
+//             //numberOfDocs = letters.length;          
+            
+//             load_noun_frequencies(function(noun_freq){
+
+//                 //---- function to compute the idf-part of the score
+//                 function compute_idf_score(keyword){
+//                     var docs_with_this_word = 0;
+//                     if(year == 1111){
+//                         docs_with_this_word = docs_containing_word[keyword];
+//                     }else if(name == 'whole'){ //only a year is open
+//                         for(var c_year in yearCountMap){
+//                             var br = false;
+//                             for(j = 0; j < yearCountMap[c_year].length; j++){
+//                                 var nounMap = noun_frequencies[yearCountMap[c_year][j]];
+//                                 for(var noun in nounMap){
+//                                     if(noun == keyword){
+//                                         docs_with_this_word += 1;
+//                                         br = true;
+//                                         break;
+//                                     }
+//                                 }
+//                                 if(br){break;}
+//                             }
+//                         }
+//                     }else{ //year & person open
+//                         for(var c_year in personCountMap){
+//                             for(var c_person in personCountMap[c_year]){
+//                                 var br = false;
+//                                 for(j = 0; j < personCountMap[c_year][c_person].length; j++){
+//                                     var nounMap = noun_frequencies[personCountMap[c_year][c_person][j]];
+//                                     for(var noun in nounMap){
+//                                         if(noun == keyword){
+//                                             docs_with_this_word += 1;
+//                                             br = true;
+//                                             break;
+//                                         }
+//                                     }
+//                                     if(br){break;}
+//                                 }
+//                             }
+//                         }
+//                     }
+//                     var score = Math.log(numberOfDocs / docs_with_this_word);
+//                     console.log(score);
+//                     return score;
+//                 }
+
+//                 var noun_frequencies = JSON.parse(noun_freq); //{letter1:{noun1: x, noun2: y}, letter2:{...}, ...}
+
+//                 //get the number of "documents" in the set of docs containing the selected word
+//                 if(year == 1111){
+//                     numberOfDocs = letters.length;
+//                 }else if(name == 'whole'){
+//                     for(var key in yearCountMap){
+//                         numberOfDocs += 1;
+//                     }
+//                 }else{
+//                     for(var key in personCountMap){
+//                         for(var otherKey in personCountMap[key]){
+//                             numberOfDocs +=1;
+//                         }
+//                     }
+//                 }
+
+//                 //---- get the Data for the tf-score: -----
+//                 //go through all the letters and all the nouns in it and compute the absolute number of
+//                 //occurences of each noun in the data by adding up the frequencies
+//                 for(i = 0; i < toGet.length; i++){
+//                     var noun_frequency = noun_frequencies[toGet[i]]; // map of all nouns which letter x contains
+//                     for(var key in noun_frequency){ //iterate through all nouns of each letter
+//                         if(tf_data[key] == undefined){ 
+//                             tf_data[key] = noun_frequency[key]; //tf_data: Map of all nouns with their absolute number
+
+//                             for(i = 0; i < letters.length; i++){
+//                                 var idf_nouns = noun_frequencies[letters[i]];
+//                                 for(var noun_key in idf_nouns){
+//                                     if(noun_key == key){
+//                                         if (docs_containing_word[noun_key] == undefined){
+//                                             docs_containing_word[noun_key] = 1;
+//                                         }
+//                                         else{
+//                                             docs_containing_word[noun_key] += 1;
+//                                         }
+//                                         break;
+//                                     }
+//                                 }
+//                             }
+//                             // docs_containing_word[key] = 1;
+                            
+//                         }else{
+//                             tf_data[key] += noun_frequency[key];
+//                             // docs_containing_word[key] += 1;
+//                         }
+//                         doc_length += noun_frequency[key]; //sum of the number of words of all letters containing the selected word
+//                     }
+//                 }
+                
+//                 //------ compute tf-idf score on the fly (not sure if this is the right way though^^) -----
+//                 for(var key in tf_data){
+//                     var idf_score = compute_idf_score(key);
+//                     //var idf_score = Math.log(numberOfDocs / docs_containing_word[key]);
+//                     var tf_score = (tf_data[key] / doc_length);
+
+//                     tf_data[key] = (tf_score * idf_score);
+//                     cloudData.push({"text":key, "count":tf_data[key]});
+//                 }
+//                 render_selected_wordcloud(cloudData);
+//             });
+//         });
+//     //}
+// }
 
 // --------------------- END ----------------------- END ------------------------ END ------------------------
 // (But maybe I still need the rest, so please don't delete it for now :))
@@ -1384,8 +1537,6 @@ function single_word_wc(word){
         }
     });
 }
-
-
 
 //-------------- Just in case we manage to place the title in a place where it's readable: ----------
 function get_year(year){

@@ -20,7 +20,7 @@
         <svg width="1250" height="600"></svg>
     </head>
 
-    <body id="button" onload="init_page('whole', 1111, 0)">
+    <body id="button" onload="init_page()">
 
         <div id="data1"> </div>
         <div id="data5"> </div>
@@ -4017,7 +4017,10 @@
         <!-- ...............Letters and wordclouds get displayed in div............... -->
         <div id="LetterDiv"></div>
 
-        <!-- ...... This ones only purpose is to deliver a message in order to avoid recursion: ..... -->
+        <!-- ...... These ones only purpose is to deliver a message in order to avoid recursion: ..... -->
         <div style="display:none" id="herr_made" onchange="trigger_new_cloud()"></div>
+        <div style="display:none" id ="message_from_bar" onchange="trigger_new_cloud()"></div>
+        <div style="display:none" id ="message_from_legend" onchange="trigger_new_cloud()"></div>
+        <div style="display:none" id ="report_steps"></div>
     </body>
 </html>
