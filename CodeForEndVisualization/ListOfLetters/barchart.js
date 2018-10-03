@@ -887,7 +887,7 @@ function count_visible_letters(){
     // console.log(visibleLettersPeople);
 }
 
-//-------- help to get the CSS style for another function ---------
+//-------- help getting the CSS style for other functions ---------
 function getStyle(element, style){
     var result;
     if(element.currentStyle){
@@ -900,7 +900,7 @@ function getStyle(element, style){
     return result;
 }
 
-//---------- highlight the selected word, highlighting the background doesn't work --------
+//---------- highlight the selected word --------
 function highlight_word(word){
     var allWCWords = document.getElementsByTagName("tspan");
     for(i = 0; i < allWCWords.length; i++){
@@ -913,7 +913,7 @@ function highlight_word(word){
     }
 }
 
-//----------- only show corresponding letters in list -----------
+//----------- only show letters in list that match the selection (bar/legend/word) -----------
 function show_corresponding_letters(word){
     //letterIndex contains an Index like this: {'Word1':[list of all letters containing Word1], 'Word2':[...],...}
     console.log("showing letters of " + word);
@@ -1019,14 +1019,19 @@ function show_all_sections(){
     }
 }
 
-//--------- After a word is deselected: bring back all hidden elements -----------
-function return_to_normal(){
-    //bring back all the Letters
+//----------- bring back all buttons ----------------
+function all_buttons_visible(){
     var allButtons = document.getElementsByClassName("openLetterButton");
     for(i = 0; i < allButtons.length; i++){
         var thisButton = allButtons[i]
         thisButton.style.display ="block";
     }
+}
+
+//--------- After a word/bar/name is deselected: bring back all hidden elements -----------
+function return_to_normal(){
+    //bring back all the Letters
+    all_buttons_visible();
     //update the small bars
     create_small_bars();
     show_all_sections();
@@ -1046,14 +1051,6 @@ function create_wordcloud(name, year, steps){
         var myText = cloudDataRequest.response;
         myConfig = {
             type: 'wordcloud',
-            // title:{
-            //     text: thisName + " " + thisYear,
-            //     visible:false,
-            //     width:150, 
-            //     height: 50,
-            //     paddingBottom: "20px",
-            //     margin:"20px"
-            // },
             options: {
                 words : myText,
                 minLength: 4,
@@ -1128,7 +1125,6 @@ function render_selected_wordcloud(cloudData){
         if(selectedWord == word){
             wordClicked = false;
             clickedWord = "";
-            //trigger the new cloud instead of calling it to avoid recursion
             document.getElementById("herr_made").innerHTML = "Wunschpunsch";
             document.getElementById("herr_made").onchange();
         }else{ 
@@ -1157,6 +1153,7 @@ function selected_wordcloud(word, name, year, steps){
 
     }else{ //compute the tf-idf scores on the fly
         var toGet = []; //all the letters that are currently open and are depicted in the wordcloud
+        var closedLetters = [];
         var tf_data = {};
         var docs_containing_word = {}; //count how many documents contain each of the words the score is computed for
         var cloudData = [];
@@ -1168,69 +1165,81 @@ function selected_wordcloud(word, name, year, steps){
             var letterIndex = JSON.parse(letterInd); // {word1:[letter1, letter2 ,...], word2[letterx, lettery,...],...}
             var letters = letterIndex[word]; //List of all Letters containing the selected word
             console.log(word);
-            // console.log(letters);
+            console.log(letterIndex[word]);
             for(i = 0; i < letters.length; i++){
                 var parameters = letters[i].split("_");
-                if(year == 1111){ //in this case we need all the letters
-                    toGet.push(letters[i]); 
-                }else if(name == 'whole'){ //all the letters from the open year
+                // if(year == 1111){ //in this case we need all the letters
+                //     toGet.push(letters[i]);
+                //     closedLetters.push(letters[i]);
+                // }else 
+                if(name == 'whole'){ //all the letters from the open year
                     if(parameters[0] == year){
                         toGet.push(letters[i]);
+                    }else{
+                        closedLetters.push(letters[i]);
                     }
                 }else{ //year & person open -> year and person have to match
                     if((parameters[0] == year) && (parameters[1] == name)){
                         toGet.push(letters[i]);
+                    }else{
+                        closedLetters.push(letters[i]);
                     }
                 }
             }
+            //numberOfDocs = letters.length;
+            numberOfDocs = closedLetters.length + 1; //weil ja alle geöffneten zu einem Doc zusammengefasst wurden!
+            console.log("Number of Docs: " + numberOfDocs);
             //console.log(toGet);
-            numberOfDocs = letters.length;          
             
             load_noun_frequencies(function(noun_freq){
-                var noun_frequencies = JSON.parse(noun_freq); //{letter1:{noun1: x, noun2: y}, letter2:{...}, ...}
+                var frequencies = JSON.parse(noun_freq); //{letter1:{noun1: x, noun2: y}, letter2:{...}, ...}
 
                 //---- get the Data for the tf-score: -----
                 //go through all the letters and all the nouns in it and compute the absolute number of
                 //occurences of each noun in the data by adding up the frequencies
                 for(i = 0; i < toGet.length; i++){
-                    var noun_frequency = noun_frequencies[toGet[i]]; // map of all nouns which letter x contains
+                    var thisLetter = toGet[i];
+                    var noun_frequency = frequencies[thisLetter]; // map of all nouns which letter x contains
                     for(var key in noun_frequency){ //iterate through all nouns of each letter
                         if(tf_data[key] == undefined){ 
                             tf_data[key] = noun_frequency[key]; //tf_data: Map of all nouns with their absolute number
+                            docs_containing_word[key] = 1;
 
-                            for(i = 0; i < letters.length; i++){
-                                var idf_nouns = noun_frequencies[letters[i]];
+                            //count how many of ALL the letters containing the selected word contain this word as well
+                            //(only necessary on the firs occurence of the word)
+                            for(i = 0; i < closedLetters.length; i++){
+                                var otherLetter = closedLetters[i];
+                                var idf_nouns = frequencies[otherLetter];
                                 for(var noun_key in idf_nouns){
                                     if(noun_key == key){
-                                        if (docs_containing_word[noun_key] == undefined){
-                                            docs_containing_word[noun_key] = 1;
-                                        }
-                                        else{
-                                            docs_containing_word[noun_key] += 1;
-                                        }
+                                        docs_containing_word[noun_key] += 1;
                                         break;
                                     }
                                 }
                             }
-                            // docs_containing_word[key] = 1;
-                            
                         }else{
                             tf_data[key] += noun_frequency[key];
-                            // docs_containing_word[key] += 1;
                         }
-                        doc_length += noun_frequency[key]; //sum of the number of words of all letters containing the selected word
+                        doc_length += noun_frequency[key]; //sum of the number of words of all letters containing the word
                     }
                 }
+                console.log("TF Data: ");
+                console.log(tf_data);
+                console.log("Gesamtwortzahl: " + doc_length);
                 
                 //------ compute tf-idf score on the fly (not sure if this is the right way though^^) -----
                 for(var key in tf_data){
                     // var idf_score = compute_idf_score(key);
+                    var tfIdf_scores = {};
                     var idf_score = Math.log(numberOfDocs / docs_containing_word[key]);
                     var tf_score = (tf_data[key] / doc_length);
 
-                    tf_data[key] = (tf_score * idf_score);
-                    cloudData.push({"text":key, "count":tf_data[key]});
+                    tfIdf_scores[key] = (tf_score * idf_score);
+                    cloudData.push({"text":key, "count":tfIdf_scores[key]});
                 }
+                console.log("Docs containing word: ");
+                console.log(docs_containing_word);
+                //console.log(cloudData);
                 render_selected_wordcloud(cloudData);
             });
         });
@@ -1266,27 +1275,6 @@ function selected_wordcloud(word, name, year, steps){
 //         var personCountMap = {};
 //         //var numberOfDocs = 1; //(1 to count the "open" part as well)
 //         var numberOfDocs = 0;
-
-
-//         function load_letter_Index(callback){
-//             var httpRequestURL = "data/word-letter_index.json";
-//             var httpRequest = new XMLHttpRequest();
-//             httpRequest.onload = function(){
-//                 callback(httpRequest.response);
-//             };
-//             httpRequest.open('GET', httpRequestURL);
-//             httpRequest.send();
-//         }
-
-//         function load_noun_frequencies(callback){
-//             var httpRequestURL = "data/noun_frequencies.json";
-//             var httpRequest = new XMLHttpRequest();
-//             httpRequest.onload = function(){
-//                 callback(httpRequest.response);
-//             };
-//             httpRequest.open('GET', httpRequestURL);
-//             httpRequest.send();
-//         }
 
 //         //toGet is a list of the names of all the letters 
 //         //that match the request
