@@ -10,7 +10,7 @@ var openYear;
 var openPerson;
 var visibleLetters;
 var visibleLettersPeople;
-var barSelected = false; //to be able to return to the wordcloud shown before you clicked on something
+var barSelected = false;
 var toggleWhileBarSelected = false;
 var legendSelected = false;
 
@@ -916,6 +916,8 @@ function highlight_word(word){
 //----------- only show corresponding letters in list -----------
 function show_corresponding_letters(word){
     //letterIndex contains an Index like this: {'Word1':[list of all letters containing Word1], 'Word2':[...],...}
+    console.log("showing letters of " + word);
+    return_to_normal();
     load_letter_Index(function(letterInd){
         var letterIndex = JSON.parse(letterInd);
         var allButtons = document.getElementsByClassName("openLetterButton");
@@ -932,10 +934,8 @@ function show_corresponding_letters(word){
                 }
             }
         }
-        if(!wordClicked){
-            return_to_normal();
-        }
-        if(barSelected){           
+
+        if(barSelected){       
             var year = document.getElementById("message_from_bar").innerHTML;
             var steps = document.getElementById("report_steps").innerHTML;
             for(i = 0; i < allButtons.length; i++){
@@ -947,8 +947,9 @@ function show_corresponding_letters(word){
                     }
                 }
             }
+            console.log("in " + year + " with steps " + steps);    
         }
-        if(legendSelected){
+        if(legendSelected){        
             var name = document.getElementById("message_from_legend").innerHTML;
             for(i = 0; i < allButtons.length; i++){
                 var thisButton = allButtons[i];
@@ -959,9 +960,11 @@ function show_corresponding_letters(word){
                     }
                 }
             }
+            console.log("from " + name);
         }
         create_small_bars();
         hide_empty_sections();
+        
     });
 }
 
@@ -1140,85 +1143,98 @@ function render_selected_wordcloud(cloudData){
 
 //---- create the wordclouds in which one word is selected -----------------
 function selected_wordcloud(word, name, year, steps){
-    //compute the tf-idf scores on the fly
-    var toGet = []; //all the letters that are currently open and are depicted in the wordcloud
-    var tf_data = {};
-    var docs_containing_word = {}; //count how many documents contain each of the words the score is computed for
-    var cloudData = [];
-    var doc_length = 0;
-    var numberOfDocs = 0; //number of docs containing the selected word
 
-    //toGet is a list of the names of all the letters matching the requested word
-    load_letter_Index(function(letterInd){
-        var letterIndex = JSON.parse(letterInd); // {word1:[letter1, letter2 ,...], word2[letterx, lettery,...],...}
-        var letters = letterIndex[word]; //List of all Letters containing the selected word
-        console.log(word);
-        // console.log(letters);
-        for(i = 0; i < letters.length; i++){
-            var parameters = letters[i].split("_");
-            if(year == 1111){ //in this case we need all the letters
-                toGet.push(letters[i]); 
-            }else if(name == 'whole'){ //all the letters from the open year
-                if(parameters[0] == year){
-                    toGet.push(letters[i]);
-                }
-            }else{ //year & person open -> year and person have to match
-                if((parameters[0] == year) && (parameters[1] == name)){
-                    toGet.push(letters[i]);
+    if(year == 1111){ //we already have this data so I'm gonna use it; it's more accurate
+        var selectedCloudDataURL = "data/noun_wc_data/" + word + ".json";
+        var selectedCloudDataRequest = new XMLHttpRequest();
+        selectedCloudDataRequest.open('GET', selectedCloudDataURL);
+        selectedCloudDataRequest.responseType = 'json';
+        selectedCloudDataRequest.send();
+        selectedCloudDataRequest.onload = function(){
+            selectedText = selectedCloudDataRequest.response;
+            render_selected_wordcloud(selectedText);
+        }
+
+    }else{ //compute the tf-idf scores on the fly
+        var toGet = []; //all the letters that are currently open and are depicted in the wordcloud
+        var tf_data = {};
+        var docs_containing_word = {}; //count how many documents contain each of the words the score is computed for
+        var cloudData = [];
+        var doc_length = 0;
+        var numberOfDocs = 0; //number of docs containing the selected word
+
+        //toGet is a list of the names of all the letters matching the requested word
+        load_letter_Index(function(letterInd){
+            var letterIndex = JSON.parse(letterInd); // {word1:[letter1, letter2 ,...], word2[letterx, lettery,...],...}
+            var letters = letterIndex[word]; //List of all Letters containing the selected word
+            console.log(word);
+            // console.log(letters);
+            for(i = 0; i < letters.length; i++){
+                var parameters = letters[i].split("_");
+                if(year == 1111){ //in this case we need all the letters
+                    toGet.push(letters[i]); 
+                }else if(name == 'whole'){ //all the letters from the open year
+                    if(parameters[0] == year){
+                        toGet.push(letters[i]);
+                    }
+                }else{ //year & person open -> year and person have to match
+                    if((parameters[0] == year) && (parameters[1] == name)){
+                        toGet.push(letters[i]);
+                    }
                 }
             }
-        }
-        //console.log(toGet);
-        numberOfDocs = letters.length;          
-        
-        load_noun_frequencies(function(noun_freq){
-            var noun_frequencies = JSON.parse(noun_freq); //{letter1:{noun1: x, noun2: y}, letter2:{...}, ...}
+            //console.log(toGet);
+            numberOfDocs = letters.length;          
+            
+            load_noun_frequencies(function(noun_freq){
+                var noun_frequencies = JSON.parse(noun_freq); //{letter1:{noun1: x, noun2: y}, letter2:{...}, ...}
 
-            //---- get the Data for the tf-score: -----
-            //go through all the letters and all the nouns in it and compute the absolute number of
-            //occurences of each noun in the data by adding up the frequencies
-            for(i = 0; i < toGet.length; i++){
-                var noun_frequency = noun_frequencies[toGet[i]]; // map of all nouns which letter x contains
-                for(var key in noun_frequency){ //iterate through all nouns of each letter
-                    if(tf_data[key] == undefined){ 
-                        tf_data[key] = noun_frequency[key]; //tf_data: Map of all nouns with their absolute number
+                //---- get the Data for the tf-score: -----
+                //go through all the letters and all the nouns in it and compute the absolute number of
+                //occurences of each noun in the data by adding up the frequencies
+                for(i = 0; i < toGet.length; i++){
+                    var noun_frequency = noun_frequencies[toGet[i]]; // map of all nouns which letter x contains
+                    for(var key in noun_frequency){ //iterate through all nouns of each letter
+                        if(tf_data[key] == undefined){ 
+                            tf_data[key] = noun_frequency[key]; //tf_data: Map of all nouns with their absolute number
 
-                        for(i = 0; i < letters.length; i++){
-                            var idf_nouns = noun_frequencies[letters[i]];
-                            for(var noun_key in idf_nouns){
-                                if(noun_key == key){
-                                    if (docs_containing_word[noun_key] == undefined){
-                                        docs_containing_word[noun_key] = 1;
+                            for(i = 0; i < letters.length; i++){
+                                var idf_nouns = noun_frequencies[letters[i]];
+                                for(var noun_key in idf_nouns){
+                                    if(noun_key == key){
+                                        if (docs_containing_word[noun_key] == undefined){
+                                            docs_containing_word[noun_key] = 1;
+                                        }
+                                        else{
+                                            docs_containing_word[noun_key] += 1;
+                                        }
+                                        break;
                                     }
-                                    else{
-                                        docs_containing_word[noun_key] += 1;
-                                    }
-                                    break;
                                 }
                             }
+                            // docs_containing_word[key] = 1;
+                            
+                        }else{
+                            tf_data[key] += noun_frequency[key];
+                            // docs_containing_word[key] += 1;
                         }
-                        // docs_containing_word[key] = 1;
-                        
-                    }else{
-                        tf_data[key] += noun_frequency[key];
-                        // docs_containing_word[key] += 1;
+                        doc_length += noun_frequency[key]; //sum of the number of words of all letters containing the selected word
                     }
-                    doc_length += noun_frequency[key]; //sum of the number of words of all letters containing the selected word
                 }
-            }
-            
-            //------ compute tf-idf score on the fly (not sure if this is the right way though^^) -----
-            for(var key in tf_data){
-                // var idf_score = compute_idf_score(key);
-                var idf_score = Math.log(numberOfDocs / docs_containing_word[key]);
-                var tf_score = (tf_data[key] / doc_length);
+                
+                //------ compute tf-idf score on the fly (not sure if this is the right way though^^) -----
+                for(var key in tf_data){
+                    // var idf_score = compute_idf_score(key);
+                    var idf_score = Math.log(numberOfDocs / docs_containing_word[key]);
+                    var tf_score = (tf_data[key] / doc_length);
 
-                tf_data[key] = (tf_score * idf_score);
-                cloudData.push({"text":key, "count":tf_data[key]});
-            }
-            render_selected_wordcloud(cloudData);
+                    tf_data[key] = (tf_score * idf_score);
+                    cloudData.push({"text":key, "count":tf_data[key]});
+                }
+                render_selected_wordcloud(cloudData);
+            });
         });
-    });
+    }
 }
 
 
