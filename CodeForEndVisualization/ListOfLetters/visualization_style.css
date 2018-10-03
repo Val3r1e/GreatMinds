@@ -57,7 +57,7 @@ button:hover{
 	width:60%;
 	min-height:150px;
 	overflow: scroll;
-	max-height: 1000px;
+	max-height: 600px;
 }
 /* #LetterDivTitle{
 	margin-left: 400px;
