@@ -546,6 +546,541 @@ function bars(data,version){
         }
     });
 }
+function barsZoom(data, version) {
+    var svg = d3.select("svg"),
+    margin = {top: 20, right: 20, bottom: 30, left: 40},
+    width = 1250 - margin.left - margin.right,
+    height = 600 - margin.top - margin.bottom,
+    g = svg.append("g").attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+    var x = d3.scaleBand()
+        .rangeRound([0, width])
+        .paddingInner(0.1)      //Makes Barchart bigger/smaller
+        .align(0.3);            //Moves barchart closer/further away from y-axis
+
+    var y = d3.scaleLinear()
+        .rangeRound([height, 0]);
+
+    //Color
+    var z = d3.scaleOrdinal()
+        //      FSchiller, CSchiller, CStein, CGoethe
+        .range(["#9fa8da", "#7b1fa2", "#5c6bc0", "#9575cd"]);
+
+    var tooltip = d3.select("body").append("div").attr("class", "toolTip");
+
+    var active_link = "0";
+    var legendClassArray = [];
+    var active = "0";
+    var rectangleClassArray = ["FSchiller","CSchiller", "CStein", "CGoethe"];
+    var yearArray = [];
+    var wanted = "0";
+    var activeName = "0";
+
+    d3.csv(data, function(d, i, columns){
+        for (i = 1, t = 0; i < columns.length; ++i) t += d[columns[i]] = +d[columns[i]];
+        d.total = t;
+        return d;
+    }, 
+
+    function(error, data){
+
+        if (error) throw error;
+
+        var keys = data.columns.slice(1);
+            x.domain(data.map(function(d) {return d.Year;}));
+            console.log(data.map(function(d) { return d.Year;}));
+            y.domain([0, d3.max(data, function(d) { return d.total; })]).nice();
+            z.domain(keys);
+
+            g.append("g")
+                .selectAll("g")
+                .data(d3.stack().keys(keys)(data))      // Stack function, stacks bars
+                .enter().append("g")
+                .attr("fill", function(d,i){ return z(i); })     // Coloring the bars, z-axis
+                .attr("class", function(d,i){
+                    classLabel = rectangleClassArray[i];
+                    return "class" + classLabel;
+                })
+                .selectAll("rect")
+                .data(function(d) { return d;})
+                .enter().append("rect")
+                .attr("x", function(d) { return x(d.data.Year);})
+                .attr("id", function(d,i){
+                    var a = 0;
+                    for(f=0; f<yearArray.length; f++){
+                        if(d.data.Year == yearArray[f]){
+                            a += 1;
+                        }
+                    }
+
+                    yearArray.push(d.data.Year);
+
+                    return ("id" + d.data.Year + "-" + rectangleClassArray[a]);
+                })
+                .attr("y", function(d) { return y(d[1]); })
+                .attr("height", function(d) { return y(d[0]) - y(d[1]); })
+                .attr("width", x.bandwidth()) // Width of bars -1 smaller +1 bigger etc
+                .on("mouseover", function (d) {
+
+                    //The Year of the Bar
+                    wanted = this.id.split("id").pop();
+                    wanted = wanted.slice(0, 4);
+
+                    //The Name of the Bar
+                    activeName = this.id.split("id").pop();
+                    activeName = activeName.slice(5);
+
+                    //No Bar and nothing on legend selected
+                    if(active === "0" && active_link === "0"){
+
+                        for (j = 0; j < rectangleClassArray.length; j++){
+                            d3.select("#id" + wanted + "-" + rectangleClassArray[j])
+                            .style("cursor", "pointer")
+                            .style("stroke", "purple")
+                            .style("stroke-width", 1.3);
+                        }  
+                        tooltip
+                        .style("left", d3.event.pageX - 50 + "px")
+                        .style("top", d3.event.pageY - 70 + "px")
+                        .style("display", "inline-block")
+                        .html(d.data.Year + ": " + d.data.total); 
+                    }
+                    //One Bar and nothing on legend selected and hovering above selected Bar
+                    else if(active == d.data.Year && active_link === "0"){
+
+                        for (j = 0; j < rectangleClassArray.length; j++){
+                            d3.select("#id" + wanted + "-" + rectangleClassArray[j])
+                            .style("cursor", "pointer");
+                        }
+                        tooltip
+                        .style("left", d3.event.pageX - 50 + "px")
+                        .style("top", d3.event.pageY - 70 + "px")
+                        .style("display", "inline-block")
+                        .html(d.data.Year + ": " + d.data.total); 
+                    }
+                    //One Bar and nothing on legend selected and hovering above not selected Bar
+                    else if(active != d.data.Year && active_link === "0"){
+
+                        for (j = 0; j < rectangleClassArray.length; j++){
+                            d3.select("#id" + wanted + "-" + rectangleClassArray[j])
+                            .style("cursor", "default");
+                        }   
+                        tooltip
+                        .style("display","none");
+                    }
+                    //No Bar and one Person on legend selected and hovering above selected person bar
+                    else if(active === "0" && active_link == activeName){
+                        d3.select("#id" + wanted + "-" + activeName)
+                        .style("cursor", "pointer")
+                        .style("stroke", "purple")
+                        .style("stroke-width", 1.3);
+
+                        amount = d[1]-d[0];
+
+                        tooltip
+                        .style("left", d3.event.pageX - 50 + "px")
+                        .style("top", d3.event.pageY - 70 + "px")
+                        .style("display", "inline-block")
+                        .html(activeName + ": " + amount); 
+                    }
+                    //No Bar and one Person on legend selected and hovering above not selected person part
+                    else if(active === "0" && active_link != activeName){
+
+                        for (j = 0; j < rectangleClassArray.length; j++){
+                            d3.select("#id" + wanted + "-" + rectangleClassArray[j])
+                            .style("cursor", "default");
+                        } 
+                    }
+                    //First one Bar and then one Person on legend selected and hovering above selected person part
+                    else if(active == d.data.Year && active_link == activeName){
+
+                        d3.select(this)
+                        .style("cursor", "pointer");
+
+                        amount = d[1]-d[0];
+                        tooltip
+                        .style("left", d3.event.pageX - 50 + "px")
+                        .style("top", d3.event.pageY - 70 + "px")
+                        .style("display", "inline-block")
+                        .html(activeName + ": " + amount); 
+                    }
+                    //First one Bar and then one Person on legend selected and hovering above not selected person part but on selected bar
+                    else if(active == d.data.Year && active_link != activeName){
+                        for (j = 0; j < rectangleClassArray.length; j++){
+                            d3.select("#id" + wanted + "-" + rectangleClassArray[j])
+                            .style("cursor", "default");
+                        } 
+                    }
+                    //First one Bar and then one Person on legend selected but hovering above not selected bar and parts
+                    else if(active != d.data.Year && active_link != activeName){
+                        for (j = 0; j < rectangleClassArray.length; j++){
+                            d3.select("#id" + wanted + "-" + rectangleClassArray[j])
+                            .style("cursor", "default");
+                        }
+                    }
+                    //First person on legend then one Bar selected and hovering above selected person part
+                    else if(active_link == activeName && active == d.data.Year){
+                        d3.select(this)
+                        .style("cursor", "pointer");
+                        
+                        amount = d[1]-d[0];
+                        tooltip
+                        .style("left", d3.event.pageX - 50 + "px")
+                        .style("top", d3.event.pageY - 70 + "px")
+                        .style("display", "inline-block")
+                        .html(activeName + ": " + amount); 
+                    }
+                    //First person on legend then one Bar selected and hovering above not selected person part but on selected bar
+                    else if(active_link != activeName && active == d.data.Year){
+                        for (j = 0; j < rectangleClassArray.length; j++){
+                            d3.select("#id" + wanted + "-" + rectangleClassArray[j])
+                            .style("cursor", "default");
+                        }
+                    }
+                    //First person on legend then one Bar selected but hovering above not selected bar or parts
+                    else if(active_link != activeName && active != d.data.Year){
+                        for (j = 0; j < rectangleClassArray.length; j++){
+                            d3.select("#id" + wanted + "-" + rectangleClassArray[j])
+                            .style("cursor", "default");
+                        }
+                    }
+                    //First person on legend then one BAr selected but hovering above same name part but different year
+                    else if(active_link == activeName && active != d.data.Year){
+                        for (j = 0; j < rectangleClassArray.length; j++){
+                            d3.select("#id" + wanted + "-" + rectangleClassArray[j])
+                            .style("cursor", "default");
+                        }
+                    }
+                })
+                .on("mouseout", function (d){
+
+                    if(active === "0" && active_link === "0"){
+
+                        for (j = 0; j < rectangleClassArray.length; j++){
+                            d3.select("#id" + wanted + "-" + rectangleClassArray[j])
+                            .style("cursor", "none")
+                            .style("stroke", "pink")
+                            .style("stroke-width", 0.2);
+                        }
+                    }
+                    else if(active === "0" && active_link == activeName){
+
+                        for (j = 0; j < rectangleClassArray.length; j++){
+                            d3.select("#id" + wanted + "-" + rectangleClassArray[j])
+                            .style("cursor", "none")
+                            .style("stroke", "pink")
+                            .style("stroke-width", 0.2);
+                        }
+                    }
+
+                    tooltip
+                    .style("display","none");
+                })
+                .on("click", function(d){
+
+                    //No Bar or Person on legend is selected
+                    if (active === "0" && active_link === "0"){
+                        barSelected = true;
+
+                        for (j = 0; j < rectangleClassArray.length; j++) {
+                            d3.select("#id" + wanted + "-" + rectangleClassArray[j])
+                            .style("stroke", "black")
+                            .style("stroke-width", 1.5);
+                        }
+
+                        active = d.data.Year;
+
+                        for(j=0; j<yearArray.length; j++){
+                            for(h=0; h<rectangleClassArray.length; h++){
+                                if(yearArray[j]!=active){
+                                    d3.select("#id" + yearArray[j] + "-" + rectangleClassArray[h])
+                                    .style("opacity", 0.5);
+                                }
+                            }
+                        }
+                        document.getElementById("message_from_bar").innerHTML = d.data.Year;
+                        document.getElementById("report_steps").innerHTML = version;
+                        document.getElementById("message_from_bar").onchange();
+                        // In "wanted" ist das Jahr und in "activeName" der eigene Name!
+                    
+                    }
+                    //Bar is selected but no person on legend, clicking on selected part
+                    else if (active === d.data.Year && active_link === "0"){
+                        barSelected = false;
+
+                        for (j = 0; j < rectangleClassArray.length; j++) {
+                            d3.select("#id" + wanted + "-" + rectangleClassArray[j])
+                            .style("stroke", "none");
+                        }
+
+                        active = "0";
+
+                        for(j=0; j<yearArray.length; j++){
+                            for(h=0; h<rectangleClassArray.length; h++){
+                                d3.select("#id" + yearArray[j] + "-" + rectangleClassArray[h])
+                                .style("opacity", 1);
+                            }
+                        }
+                        document.getElementById("message_from_bar").onchange();
+                        
+                    }
+                    //No bar but person on legend is selected, clicking on part of bar of that person
+                    else if(active === "0" && active_link == activeName){
+                        barSelected = true;
+                        d3.select(this)
+                        .style("stroke", "black")
+                        .style("stroke-width", 1.5);
+
+                        for (j = 0; j < yearArray.length; j++) {
+                            if(yearArray[j] != wanted){
+                                d3.select("#id" + yearArray[j] + "-" + activeName)
+                                .style("opacity", 0.5);
+                            }
+                        }
+                        active = d.data.Year;
+
+                        document.getElementById("message_from_bar").innerHTML = d.data.Year;
+                        document.getElementById("report_steps").innerHTML = version;
+                        document.getElementById("message_from_bar").onchange();
+
+                        
+                    }
+                    //Bar and person on legend is selected, clicking on part of bar of that person
+                    else if(active === d.data.Year && active_link == activeName){
+                        barSelected = false;
+                        d3.select(this)
+                        .style("stroke", "none");
+
+                        for (j = 0; j < yearArray.length; j++) {
+                            if(yearArray[j] != wanted){
+                                d3.select("#id" + yearArray[j] + "-" + activeName)
+                                .style("opacity", 1);
+                            }
+                        }
+                        active = "0";
+                        document.getElementById("message_from_bar").onchange();
+                    }
+                })
+                .on('dblclick', function(d, i){
+                    d3.select(!this)
+                        .attr('opacity', 0.5)
+                        .attr('width', x.bandwidth - 100)
+                    
+                })
+                
+            /* --------- x-axis --------- */
+            g.append("g")
+                .attr("class", "axis")
+                .attr("transform", "translate(0," + height + ")")
+                .attr("font-weight", "bold")        // Bold Years
+                .call(d3.axisBottom(x));
+
+            /* -------- Amount tag on the top left -------- */
+            g.append("g")
+                .attr("class", "axis")
+                .call(d3.axisLeft(y).ticks(null, "s"))
+                .attr("font-weight", "bold")        // Bold y-axis
+                .append("text")
+                .attr("x", 2)       // Hight x-axis
+                .attr("y", y(y.ticks().pop()) + 0.5)    // Hight y-axis
+                .attr("dy", "0.32em")
+                .attr("fill", "#000")
+                .attr("font-weight", "bold")    // bold text
+                .attr("text-anchor", "start")   // text position
+                .text("Amount");    // Text
+
+        /* --------- Legend in top right corner --------- */
+        var legend = g.append("g")
+            .attr("font-family", "sans-serif") // Schriftart
+            .attr("font-size", 10)  // Schriftgröße
+            .attr("font-weight", "bold")
+            .attr("text-anchor", "end")
+            .selectAll("g")
+            .data(keys.slice().reverse())
+            .enter().append("g")
+            //------------- Add Class and fill legendClassArray-------------
+            .attr("class", function (d) {
+                legendClassArray.push(d); 
+                return "legend";
+            })
+            .attr("transform", function(d, i) { return "translate(0," + i * 20 + ")"; });
+
+        legendClassArray = legendClassArray.reverse();
+
+        legend.append("rect")  // Rectangles of legend
+            .attr("x", width - 50)  
+            .attr("width", 19)
+            .attr("height", 19)
+            .attr("fill", z)
+            //------------- Add Id-------------
+            .attr("id", function (d) {
+                return ("id" + d);
+            })
+            .on("mouseover", function(){ 
+                if (active_link === "0"){
+                    d3.select(this)
+                    .style("stroke","purple")
+                    .style("stroke-width",0.8)
+                    .style("cursor", "pointer");
+                }
+            })
+            .on("mouseout", function(){
+                if (active_link === "0"){
+                    d3.select(this)
+                    .style("stroke","pink")
+                    .style("stroke-width",0.2);
+                }
+            })
+            .on("click", function(d){
+                //No person on legend and no bar selected
+                if(active_link === "0" && active === "0"){
+                    legendSelected = true;
+                    d3.select(this)           
+                    .style("stroke", "black")
+                    .style("stroke-width", 1);
+
+                    active_link = this.id.split("id").pop();
+
+                    erase(this);
+
+                    for (i = 0; i < legendClassArray.length; i++){
+                        if (legendClassArray[i] != active_link) {
+                            d3.select("#id" + legendClassArray[i])
+                            .style("opacity", 0.5);
+                        }
+                    }
+                    document.getElementById("message_from_legend").innerHTML = active_link;
+                    document.getElementById("message_from_legend").onchange();
+                    
+                }
+                //Person on legend was selected but no bar
+                else if(active_link === this.id.split("id").pop() && active === "0"){
+                    legendSelected = false;
+                    d3.select(this)           
+                    .style("stroke", "none");
+
+                    active_link = "0"; 
+
+                    for (i = 0; i < legendClassArray.length; i++) {              
+                        d3.select("#id" + legendClassArray[i])
+                        .style("opacity", 1);
+                    }
+
+                    putBack(d);
+
+                    //make other bars visible again
+                    for (j = 0; j < yearArray.length; j++) {
+                        for(h = 0; h < legendClassArray.length; h++){
+                            d3.select("#id" + yearArray[j] + "-" + legendClassArray[h])
+                            .transition()
+                            .duration(1000)
+                            //.delay(750)
+                            .style("opacity", 1);
+                        }
+                    }
+
+                    document.getElementById("message_from_legend").onchange();
+                        
+                }
+                //No person on legend but person on bar was selected  
+                else if(active_link === "0" && active != "0"){
+                    legendSelected = true;
+                    
+                    d3.select(this)           
+                    .style("stroke", "black")
+                    .style("stroke-width", 1);
+
+                    //Person
+                    active_link = this.id.split("id").pop();
+
+                    for (j = 0; j < legendClassArray.length; j++){
+                        if (legendClassArray[j] != active_link) {
+                            d3.select("#id" + legendClassArray[j])
+                            .style("opacity", 0.5)
+                            .style("cursor", "default");
+                        }
+                    }
+
+                    for(j=0; j<legendClassArray.length; j++){
+                        if(legendClassArray[j] != active_link){
+                            d3.select("#id" + active + "-" + legendClassArray[j])
+                            .style("cursor", "default")
+                            .style("stroke", "pink")
+                            .style("stroke-width", 0.2)
+                            .style("opacity", 0.5);
+                        }
+                    }
+                    document.getElementById("message_from_legend").innerHTML = active_link;
+                    document.getElementById("message_from_legend").onchange();
+                }
+                //Person on legend and bar selected 
+                else if(active_link == this.id.split("id").pop() && active != "0"){
+                    legendSelected = false;
+
+                    d3.select(this)           
+                    .style("stroke", "none");
+
+                    for (i = 0; i < legendClassArray.length; i++) {              
+                        d3.select("#id" + legendClassArray[i])
+                        .style("opacity", 1);
+                    }
+
+                    for(j=0; j<legendClassArray.length; j++){
+                        if(legendClassArray[j] != active_link){
+                            d3.select("#id" + active + "-" + legendClassArray[j])
+                            .style("cursor", "pointer")
+                            .style("stroke", "black")
+                            .style("stroke-width", 1.5)
+                            .style("opacity", 1);
+                        }
+                    }
+
+                    active_link = "0";
+                    document.getElementById("message_from_legend").onchange();
+                }
+                /*else if(active === "0" && active_link == this.id.split("id").pop()){
+                    console.log("Here");
+                }*/
+            });
+
+        legend.append("text") // Text of legends 
+            .attr("x", width - 60)  // Same -x moves it closer to y-axis
+            .attr("y", 9.5)         //The higher the x the farther down it goes (closer to x-axis)
+            .attr("dy", "0.32em")
+            .text(function(d) { return d; });
+
+        function erase(d){
+            
+            class_keep = d.id.split("id").pop();
+
+            //Make all other bars less visible
+            for (i = 0; i < legendClassArray.length; i++) {
+                if (legendClassArray[i] != class_keep) {
+                    d3.selectAll(".class" + legendClassArray[i])
+                    .transition()
+                    .duration(1000)          
+                    .style("opacity", 0.5);
+                }
+            }
+        } 
+
+        function putBack(d){
+
+            console.log("here2");
+
+            //make other bars visible again
+            for (j = 0; j < legendClassArray.length; j++) {
+                //if (legendClassArray[j] != class_keep){
+                    d3.selectAll(".class" + legendClassArray[j])
+                    .transition()
+                    .duration(1000)
+                    //.delay(750)
+                    .style("opacity", 1);
+                //}
+            }
+        }
+    });
+}
 
 //-------------------------- Call visualization with specified data ------------------------------
 function init(version){
@@ -585,7 +1120,7 @@ function init(version){
         })
         .on("click", function(d,i) {
             d3.select("svg").selectAll("*").remove();
-            bars("data/vis_data_5.csv", version);
+            bars("data/vis_data_1_all.csv", version);
         })
 
     /*if(version === 1){

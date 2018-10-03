@@ -1,0 +1,464 @@
+{
+    "name": "Letters",
+    "children": [
+            {
+        "name": "1780",
+        "children": [
+            {
+                "name": "1776",
+                "children": [
+                    {"name": "FSchiller", "letters": 0},
+                    {"name": "CSchiller", "letters": 0},
+                    {"name": "CStein", "letters": 117},
+                    {"name": "CGoethe", "letters": 0}   
+                
+                ]
+            },
+            {
+                "name": "1777",
+                "children": [
+                    {"name": "FSchiller", "letters": 0},
+                    {"name": "CSchiller", "letters": 0},
+                    {"name": "CStein", "letters": 91},
+                    {"name": "CGoethe", "letters": 0}
+                ]
+            },
+            {
+                "name": "1778",
+                "children": [
+                    {"name": "FSchiller", "letters": 0},
+                    {"name": "CSchiller", "letters": 0},
+                    {"name": "CStein", "letters": 85},
+                    {"name": "CGoethe", "letters": 0}
+                ]
+            },
+            {
+                "name": "1779",
+                "children": [
+                    {"name": "FSchiller", "letters": 0},
+                    {"name": "CSchiller", "letters": 0},
+                    {"name": "CStein", "letters": 68},
+                    {"name": "CGoethe", "letters": 0}
+                ]  
+            },
+            {
+                "name": "1780",
+                "children": [
+                    {"name": "FSchiller", "letters": 0},
+                    {"name": "CSchiller", "letters": 0},
+                    {"name": "CStein", "letters": 171},
+                    {"name": "CGoethe", "letters": 0}
+                ]
+            }
+        ]
+    },
+    {
+        "name": "1785",
+        "children": [
+            {
+                "name": "1781",
+                "children": [
+                    {"name": "FSchiller", "letters": 0},
+                    {"name": "CSchiller", "letters": 0},
+                    {"name": "CStein", "letters": 241},
+                    {"name": "CGoethe", "letters": 0}   
+                
+                ]
+            },
+            {
+                "name": "1782",
+                "children": [
+                    {"name": "FSchiller", "letters": 0},
+                    {"name": "CSchiller", "letters": 0},
+                    {"name": "CStein", "letters": 270},
+                    {"name": "CGoethe", "letters": 0}
+                ]
+            },
+            {
+                "name": "1783",
+                "children": [
+                    {"name": "FSchiller", "letters": 0},
+                    {"name": "CSchiller", "letters": 0},
+                    {"name": "CStein", "letters": 153},
+                    {"name": "CGoethe", "letters": 0}
+                ]
+            },
+            {
+                "name": "1784",
+                "children": [
+                    {"name": "FSchiller", "letters": 0},
+                    {"name": "CSchiller", "letters": 0},
+                    {"name": "CStein", "letters": 142},
+                    {"name": "CGoethe", "letters": 0}
+                ]  
+            },
+            {
+                "name": "1785",
+                "children": [
+                    {"name": "FSchiller", "letters": 0},
+                    {"name": "CSchiller", "letters": 0},
+                    {"name": "CStein", "letters": 162},
+                    {"name": "CGoethe", "letters": 0}
+                ]
+            }
+        ]
+    },
+    {
+        "name": "1790",
+        "children": [
+            {
+                "name": "1786",
+                "children": [
+                    {"name": "FSchiller", "letters": 0},
+                    {"name": "CSchiller", "letters": 0},
+                    {"name": "CStein", "letters": 101},
+                    {"name": "CGoethe", "letters": 0}   
+                
+                ]
+            },
+            {
+                "name": "1787",
+                "children": [
+                    {"name": "FSchiller", "letters": 0},
+                    {"name": "CSchiller", "letters": 0},
+                    {"name": "CStein", "letters": 20},
+                    {"name": "CGoethe", "letters": 0}
+                ]
+            },
+            {
+                "name": "1788",
+                "children": [
+                    {"name": "FSchiller", "letters": 0},
+                    {"name": "CSchiller", "letters": 0},
+                    {"name": "CStein", "letters": 7},
+                    {"name": "CGoethe", "letters": 0}
+                ]
+            },
+            {
+                "name": "1789",
+                "children": [
+                    {"name": "FSchiller", "letters": 0},
+                    {"name": "CSchiller", "letters": 0},
+                    {"name": "CStein", "letters": 4},
+                    {"name": "CGoethe", "letters": 0}
+                ]  
+            },
+            {
+                "name": "1790",
+                "children": [
+                    {"name": "FSchiller", "letters": 0},
+                    {"name": "CSchiller", "letters": 0},
+                    {"name": "CStein", "letters": 0},
+                    {"name": "CGoethe", "letters": 0}
+                ]
+            }
+        ]
+    },
+    {
+        "name": "1795",
+        "children": [
+            {
+                "name": "1791",
+                "children": [
+                    {"name": "FSchiller", "letters": 0},
+                    {"name": "CSchiller", "letters": 0},
+                    {"name": "CStein", "letters": 0},
+                    {"name": "CGoethe", "letters": 0}   
+                
+                ]
+            },
+            {
+                "name": "1792",
+                "children": [
+                    {"name": "FSchiller", "letters": 0},
+                    {"name": "CSchiller", "letters": 0},
+                    {"name": "CStein", "letters": 0},
+                    {"name": "CGoethe", "letters": 12}
+                ]
+            },
+            {
+                "name": "1793",
+                "children": [
+                    {"name": "FSchiller", "letters": 0},
+                    {"name": "CSchiller", "letters": 0},
+                    {"name": "CStein", "letters": 0},
+                    {"name": "CGoethe", "letters": 24}
+                ]
+            },
+            {
+                "name": "1794",
+                "children": [
+                    {"name": "FSchiller", "letters": 36},
+                    {"name": "CSchiller", "letters": 0},
+                    {"name": "CStein", "letters": 0},
+                    {"name": "CGoethe", "letters": 2}
+                ]  
+            },
+            {
+                "name": "1795",
+                "children": [
+                    {"name": "FSchiller", "letters": 100},
+                    {"name": "CSchiller", "letters": 1},
+                    {"name": "CStein", "letters": 0},
+                    {"name": "CGoethe", "letters": 24}
+                ]
+            }
+        ]
+    },
+    {
+        "name": "1800",
+        "children": [
+            {
+                "name": "1796",
+                "children": [
+                    {"name": "FSchiller", "letters": 125},
+                    {"name": "CSchiller", "letters": 0},
+                    {"name": "CStein", "letters": 0},
+                    {"name": "CGoethe", "letters": 33}   
+                
+                ]
+            },
+            {
+                "name": "1797",
+                "children": [
+                    {"name": "FSchiller", "letters": 131},
+                    {"name": "CSchiller", "letters": 4},
+                    {"name": "CStein", "letters": 0},
+                    {"name": "CGoethe", "letters": 62}
+                ]
+            },
+            {
+                "name": "1798",
+                "children": [
+                    {"name": "FSchiller", "letters": 164},
+                    {"name": "CSchiller", "letters": 4},
+                    {"name": "CStein", "letters": 0},
+                    {"name": "CGoethe", "letters": 60}
+                ]
+            },
+            {
+                "name": "1799",
+                "children": [
+                    {"name": "FSchiller", "letters": 131},
+                    {"name": "CSchiller", "letters": 0},
+                    {"name": "CStein", "letters": 0},
+                    {"name": "CGoethe", "letters": 53}
+                ]  
+            },
+            {
+                "name": "1800",
+                "children": [
+                    {"name": "FSchiller", "letters": 93},
+                    {"name": "CSchiller", "letters": 0},
+                    {"name": "CStein", "letters": 0},
+                    {"name": "CGoethe", "letters": 26}
+                ]
+            }
+        ]
+    },
+    {
+        "name": "1805",
+        "children": [
+            {
+                "name": "1801",
+                "children": [
+                    {"name": "FSchiller", "letters": 42},
+                    {"name": "CSchiller", "letters": 0},
+                    {"name": "CStein", "letters": 0},
+                    {"name": "CGoethe", "letters": 14}   
+                
+                ]
+            },
+            {
+                "name": "1802",
+                "children": [
+                    {"name": "FSchiller", "letters": 50},
+                    {"name": "CSchiller", "letters": 0},
+                    {"name": "CStein", "letters": 0},
+                    {"name": "CGoethe", "letters": 45}
+                ]
+            },
+            {
+                "name": "1803",
+                "children": [
+                    {"name": "FSchiller", "letters": 53},
+                    {"name": "CSchiller", "letters": 5},
+                    {"name": "CStein", "letters": 0},
+                    {"name": "CGoethe", "letters": 37}
+                ]
+            },
+            {
+                "name": "1804",
+                "children": [
+                    {"name": "FSchiller", "letters": 45},
+                    {"name": "CSchiller", "letters": 1},
+                    {"name": "CStein", "letters": 0},
+                    {"name": "CGoethe", "letters": 4}
+                ]  
+            },
+            {
+                "name": "1805",
+                "children": [
+                    {"name": "FSchiller", "letters": 25},
+                    {"name": "CSchiller", "letters": 0},
+                    {"name": "CStein", "letters": 0},
+                    {"name": "CGoethe", "letters": 3}
+                ]
+            }
+        ]
+    },
+    {
+        "name": "1810",
+        "children": [
+            {
+                "name": "1806",
+                "children": [
+                    {"name": "FSchiller", "letters": 0},
+                    {"name": "CSchiller", "letters": 0},
+                    {"name": "CStein", "letters": 0},
+                    {"name": "CGoethe", "letters": 9}   
+                
+                ]
+            },
+            {
+                "name": "1807",
+                "children": [
+                    {"name": "FSchiller", "letters": 0},
+                    {"name": "CSchiller", "letters": 0},
+                    {"name": "CStein", "letters": 0},
+                    {"name": "CGoethe", "letters": 16}
+                ]
+            },
+            {
+                "name": "1808",
+                "children": [
+                    {"name": "FSchiller", "letters": 0},
+                    {"name": "CSchiller", "letters": 0},
+                    {"name": "CStein", "letters": 0},
+                    {"name": "CGoethe", "letters": 22}
+                ]
+            },
+            {
+                "name": "1809",
+                "children": [
+                    {"name": "FSchiller", "letters": 0},
+                    {"name": "CSchiller", "letters": 0},
+                    {"name": "CStein", "letters": 0},
+                    {"name": "CGoethe", "letters": 33}
+                ]  
+            },
+            {
+                "name": "1810",
+                "children": [
+                    {"name": "FSchiller", "letters": 0},
+                    {"name": "CSchiller", "letters": 0},
+                    {"name": "CStein", "letters": 0},
+                    {"name": "CGoethe", "letters": 43}
+                ]
+            }
+        ]
+    },
+    {
+        "name": "1815",
+        "children": [
+            {
+                "name": "1811",
+                "children": [
+                    {"name": "FSchiller", "letters": 0},
+                    {"name": "CSchiller", "letters": 0},
+                    {"name": "CStein", "letters": 0},
+                    {"name": "CGoethe", "letters": 11}   
+                
+                ]
+            },
+            {
+                "name": "1812",
+                "children": [
+                    {"name": "FSchiller", "letters": 0},
+                    {"name": "CSchiller", "letters": 0},
+                    {"name": "CStein", "letters": 0},
+                    {"name": "CGoethe", "letters": 18}
+                ]
+            },
+            {
+                "name": "1813",
+                "children": [
+                    {"name": "FSchiller", "letters": 0},
+                    {"name": "CSchiller", "letters": 0},
+                    {"name": "CStein", "letters": 0},
+                    {"name": "CGoethe", "letters": 19}
+                ]
+            },
+            {
+                "name": "1814",
+                "children": [
+                    {"name": "FSchiller", "letters": 0},
+                    {"name": "CSchiller", "letters": 0},
+                    {"name": "CStein", "letters": 0},
+                    {"name": "CGoethe", "letters": 19}
+                ]  
+            },
+            {
+                "name": "1815",
+                "children": [
+                    {"name": "FSchiller", "letters": 0},
+                    {"name": "CSchiller", "letters": 0},
+                    {"name": "CStein", "letters": 0},
+                    {"name": "CGoethe", "letters": 23}
+                ]
+            }
+        ]
+    },
+    {
+        "name": "1820",
+        "children": [
+            {
+                "name": "1816",
+                "children": [
+                    {"name": "FSchiller", "letters": 0},
+                    {"name": "CSchiller", "letters": 0},
+                    {"name": "CStein", "letters": 0},
+                    {"name": "CGoethe", "letters": 3}   
+                
+                ]
+            },
+            {
+                "name": "1817",
+                "children": [
+                    {"name": "FSchiller", "letters": 0},
+                    {"name": "CSchiller", "letters": 0},
+                    {"name": "CStein", "letters": 0},
+                    {"name": "CGoethe", "letters": 0}
+                ]
+            },
+            {
+                "name": "1818",
+                "children": [
+                    {"name": "FSchiller", "letters": 0},
+                    {"name": "CSchiller", "letters": 0},
+                    {"name": "CStein", "letters": 0},
+                    {"name": "CGoethe", "letters": 0}
+                ]
+            },
+            {
+                "name": "1819",
+                "children": [
+                    {"name": "FSchiller", "letters": 0},
+                    {"name": "CSchiller", "letters": 0},
+                    {"name": "CStein", "letters": 0},
+                    {"name": "CGoethe", "letters": 0}
+                ]  
+            },
+            {
+                "name": "1820",
+                "children": [
+                    {"name": "FSchiller", "letters": 0},
+                    {"name": "CSchiller", "letters": 0},
+                    {"name": "CStein", "letters": 0},
+                    {"name": "CGoethe", "letters": 0}
+                ]
+            }
+        ]
+    }
+]
+}
