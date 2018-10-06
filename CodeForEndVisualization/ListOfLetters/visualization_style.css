@@ -45,8 +45,10 @@ button{
 	cursor: pointer;
 }
 button:hover{
-	color: grey;
+	/* color: grey; */
+	color : #dc6daa;
 }
+
 #LetterDiv{
 	margin-left: 700px;
 	margin-right: 50px;
@@ -94,4 +96,4 @@ li img {
 }
 .zc-ref {
     display: none;
-  }
+}

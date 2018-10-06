@@ -13,6 +13,7 @@ var visibleLettersPeople;
 var barSelected = false;
 var toggleWhileBarSelected = false;
 var legendSelected = false;
+var loadedLetter;
 
 //-------------------- Barchart -----------------------
 
@@ -1331,7 +1332,15 @@ function toggle(id, name, year, steps){
 //------------- Load the letters --------------
 function Load(clickedButton){
     Remove();
-    $("#LetterDiv").load("../../AllLetters/" + clickedButton + ".html")
+    var thisButton = document.getElementById(clickedButton);
+    if(thisButton == loadedLetter){
+        thisButton.style.color = "#000000";
+        document.getElementById("herr_made").onchange();
+    }else{
+        thisButton.style.color = "#fd00ff";
+        $("#LetterDiv").load("../../AllLetters/" + clickedButton + ".html");
+    }
+    loadedLetter = thisButton;
 }
 
 //-------- Remove previous text/Letters from the div ---------
@@ -1607,7 +1616,8 @@ function render_wordcloud(cloudData){
         id: 'LetterDiv', 
         data: myConfig, 
         height: '100%', 
-        width: '100%'
+        width: '100%',
+        autoResize: true
     });
 
     zingchart.bind('LetterDiv','label_click', function(p){
@@ -1627,7 +1637,8 @@ function render_selected_wordcloud(cloudData){
         id:'LetterDiv',
         data: selectedConfig,
         height:'100%',
-        width:'100%'
+        width:'100%',
+        autoResize: true
     });
     
     highlight_word(word);
