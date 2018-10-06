@@ -1135,7 +1135,7 @@ function init(version){
 
 //----------------------- Create the first wordcloud and the first small bars next to the years ----------------
 function init_page(){
-    document.getElementById("herr_made").innerHTML = "Wunschpunsch";
+    document.getElementById("herr_made").innerHTML = "wunschpunsch";
     document.getElementById("herr_made").onchange();
     create_small_bars();
 }
@@ -1196,7 +1196,7 @@ function trigger_new_cloud(){
             if(!legendSelected){
                 name = 'whole';
             }
-            if(word != "Wunschpunsch"){
+            if(word != "wunschpunsch"){
                 console.log("selected cloud with " + name, year, steps);
                 selected_wordcloud(word, name, year, steps);
             }else{
@@ -1211,7 +1211,7 @@ function trigger_new_cloud(){
             if(!legendSelected){
                 name = elements[1];
             }
-            if(word != "Wunschpunsch"){
+            if(word != "wunschpunsch"){
                 console.log("selected cloud with " + name, year, steps);
                 selected_wordcloud(word, name, year, steps);
             }else{
@@ -1227,7 +1227,7 @@ function trigger_new_cloud(){
         if(!legendSelected){
             name = 'whole';
         }
-        if(word != "Wunschpunsch"){
+        if(word != "wunschpunsch"){
             console.log("selected cloud with " + name, year, steps);
             selected_wordcloud(word, name, year, steps);
         }else{
@@ -1284,7 +1284,7 @@ function toggle(id, name, year, steps){
         }
 
         if(!wordClicked){
-            document.getElementById("herr_made").innerHTML = "Wunschpunsch";
+            document.getElementById("herr_made").innerHTML = "wunschpunsch";
             document.getElementById("herr_made").onchange();
         }else{
             document.getElementById("herr_made").innerHTML = clickedWord;
@@ -1356,7 +1356,7 @@ function Remove(){
 
 //------------ callback functions to load JSON files ----------
 function load_letter_Index(callback){
-    var httpRequestURL = "data/word-letter_index.json";
+    var httpRequestURL = "data/word-letter_index2.json";
     var httpRequest = new XMLHttpRequest();
     httpRequest.onload = function(){
         callback(httpRequest.response);
@@ -1660,7 +1660,7 @@ function render_selected_wordcloud(cloudData){
         if(selectedWord == word){
             wordClicked = false;
             clickedWord = "";
-            document.getElementById("herr_made").innerHTML = "Wunschpunsch";
+            document.getElementById("herr_made").innerHTML = "wunschpunsch";
             document.getElementById("herr_made").onchange();
         }else{ 
             //click on another word: that word gets selected
@@ -1675,18 +1675,18 @@ function render_selected_wordcloud(cloudData){
 //---- create the wordclouds in which one word is selected -----------------
 function selected_wordcloud(word, name, year, steps){
 
-    if(year == 1111){ //we already have this data so I'm gonna use it; it's more accurate
-        var selectedCloudDataURL = "data/noun_wc_data/" + word + ".json";
-        var selectedCloudDataRequest = new XMLHttpRequest();
-        selectedCloudDataRequest.open('GET', selectedCloudDataURL);
-        selectedCloudDataRequest.responseType = 'json';
-        selectedCloudDataRequest.send();
-        selectedCloudDataRequest.onload = function(){
-            selectedText = selectedCloudDataRequest.response;
-            render_selected_wordcloud(selectedText);
-        }
+    // if(year == 1111){ //we already have this data so I'm gonna use it; it's more accurate
+    //     var selectedCloudDataURL = "data/noun_wc_data/" + word + ".json";
+    //     var selectedCloudDataRequest = new XMLHttpRequest();
+    //     selectedCloudDataRequest.open('GET', selectedCloudDataURL);
+    //     selectedCloudDataRequest.responseType = 'json';
+    //     selectedCloudDataRequest.send();
+    //     selectedCloudDataRequest.onload = function(){
+    //         selectedText = selectedCloudDataRequest.response;
+    //         render_selected_wordcloud(selectedText);
+    //     }
 
-    }else{ //compute the tf-idf scores on the fly
+    // }else{ //compute the tf-idf scores on the fly
         var toGet = []; //all the letters that are currently open and are depicted in the wordcloud
         var closedLetters = [];
         var tf_data = {};
@@ -1703,11 +1703,10 @@ function selected_wordcloud(word, name, year, steps){
             console.log(letterIndex[word]);
             for(i = 0; i < letters.length; i++){
                 var parameters = letters[i].split("_");
-                // if(year == 1111){ //in this case we need all the letters
-                //     toGet.push(letters[i]);
-                //     closedLetters.push(letters[i]);
-                // }else 
-                if(name == 'whole'){ //all the letters from the open year
+                if(year == 1111){ //in this case we need all the letters
+                    toGet.push(letters[i]);
+                    closedLetters.push(letters[i]);
+                }else if(name == 'whole'){ //all the letters from the open year
                     if(parameters[0] == year){
                         toGet.push(letters[i]);
                     }else{
@@ -1721,8 +1720,8 @@ function selected_wordcloud(word, name, year, steps){
                     }
                 }
             }
-            //numberOfDocs = letters.length;
-            numberOfDocs = closedLetters.length + 1; //weil ja alle geöffneten zu einem Doc zusammengefasst wurden!
+            numberOfDocs = toGet.length;
+            //numberOfDocs = closedLetters.length + 1; //weil ja alle geöffneten zu einem Doc zusammengefasst wurden!
             console.log("Number of Docs: " + numberOfDocs);
             //console.log(toGet);
             
@@ -1742,18 +1741,19 @@ function selected_wordcloud(word, name, year, steps){
 
                             //count how many of ALL the letters containing the selected word contain this word as well
                             //(only necessary on the firs occurence of the word)
-                            for(i = 0; i < closedLetters.length; i++){
-                                var otherLetter = closedLetters[i];
-                                var idf_nouns = frequencies[otherLetter];
-                                for(var noun_key in idf_nouns){
-                                    if(noun_key == key){
-                                        docs_containing_word[noun_key] += 1;
-                                        break;
-                                    }
-                                }
-                            }
+                            // for(i = 0; i < toGet.length; i++){
+                            //     var otherLetter = toGet[i];
+                            //     var idf_nouns = frequencies[otherLetter];
+                            //     for(var noun_key in idf_nouns){
+                            //         if(noun_key == key){
+                            //             docs_containing_word[noun_key] += 1;
+                            //             break;
+                            //         }
+                            //     }
+                            // }
                         }else{
                             tf_data[key] += noun_frequency[key];
+                            docs_containing_word[key] += 1;
                         }
                         doc_length += noun_frequency[key]; //sum of the number of words of all letters containing the word
                     }
@@ -1774,11 +1774,11 @@ function selected_wordcloud(word, name, year, steps){
                 }
                 console.log("Docs containing word: ");
                 console.log(docs_containing_word);
-                //console.log(cloudData);
+                console.log(cloudData);
                 render_selected_wordcloud(cloudData);
             });
         });
-    }
+    //}
 }
 
 

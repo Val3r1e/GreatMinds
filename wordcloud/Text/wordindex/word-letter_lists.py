@@ -11,7 +11,7 @@ import pickle
 
 def get_all_words():
 
-    direc = "../nouns/whole/"
+    direc = "../nouns_steps/whole/"
 
     words = set()
 
@@ -31,20 +31,22 @@ def get_all_words():
 
     words = sorted(words)
     #print(words)
-    print(len(words))
+    #print(len(words))
     # json.dump(words, open("../all_nouns.json", 'w'))
     # with open('../all_nouns_set.pickle', 'wb') as f:
     #     pickle.dump(words, f)
 
-    #return words
+    return words
 
 def create_word_index():
 
     root = "../../../Letters/" 
+    letter_root = "../../../AllLetters"
     words = get_all_words()
     names = ["CSchiller", "CStein", "CGoethe", "FSchiller"]
     index = {}
-    visibility = {}
+    wunschpunsch = [file.replace(".html", "") for file in os.listdir(letter_root)]
+    #visibility = {}
 
     for word in words:
         filenames = []
@@ -54,22 +56,23 @@ def create_word_index():
                 if file.endswith(".txt"):
                     filename = os.path.join(direc, file)
                     f_name = file.replace(".txt", "")
-                    visibility[f_name] = False;
-        #             with open(filename, 'r') as openfile:
-        #                 text = (openfile.read()).casefold()
-        #                 if word.casefold() in text:
-        #                     filenames.append(f_name)
+                   # visibility[f_name] = False;
+                    with open(filename, 'r') as openfile:
+                        text = (openfile.read()).casefold()
+                        if word.casefold() in text:
+                            filenames.append(f_name)
         
-        # index[word] = filenames
+        index[word] = filenames
     
-    #json.dump(index, open("word-letter_index.json", 'w'))
-    json.dump(visibility, open("visibility.json", 'w'))
+    index["wunschpunsch"] = wunschpunsch
+    json.dump(index, open("word-letter_index2.json", 'w'))
+    #json.dump(visibility, open("visibility.json", 'w'))
 
 
 def main():
     
-    #create_word_index()
-    get_all_words()
+    create_word_index()
+    #get_all_words()
 
 if __name__ == '__main__':
     main()
