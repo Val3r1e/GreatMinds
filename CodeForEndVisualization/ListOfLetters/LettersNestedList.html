@@ -4020,6 +4020,19 @@
         <div id="LetterDiv" style="display: none" class="animateLoader"></div>
         <div id="loader"><img src="Goethe_head.png" width="80px"></div>
         <div id="quote"></div>
+        <div id="filterbar">
+            <a href="#" id="filter">
+                <ol>
+                    <li id="filterhead">Filter </li>
+                    <li id="filtersub">click to deselect</li>
+                    <li>
+                        <button id="filteryear" class="filterelement" onclick="deselectFilter(this.id)"></button>
+                        <button id="filtername" class="filterelement" onclick="deselectFilter(this.id)"></button>
+                        <button id="filterword" class="filterelement" onclick="deselectFilter(this.id)"></button>
+                    </li> 
+                </ol>
+            </a>
+        </div>
 
         <!-- ...... These ones only purpose is to deliver a message in order to avoid recursion: ..... -->
         <div style="display:none" id="herr_made" onchange="trigger_new_cloud()"></div>

@@ -12,6 +12,7 @@ var visibleLetters;
 var visibleLettersPeople;
 var barSelected = false;
 var toggleWhileBarSelected = false;
+var toggleWhileLegendSelected = false;
 var legendSelected = false;
 var loadedLetter;
 var letterLoaded = false;
@@ -1146,7 +1147,7 @@ function init_page(){
     
 }
 
-// ----- calculating the clouds and the list takes a while so here is a loading screen -----------
+// ----- calculating the clouds and the list takes a while so here is a loading screen: -----------
 function showListAndWC(){
     document.getElementById("loader").style.display = "none";
     document.getElementById("quote").style.display = "none";
@@ -1162,13 +1163,13 @@ function loadListAndWC(){
     document.getElementById("ButtonDiv").style.display = "none";
 }
 
-//------ some short quotes to make the waiting more pleasant --------
+//------ some short quotes to make the waiting more pleasant (feel free to add some) --------
 function newQuote(){
     quotes = ["Es hört doch jeder nur, was er versteht", "Mit dem Wissen wächst der Zweifel", "Die Welt urteilt nach dem Scheine",
               "Wo viel Licht ist, ist starker Schatten", "Es irrt der Mensch, solang er strebt", "Zur Resignation gehört Charakter",
               "Es nimmt der Augenblick, was Jahre geben", "Edel sei der Mensch, hilfreich und gut", "Glücklich allein ist die Seele, die liebt"];
-    quoteCounter = (quoteCounter + 1) % quotes.length;
     document.getElementById("quote").innerHTML = quotes[quoteCounter];
+    quoteCounter = (quoteCounter + 1) % quotes.length;
 }
 
 // ---------------- Code for small bars to show letter amount -----------------
@@ -1205,6 +1206,66 @@ function small_bar(id){
     .attr("class", "divchart")
     .style("background-color", function(d){ return color(d)})
     .text(function(d) { return d; });
+}
+
+//---- set the filter in the sidebar ------------
+function setFilter(word, name, year, steps){
+    steps = parseInt(steps);
+    year = parseInt(year);
+
+    if(word != "wunschpunsch"){
+        document.getElementById("filterword").innerHTML = word;
+        document.getElementById("filterword").style.display = "block";
+    }else{
+        document.getElementById("filterword").innerHTML = "";
+        document.getElementById("filterword").style.display = "none";
+    }
+
+    if(legendSelected && !toggleWhileLegendSelected){
+        if(name != "whole"){
+            document.getElementById("filtername").innerHTML = name;
+            document.getElementById("filtername").style.display = "block";
+        }else{
+            document.getElementById("filtername").innerHTML = "";
+            document.getElementById("filtername").style.display = "none";
+        }
+    }
+    
+    if(barSelected && !toggleWhileBarSelected){
+        if(year != 1111){
+            if(steps === 5){
+                document.getElementById("filteryear").innerHTML = year + " - " + (year + 4);
+                
+            }else{
+                document.getElementById("filteryear").innerHTML = year;
+            }
+            document.getElementById("filteryear").style.display = "block";
+        }else{
+            document.getElementById("filteryear").innerHTML = "";
+            document.getElementById("filteryear").style.display = "none";
+        }
+    }
+}
+
+function deselectFilter(clickedElement){
+    if(clickedElement == "filteryear"){
+        barSelected = false;
+        toggleWhileBarSelected = false;
+        document.getElementById("filteryear").innerHTML = "";
+        document.getElementById("filteryear").style.display = "none";
+    }
+    if(clickedElement == "filtername"){
+        legendSelected = false;
+        toggleWhileLegendSelected = false;
+        document.getElementById("filtername").innerHTML = "";
+        document.getElementById("filtername").style.display = "none";
+    }
+    if(clickedElement == "filterword"){
+        wordClicked = false;
+        clickedWord = "";
+        document.getElementById("herr_made").innerHTML = "wunschpunsch";
+    }
+    document.getElementById("herr_made").onchange();
 }
 
 //---- we need one main function to trigger a new cloud because otherwise it would be a recursive mess --------
@@ -1253,6 +1314,8 @@ function trigger_new_cloud(){
         //console.log("Cloud: " + name, year, steps);
         selected_wordcloud(word, name, year, steps);
     }
+    console.log("set parameters to "+ word +" "+ name +" "+ year +" "+ steps);
+    setFilter(word, name, year, steps);
     show_corresponding_letters(word);
 }
 
@@ -1288,6 +1351,12 @@ function toggle(id, name, year, steps){
             toggleWhileBarSelected = true;
         }else{
             toggleWhileBarSelected = false;
+        }
+
+        if(legendSelected){
+            toggleWhileLegendSelected = true;
+        }else{
+            toggleWhileLegendSelected = false;
         }
 
         this_ulElement = load_ul(element_id);
