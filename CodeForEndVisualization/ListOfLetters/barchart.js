@@ -14,6 +14,7 @@ var barSelected = false;
 var toggleWhileBarSelected = false;
 var legendSelected = false;
 var loadedLetter;
+var letterLoaded = false;
 
 //-------------------- Barchart -----------------------
 
@@ -1280,6 +1281,13 @@ function toggle(id, name, year, steps){
     }
 
     if (ulElement){
+        
+        //for (de-)selecting the letters
+        if(letterLoaded){
+            loadedLetter.style.color = "#000000";
+            loadedLetter = undefined;
+            letterLoaded = false;
+        }
         //open element
         if (ulElement.className == 'closed'){
             //to ensure only one year and max. one person is open at the same time:
@@ -1331,16 +1339,21 @@ function toggle(id, name, year, steps){
 
 //------------- Load the letters --------------
 function Load(clickedButton){
+    letterLoaded = true;
     Remove();
     var thisButton = document.getElementById(clickedButton);
     if(thisButton == loadedLetter){
         thisButton.style.color = "#000000";
+        letterLoaded = false;
         document.getElementById("herr_made").onchange();
     }else{
+        if(loadedLetter!= undefined){
+            loadedLetter.style.color = "#000000";
+        }
+        loadedLetter = thisButton;
         thisButton.style.color = "#fd00ff";
         $("#LetterDiv").load("../../AllLetters/" + clickedButton + ".html");
     }
-    loadedLetter = thisButton;
 }
 
 //-------- Remove previous text/Letters from the div ---------
