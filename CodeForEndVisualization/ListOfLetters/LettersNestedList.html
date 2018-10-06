@@ -16,6 +16,8 @@
         <link href="visualization_style.css" rel="stylesheet" type="text/CSS"/>
         <link href="https://fonts.googleapis.com/css?family=Merriweather" rel="stylesheet">
         <link href="https://fonts.googleapis.com/css?family=Montserrat|Ubuntu+Mono|Vidaloka|Raleway|Marcellus+SC|IM+Fell+French+Canon+SC" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css?family=Meie+Script|Parisienne" rel="stylesheet"> 
+
 
         <svg width="1250" height="600"></svg>
     </head>
@@ -31,7 +33,7 @@
         </script>
     
         <!-- ...............List with buttons............... -->
-        <div class="ButtonDiv">
+        <div id="ButtonDiv" class="ButtonDiv">
             <ul class="open">
                 <li class="toggle_year" id="a_1776">
                     <a onclick="toggle('1776', 'whole', 1776, 1);">
@@ -4015,7 +4017,9 @@
         </div>
 
         <!-- ...............Letters and wordclouds get displayed in div............... -->
-        <div id="LetterDiv"></div>
+        <div id="LetterDiv" style="display: none" class="animateLoader"></div>
+        <div id="loader"><img src="Goethe_head.png" width="80px"></div>
+        <div id="quote"></div>
 
         <!-- ...... These ones only purpose is to deliver a message in order to avoid recursion: ..... -->
         <div style="display:none" id="herr_made" onchange="trigger_new_cloud()"></div>

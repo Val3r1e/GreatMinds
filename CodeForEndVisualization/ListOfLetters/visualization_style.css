@@ -50,6 +50,7 @@ button:hover{
 }
 
 #LetterDiv{
+	display: none;
 	margin-left: 700px;
 	margin-right: 50px;
 	position: absolute;
@@ -61,15 +62,40 @@ button:hover{
 	overflow: scroll;
 	max-height: 600px;
 }
-/* #LetterDivTitle{
-	margin-left: 400px;
-	margin-right:100px;
-	position: relative;;
-	top:0px;
-	right: 0px;
-	height: 50px;
-} */
+
+#loader {
+	position: absolute;
+	left: 50%;
+	top: 80%;
+	z-index: 1;
+	width: 150px;
+	height: 150px;
+	margin: -75px 0 0 -75px;
+	border: 16px solid #f3f3f3;
+	border-radius: 50%;
+	border-top: 16px solid #7b1fa2;
+	border-right: 16px solid #5c6bc0;
+	border-left: 16px solid #9575cd;
+	border-bottom: 16px solid #9fa8da;
+	width: 80px;
+	height: 80px;
+	-webkit-animation: spin 2s linear infinite;
+	animation: spin 2s linear infinite;
+}
+
+#quote{
+	text-align: center;
+	font-size: 50px;
+	font-family: 'Meie Script', cursive;
+	position: absolute;
+	left: 30%;
+	top: 90%;
+	z-index: 1;
+	margin: -40px 0 0 -40px;
+}
+
 .ButtonDiv{
+	display: none;
 	position: relative;
 	overflow: scroll;
 	max-height: 600px;
@@ -97,3 +123,33 @@ li img {
 .zc-ref {
     display: none;
 }
+  
+@-webkit-keyframes spin {
+	0% { -webkit-transform: rotate(0deg); }
+	100% { -webkit-transform: rotate(360deg); }
+}
+  
+@keyframes spin {
+	0% { transform: rotate(0deg); }
+	100% { transform: rotate(360deg); }
+}
+  
+  /* Add animation to "page content" */
+.animateLoader {
+	position: relative;
+	-webkit-animation-name: animatebottom;
+	-webkit-animation-duration: 1s;
+	animation-name: animatebottom;
+	animation-duration: 1s
+}
+  
+@-webkit-keyframes animatebottom {
+	from { bottom:-100px; opacity:0 } 
+	to { bottom:0px; opacity:1 }
+}
+  
+@keyframes animatebottom { 
+	from{ bottom:-100px; opacity:0 } 
+	to{ bottom:0; opacity:1 }
+}
+  
