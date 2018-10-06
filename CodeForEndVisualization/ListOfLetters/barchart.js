@@ -1569,7 +1569,7 @@ function render_wordcloud(cloudData){
         options: {
             words : cloudData,
             minLength: 4,
-            // ignore: ['frau','leben'],
+            ignore: ['frau','leben'],
             maxItems: 50,
             aspect: 'spiral',
             rotate: false,
@@ -1667,6 +1667,7 @@ function selected_wordcloud(word, name, year, steps){
     var doc_length = 0; //total wordcount
     var numberOfDocs = 0; //number of docs containing the selected word
     var cloudData = [];
+    var totalCount = [];
 
     //toGet is a list of the names of all the letters matching the requested word
     load_letter_Index(function(letterInd){
@@ -1723,6 +1724,7 @@ function selected_wordcloud(word, name, year, steps){
                 var tf_score = (tf_data[key]); // doc_length);
 
                 tfIdf_scores[key] = (tf_score * idf_score);
+                totalCount.push({"text":key, "count":tf_data[key]});
                 cloudData.push({"text":key, "count":tfIdf_scores[key]});
                 if(key == word){
                     console.log(word + " : " + tfIdf_scores[word]);
@@ -1733,9 +1735,11 @@ function selected_wordcloud(word, name, year, steps){
             console.log(docs_containing_word);
             console.log(cloudData);
             if(word != "wunschpunsch"){
-                render_selected_wordcloud(cloudData);
+                //render_selected_wordcloud(cloudData);
+                render_selected_wordcloud(totalCount);
             }else{
-                render_wordcloud(cloudData);
+                //render_wordcloud(cloudData);
+                render_wordcloud(totalCount);
             }
             
         });
