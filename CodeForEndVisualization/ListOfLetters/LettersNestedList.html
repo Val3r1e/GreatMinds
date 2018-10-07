@@ -4023,12 +4023,16 @@
         <div id="filterbar">
             <a href="#" id="filter">
                 <ol>
-                    <li id="filterhead">Filter </li>
-                    <li id="filtersub">click to deselect</li>
+                    <li id="WCHeadline">You are here:</li>
+                    <li id="WCTitle"></li>
+                    <li class="break"></li>
+                    <li></li>
+                    <li id="filterhead">Applied Filter: </li>
+                    <li id="filtersub">(click to deselect)</li>
                     <li>
-                        <button id="filteryear" class="filterelement" onclick="deselectFilter(this.id)"></button>
-                        <button id="filtername" class="filterelement" onclick="deselectFilter(this.id)"></button>
-                        <button id="filterword" class="filterelement" onclick="deselectFilter(this.id)"></button>
+                        <button id="filteryear" class="filterelement" onclick="deselectFilter(this.id)"><span class = "tooltiptext">&nbsp;X&nbsp;</span></button>
+                        <button id="filtername" class="filterelement" onclick="deselectFilter(this.id)"><span class = "tooltiptext">&nbsp;X&nbsp;</span></button>
+                        <button id="filterword" class="filterelement" onclick="deselectFilter(this.id)"><span class = "tooltiptext">&nbsp;X&nbsp;</span></button>
                     </li> 
                 </ol>
             </a>

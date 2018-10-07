@@ -283,6 +283,7 @@ function bars(data,version){
                     //Bar is selected but no person on legend, clicking on selected part
                     else if (active === d.data.Year && active_link === "0"){
                         barSelected = false;
+                        toggleWhileBarSelected = false;
 
                         for (j = 0; j < rectangleClassArray.length; j++) {
                             d3.select("#id" + wanted + "-" + rectangleClassArray[j])
@@ -324,6 +325,7 @@ function bars(data,version){
                     //Bar and person on legend is selected, clicking on part of bar of that person
                     else if(active === d.data.Year && active_link == activeName){
                         barSelected = false;
+                        toggleWhileBarSelected = false;
                         d3.select(this)
                         .style("stroke", "none");
 
@@ -1147,6 +1149,8 @@ function init_page(){
     
 }
 
+//---------- LOADINGSCREEN -----------
+
 // ----- calculating the clouds and the list takes a while so here is a loading screen: -----------
 function showListAndWC(){
     document.getElementById("loader").style.display = "none";
@@ -1171,6 +1175,101 @@ function newQuote(){
     document.getElementById("quote").innerHTML = quotes[quoteCounter];
     quoteCounter = (quoteCounter + 1) % quotes.length;
 }
+
+//-------- SIDEBAR --------------
+
+//---------- set title for sidebar --------------
+function setTitle(word, name, year, steps){
+    year = parseInt(year);
+    steps = parseInt(steps);
+    if(word == "wunschpunsch"){
+        word = "";
+    }else{
+        word = " ("+word+")";
+    }
+    if(year == 1111){
+        year = "All Letters <br>";
+    }
+    if(name == 'whole'){
+        name = ""
+    }else{
+        if(name == "FSchiller"){
+            name = "Friedrich von Schiller,<br>"
+        }else if(name == "CGoethe"){
+            name = "Christiane von Goethe,<br>"
+        }else if(name == "CSchiller"){
+            name = "Charlotte von Schiller,<br>"
+        }else if(name == "CStein"){
+            name = "Charlotte von Stein,<br>"
+        }
+    }
+    if(steps == 5){
+        year = year + " - " + (year + 4) + "<br>";
+    }
+    document.getElementById("WCTitle").innerHTML = name + year + word;
+}
+
+//--------- set the filter in the sidebar ------------
+function setFilter(word, name, year, steps){
+    steps = parseInt(steps);
+    year = parseInt(year);
+
+    if(word != "wunschpunsch"){
+        document.getElementById("filterword").innerHTML = word + "<span class='tooltiptext'>&nbsp;X&nbsp;</span>";
+        document.getElementById("filterword").style.display = "block";
+    }else{
+        document.getElementById("filterword").innerHTML = "";
+        document.getElementById("filterword").style.display = "none";
+    }
+
+    if(legendSelected && !toggleWhileLegendSelected){
+        if(name != "whole"){
+            document.getElementById("filtername").innerHTML = name + "<span class='tooltiptext'>&nbsp;X&nbsp;</span>";
+            document.getElementById("filtername").style.display = "block";
+        }else{
+            document.getElementById("filtername").innerHTML = "";
+            document.getElementById("filtername").style.display = "none";
+        }
+    }
+    
+    if(barSelected && !toggleWhileBarSelected){
+        if(year != 1111){
+            if(steps === 5){
+                document.getElementById("filteryear").innerHTML = year + " - " + (year + 4) + "<span class='tooltiptext'>&nbsp;X&nbsp;</span>";
+                
+            }else{
+                document.getElementById("filteryear").innerHTML = year + "<span class='tooltiptext'>&nbsp;X&nbsp;</span>";
+            }
+            document.getElementById("filteryear").style.display = "block";
+        }else{
+            document.getElementById("filteryear").innerHTML = "";
+            document.getElementById("filteryear").style.display = "none";
+        }
+    }
+}
+
+//-------- if a filter gets deselected in the sidebar -------------
+function deselectFilter(clickedElement){
+    if(clickedElement == "filteryear"){
+        barSelected = false;
+        toggleWhileBarSelected = false;
+        document.getElementById("filteryear").innerHTML = "";
+        document.getElementById("filteryear").style.display = "none";
+    }
+    if(clickedElement == "filtername"){
+        legendSelected = false;
+        toggleWhileLegendSelected = false;
+        document.getElementById("filtername").innerHTML = "";
+        document.getElementById("filtername").style.display = "none";
+    }
+    if(clickedElement == "filterword"){
+        wordClicked = false;
+        clickedWord = "";
+        document.getElementById("herr_made").innerHTML = "wunschpunsch";
+    }
+    document.getElementById("herr_made").onchange();
+}
+
 
 // ---------------- Code for small bars to show letter amount -----------------
 function create_small_bars(){
@@ -1206,66 +1305,6 @@ function small_bar(id){
     .attr("class", "divchart")
     .style("background-color", function(d){ return color(d)})
     .text(function(d) { return d; });
-}
-
-//---- set the filter in the sidebar ------------
-function setFilter(word, name, year, steps){
-    steps = parseInt(steps);
-    year = parseInt(year);
-
-    if(word != "wunschpunsch"){
-        document.getElementById("filterword").innerHTML = word;
-        document.getElementById("filterword").style.display = "block";
-    }else{
-        document.getElementById("filterword").innerHTML = "";
-        document.getElementById("filterword").style.display = "none";
-    }
-
-    if(legendSelected && !toggleWhileLegendSelected){
-        if(name != "whole"){
-            document.getElementById("filtername").innerHTML = name;
-            document.getElementById("filtername").style.display = "block";
-        }else{
-            document.getElementById("filtername").innerHTML = "";
-            document.getElementById("filtername").style.display = "none";
-        }
-    }
-    
-    if(barSelected && !toggleWhileBarSelected){
-        if(year != 1111){
-            if(steps === 5){
-                document.getElementById("filteryear").innerHTML = year + " - " + (year + 4);
-                
-            }else{
-                document.getElementById("filteryear").innerHTML = year;
-            }
-            document.getElementById("filteryear").style.display = "block";
-        }else{
-            document.getElementById("filteryear").innerHTML = "";
-            document.getElementById("filteryear").style.display = "none";
-        }
-    }
-}
-
-function deselectFilter(clickedElement){
-    if(clickedElement == "filteryear"){
-        barSelected = false;
-        toggleWhileBarSelected = false;
-        document.getElementById("filteryear").innerHTML = "";
-        document.getElementById("filteryear").style.display = "none";
-    }
-    if(clickedElement == "filtername"){
-        legendSelected = false;
-        toggleWhileLegendSelected = false;
-        document.getElementById("filtername").innerHTML = "";
-        document.getElementById("filtername").style.display = "none";
-    }
-    if(clickedElement == "filterword"){
-        wordClicked = false;
-        clickedWord = "";
-        document.getElementById("herr_made").innerHTML = "wunschpunsch";
-    }
-    document.getElementById("herr_made").onchange();
 }
 
 //---- we need one main function to trigger a new cloud because otherwise it would be a recursive mess --------
@@ -1776,6 +1815,7 @@ function render_selected_wordcloud(cloudData){
 //---- create the wordclouds in which one word is selected -----------------
 function selected_wordcloud(word, name, year, steps){
     console.log("request on " + word +" "+ name +" "+ year +" "+ steps);
+    setTitle(word, name, year, steps);
     // d_j: all currently open letters containing the selected Word W = toGet
     // D: Corpus (here: all currently open letters containing the selected Word W) = d_j = toGet
     // w_i: word the score is computed for
