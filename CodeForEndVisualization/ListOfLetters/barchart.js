@@ -1257,18 +1257,18 @@ function setFilter(word, name, year, steps){
 
 //-------- if a filter gets deselected in the sidebar -------------
 function deselectFilter(clickedElement){
-    if(clickedElement == "filteryear"){
-        barSelected = false;
-        toggleWhileBarSelected = false;
-        document.getElementById("filteryear").innerHTML = "";
-        document.getElementById("filteryear").style.display = "none";
-    }
-    if(clickedElement == "filtername"){
-        legendSelected = false;
-        toggleWhileLegendSelected = false;
-        document.getElementById("filtername").innerHTML = "";
-        document.getElementById("filtername").style.display = "none";
-    }
+    // if(clickedElement == "filteryear"){
+    //     barSelected = false;
+    //     toggleWhileBarSelected = false;
+    //     document.getElementById("filteryear").innerHTML = "";
+    //     document.getElementById("filteryear").style.display = "none";
+    // }
+    // if(clickedElement == "filtername"){
+    //     legendSelected = false;
+    //     toggleWhileLegendSelected = false;
+    //     document.getElementById("filtername").innerHTML = "";
+    //     document.getElementById("filtername").style.display = "none";
+    // }
     if(clickedElement == "filterword"){
         wordClicked = false;
         clickedWord = "";
@@ -1338,7 +1338,7 @@ function trigger_new_cloud(){
                 name = 'whole';
             }
             //console.log("Cloud: " + name, year, steps);
-            selected_wordcloud(word, name, year, steps);
+            wordcloud_data(word, name, year, steps);
         }else{ //person is open
             if(!barSelected || toggleWhileBarSelected){
                 year = elements[2];
@@ -1348,7 +1348,7 @@ function trigger_new_cloud(){
                 name = elements[1];
             }
             //console.log("Cloud: " + name, year, steps);
-            selected_wordcloud(word, name, year, steps);
+            wordcloud_data(word, name, year, steps);
         }
     }else{ //outside layer
         if(!barSelected){
@@ -1359,7 +1359,7 @@ function trigger_new_cloud(){
             name = 'whole';
         }
         //console.log("Cloud: " + name, year, steps);
-        selected_wordcloud(word, name, year, steps);
+        wordcloud_data(word, name, year, steps);
     }
     console.log("set parameters to "+ word +" "+ name +" "+ year +" "+ steps);
     setFilter(word, name, year, steps);
@@ -1488,6 +1488,7 @@ function Load(clickedButton){
     letterLoaded = true;
     Remove();
     var thisButton = document.getElementById(clickedButton);
+    console.log(thisButton);
     if(thisButton == loadedLetter){
         thisButton.style.color = "#000000";
         letterLoaded = false;
@@ -1498,7 +1499,7 @@ function Load(clickedButton){
         }
         loadedLetter = thisButton;
         // thisButton.style.color = "#8b0000"; //die sieht man gar nicht
-        thisButton.style.color = "#7b1fa2";
+        thisButton.style.color = "#a286d6";
         $("#LetterDiv").load("../../AllLetters/" + clickedButton + ".html");
     }
 }
@@ -1531,6 +1532,7 @@ function load_noun_frequencies(callback){
 }
 
 // ------- somehow ?? Doesn't work ----------
+// https://halistechnology.com/2015/05/28/use-javascript-to-export-your-data-as-csv/
 function convertArrayOfObjectsToCSV(args) {  
     
     var result, ctr, keys, columnDelimiter, lineDelimiter, data;
@@ -1866,7 +1868,7 @@ function render_selected_wordcloud(cloudData){
 }
 
 //---- create the wordclouds in which one word is selected -----------------
-function selected_wordcloud(word, name, year, steps){
+function wordcloud_data(word, name, year, steps){
     console.log("request on " + word +" "+ name +" "+ year +" "+ steps);
     setTitle(word, name, year, steps);
     // d_j: all currently open letters containing the selected Word W = toGet
