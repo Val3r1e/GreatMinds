@@ -1093,7 +1093,7 @@ function barsZoom(data, version) {
 //-------------------------- Call visualization with specified data ------------------------------
 function init(version){
 
-    bars("data/vis_data_5.csv", version);
+    bars("data/vis_data_5.csv", 5);
 
     d3.select("#data1")
         .attr("font-family", "sans-serif") 
@@ -1110,7 +1110,7 @@ function init(version){
         })
         .on("click", function(d,i) {
             d3.select("svg").selectAll("*").remove();
-            bars("data/vis_data_1.csv", version);
+            bars("data/vis_data_1.csv", 1);
         })
 
     d3.select("#data5")
@@ -1129,7 +1129,7 @@ function init(version){
         .on("click", function(d,i) {
             d3.select("svg").selectAll("*").remove();
             /*bars("data/vis_data_1_all.csv", version);*/
-            bars("data/vis_data_5.csv", version);
+            bars("data/vis_data_5.csv", 5);
         })
 }
 
