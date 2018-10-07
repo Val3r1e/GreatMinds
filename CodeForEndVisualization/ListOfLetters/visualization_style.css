@@ -19,7 +19,7 @@
 	font-weight: bold;
 }
 #data1,#data5{
-	display: inline;
+	/*display: inline;*/
 	font: 11px sans-serif;
 	margin-left: 20px;
 	font-weight: bold;
@@ -43,6 +43,7 @@ html, body {
 	border-style: none;
 	background-color: white;
 	cursor: pointer;
+	/*font-size: 18px;*/
 }
 .openLetterButton:hover{
 	/* color: grey; */

@@ -1128,17 +1128,9 @@ function init(version){
         })
         .on("click", function(d,i) {
             d3.select("svg").selectAll("*").remove();
-            bars("data/vis_data_1_all.csv", version);
+            /*bars("data/vis_data_1_all.csv", version);*/
+            bars("data/vis_data_5.csv", version);
         })
-
-    /*if(version === 1){
-        d3.select("svg").selectAll("*").remove();
-        bars("data/vis_data_1.csv", version);
-    }
-    else if(version === 5){
-        d3.select("svg").selectAll("*").remove();
-        bars("data/vis_data_5.csv", version);
-    }*/
 }
 
 //----------------------- Create the first wordcloud and the first small bars next to the years ----------------
@@ -1169,9 +1161,9 @@ function loadListAndWC(){
 
 //------ some short quotes to make the waiting more pleasant (feel free to add some) --------
 function newQuote(){
-    quotes = ["Es hört doch jeder nur, was er versteht", "Mit dem Wissen wächst der Zweifel", "Die Welt urteilt nach dem Scheine",
-              "Wo viel Licht ist, ist starker Schatten", "Es irrt der Mensch, solang er strebt", "Zur Resignation gehört Charakter",
-              "Es nimmt der Augenblick, was Jahre geben", "Edel sei der Mensch, hilfreich und gut", "Glücklich allein ist die Seele, die liebt"];
+    quotes = ["Es hört doch jeder nur, was er versteht -Goethe", "Mit dem Wissen wächst der Zweifel -Goethe", "Die Welt urteilt nach dem Scheine -Goethe",
+              "Wo viel Licht ist, ist starker Schatten -Goethe", "Es irrt der Mensch, solang er strebt -Goethe", "Zur Resignation gehört Charakter -Goethe",
+              "Es nimmt der Augenblick, was Jahre geben -Goethe", "Edel sei der Mensch, hilfreich und gut -Goethe", "Glücklich allein ist die Seele, die liebt -Goethe"];
     document.getElementById("quote").innerHTML = quotes[quoteCounter];
     quoteCounter = (quoteCounter + 1) % quotes.length;
 }
@@ -1489,7 +1481,7 @@ function Load(clickedButton){
             loadedLetter.style.color = "#000000";
         }
         loadedLetter = thisButton;
-        thisButton.style.color = "#fd00ff";
+        thisButton.style.color = "#8b0000";
         $("#LetterDiv").load("../../AllLetters/" + clickedButton + ".html");
     }
 }
