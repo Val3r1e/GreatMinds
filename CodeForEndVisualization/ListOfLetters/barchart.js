@@ -18,10 +18,15 @@ var loadedLetter;
 var letterLoaded = false;
 var loading;
 var quoteCounter = 0;
-
-//-------------------- Barchart -----------------------
+var csvDataList = [];
+var csvData;
+//-------------------- BARCHART -----------------------
 
 function bars(data,version){
+
+    // count_visible_letters();
+    // var csvData = convertArrayOfObjectsToCSV(csvDataList);
+    // console.log(csvData);
 
     var svg = d3.select("svg"),
         margin = {top: 20, right: 20, bottom: 30, left: 40},
@@ -53,6 +58,7 @@ function bars(data,version){
     var activeName = "0";
 
     d3.csv(data, function(d, i, columns){
+    //d3.csv(csvData, function(d, i, columns){
         for (i = 1, t = 0; i < columns.length; ++i) t += d[columns[i]] = +d[columns[i]];
         d.total = t;
         return d;
@@ -1133,15 +1139,14 @@ function init(version){
         })
 }
 
-//----------------------- Create the first wordcloud and the first small bars next to the years ----------------
+//----- Create the first wordcloud and the first small bars next to the years ------
 function init_page(){
     document.getElementById("herr_made").innerHTML = "wunschpunsch";
     document.getElementById("herr_made").onchange();
     create_small_bars();
-    
 }
 
-//---------- LOADINGSCREEN -----------
+//------------------ LOADINGSCREEN ------------------
 
 // ----- calculating the clouds and the list takes a while so here is a loading screen: -----------
 function showListAndWC(){
@@ -1170,7 +1175,7 @@ function newQuote(){
     quoteCounter = (quoteCounter + 1) % quotes.length;
 }
 
-//-------- SIDEBAR --------------
+//------------------ SIDEBAR -----------------------
 
 function capitalizeFirstLetter(string){
     return string.charAt(0).toUpperCase() + string.slice(1);
@@ -1272,7 +1277,9 @@ function deselectFilter(clickedElement){
     document.getElementById("herr_made").onchange();
 }
 
-// ---------------- Code for small bars to show letter amount -----------------
+//----------------------- SMALL BARS ------------------------
+
+// ----- Code for small bars to show letter amount -----
 function create_small_bars(){
     count_visible_letters();
     d3.select("div").selectAll("divchart").remove();
@@ -1523,6 +1530,39 @@ function load_noun_frequencies(callback){
     httpRequest.send();
 }
 
+// ------- somehow ?? Doesn't work ----------
+function convertArrayOfObjectsToCSV(args) {  
+    
+    var result, ctr, keys, columnDelimiter, lineDelimiter, data;
+
+    data = args.data || null;
+    if (data == null || !data.length) {
+        return null;
+    }
+    columnDelimiter = args.columnDelimiter || ',';
+    lineDelimiter = args.lineDelimiter || '\n';
+
+    keys = Object.keys(data[0]);
+
+    result = '';
+    result += keys.join(columnDelimiter);
+    result += lineDelimiter;
+    console.log(result);
+
+    data.forEach(function(item) {
+        ctr = 0;
+        keys.forEach(function(key) {
+            if (ctr > 0) result += columnDelimiter;
+
+            result += item[key];
+            ctr++;
+        });
+        result += lineDelimiter;
+    });
+
+    return result;
+}
+
 //--- count all visible letters so the small bars can be adjusted and years/persons with no letters can be hidden ---
 function count_visible_letters(){
     visibleLetters = {};
@@ -1567,7 +1607,18 @@ function count_visible_letters(){
             }
         }
     }
+
+    for(var key in visibleLettersPeople){
+        var tmpDict = {"Year":0, "FSchiller":0, "CSchiller":0, "CStein":0, "CGoethe":0};
+        tmpDict["Year"] = key;
+        for(var nameKey in visibleLettersPeople[key]){
+            tmpDict[nameKey] = visibleLettersPeople[key][nameKey];
+        }
+        csvDataList.push(tmpDict);
+    }
     // console.log(visibleLettersPeople);
+    csvData = convertArrayOfObjectsToCSV(csvDataList);
+ 
 }
 
 //-------- help getting the CSS style for other functions ---------
@@ -1724,7 +1775,7 @@ function return_to_normal(){
 // function create_wordcloud(name, year, steps){
 function render_wordcloud(cloudData){
 
-    count_visible_letters();
+    //count_visible_letters();
 
     myConfig = {
         type: 'wordcloud',
