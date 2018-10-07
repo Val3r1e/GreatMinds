@@ -4018,8 +4018,13 @@
 
         <!-- ...............Letters and wordclouds get displayed in div............... -->
         <div id="LetterDiv" style="display: none" class="animateLoader"></div>
+
+        <!-- ................. Loading Screen ................. -->
         <div id="loader"><img src="Goethe_head.png" width="80px"></div>
         <div id="quote"></div>
+        <div id="quoteAuthor">- J.W. von Goethe</div>
+
+        <!-- ..................... Sidebar ..................... -->
         <div id="filterbar">
             <a href="#" id="filter">
                 <ol>
@@ -4027,11 +4032,11 @@
                     <li id="WCTitle"></li>
                     <li class="break"></li>
                     <li></li>
-                    <li id="filterhead">Applied Filter: </li>
+                    <li id="filterhead">Selected Word </li>
                     <li id="filtersub">(click to deselect)</li>
                     <li>
-                        <button id="filteryear" class="filterelement" onclick="deselectFilter(this.id)"><span class = "tooltiptext">&nbsp;X&nbsp;</span></button>
-                        <button id="filtername" class="filterelement" onclick="deselectFilter(this.id)"><span class = "tooltiptext">&nbsp;X&nbsp;</span></button>
+                        <!-- <button id="filteryear" class="filterelement" onclick="deselectFilter(this.id)"><span class = "tooltiptext">&nbsp;X&nbsp;</span></button>
+                        <button id="filtername" class="filterelement" onclick="deselectFilter(this.id)"><span class = "tooltiptext">&nbsp;X&nbsp;</span></button> -->
                         <button id="filterword" class="filterelement" onclick="deselectFilter(this.id)"><span class = "tooltiptext">&nbsp;X&nbsp;</span></button>
                     </li> 
                 </ol>

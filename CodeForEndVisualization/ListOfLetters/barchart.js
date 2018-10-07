@@ -1147,6 +1147,7 @@ function init_page(){
 function showListAndWC(){
     document.getElementById("loader").style.display = "none";
     document.getElementById("quote").style.display = "none";
+    document.getElementById("quoteAuthor").style.display = "none";
     document.getElementById("LetterDiv").style.display = "block";
     document.getElementById("ButtonDiv").style.display = "block";
 }
@@ -1155,20 +1156,25 @@ function loadListAndWC(){
     newQuote();
     document.getElementById("loader").style.display = "block";
     document.getElementById("quote").style.display = "block";
+    document.getElementById("quoteAuthor").style.display = "block";
     document.getElementById("LetterDiv").style.display = "none";
     document.getElementById("ButtonDiv").style.display = "none";
 }
 
 //------ some short quotes to make the waiting more pleasant (feel free to add some) --------
 function newQuote(){
-    quotes = ["Es hört doch jeder nur, was er versteht -Goethe", "Mit dem Wissen wächst der Zweifel -Goethe", "Die Welt urteilt nach dem Scheine -Goethe",
-              "Wo viel Licht ist, ist starker Schatten -Goethe", "Es irrt der Mensch, solang er strebt -Goethe", "Zur Resignation gehört Charakter -Goethe",
-              "Es nimmt der Augenblick, was Jahre geben -Goethe", "Edel sei der Mensch, hilfreich und gut -Goethe", "Glücklich allein ist die Seele, die liebt -Goethe"];
+    quotes = ["Es hört doch jeder nur, was er versteht", "Mit dem Wissen wächst der Zweifel", "Die Welt urteilt nach dem Scheine",
+              "Wo viel Licht ist, ist starker Schatten", "Es irrt der Mensch, solang er strebt", "Zur Resignation gehört Charakter",
+              "Es nimmt der Augenblick, was Jahre geben", "Edel sei der Mensch, hilfreich und gut", "Glücklich allein ist die Seele, die liebt"];
     document.getElementById("quote").innerHTML = quotes[quoteCounter];
     quoteCounter = (quoteCounter + 1) % quotes.length;
 }
 
 //-------- SIDEBAR --------------
+
+function capitalizeFirstLetter(string){
+    return string.charAt(0).toUpperCase() + string.slice(1);
+}
 
 //---------- set title for sidebar --------------
 function setTitle(word, name, year, steps){
@@ -1177,22 +1183,26 @@ function setTitle(word, name, year, steps){
     if(word == "wunschpunsch"){
         word = "";
     }else{
-        word = " ("+word+")";
+        word = capitalizeFirstLetter(word);
     }
     if(year == 1111){
         year = "All Letters <br>";
+    }else{
+        if(steps !=5){
+            year = year + "<br>";
+        }
     }
     if(name == 'whole'){
         name = ""
     }else{
         if(name == "FSchiller"){
-            name = "Friedrich von Schiller,<br>"
+            name = "Friedrich von Schiller<br>"
         }else if(name == "CGoethe"){
-            name = "Christiane von Goethe,<br>"
+            name = "Christiane von Goethe<br>"
         }else if(name == "CSchiller"){
-            name = "Charlotte von Schiller,<br>"
+            name = "Charlotte von Schiller<br>"
         }else if(name == "CStein"){
-            name = "Charlotte von Stein,<br>"
+            name = "Charlotte von Stein<br>"
         }
     }
     if(steps == 5){
@@ -1203,41 +1213,41 @@ function setTitle(word, name, year, steps){
 
 //--------- set the filter in the sidebar ------------
 function setFilter(word, name, year, steps){
-    steps = parseInt(steps);
-    year = parseInt(year);
+    // steps = parseInt(steps);
+    // year = parseInt(year);
 
     if(word != "wunschpunsch"){
+        word = capitalizeFirstLetter(word);
         document.getElementById("filterword").innerHTML = word + "<span class='tooltiptext'>&nbsp;X&nbsp;</span>";
         document.getElementById("filterword").style.display = "block";
     }else{
         document.getElementById("filterword").innerHTML = "";
         document.getElementById("filterword").style.display = "none";
     }
-
-    if(legendSelected && !toggleWhileLegendSelected){
-        if(name != "whole"){
-            document.getElementById("filtername").innerHTML = name + "<span class='tooltiptext'>&nbsp;X&nbsp;</span>";
-            document.getElementById("filtername").style.display = "block";
-        }else{
-            document.getElementById("filtername").innerHTML = "";
-            document.getElementById("filtername").style.display = "none";
-        }
-    }
+    // if(legendSelected && !toggleWhileLegendSelected){
+    //     if(name != "whole"){
+    //         document.getElementById("filtername").innerHTML = name + "<span class='tooltiptext'>&nbsp;X&nbsp;</span>";
+    //         document.getElementById("filtername").style.display = "block";
+    //     }else{
+    //         document.getElementById("filtername").innerHTML = "";
+    //         document.getElementById("filtername").style.display = "none";
+    //     }
+    // }
     
-    if(barSelected && !toggleWhileBarSelected){
-        if(year != 1111){
-            if(steps === 5){
-                document.getElementById("filteryear").innerHTML = year + " - " + (year + 4) + "<span class='tooltiptext'>&nbsp;X&nbsp;</span>";
+    // if(barSelected && !toggleWhileBarSelected){
+    //     if(year != 1111){
+    //         if(steps === 5){
+    //             document.getElementById("filteryear").innerHTML = year + " - " + (year + 4) + "<span class='tooltiptext'>&nbsp;X&nbsp;</span>";
                 
-            }else{
-                document.getElementById("filteryear").innerHTML = year + "<span class='tooltiptext'>&nbsp;X&nbsp;</span>";
-            }
-            document.getElementById("filteryear").style.display = "block";
-        }else{
-            document.getElementById("filteryear").innerHTML = "";
-            document.getElementById("filteryear").style.display = "none";
-        }
-    }
+    //         }else{
+    //             document.getElementById("filteryear").innerHTML = year + "<span class='tooltiptext'>&nbsp;X&nbsp;</span>";
+    //         }
+    //         document.getElementById("filteryear").style.display = "block";
+    //     }else{
+    //         document.getElementById("filteryear").innerHTML = "";
+    //         document.getElementById("filteryear").style.display = "none";
+    //     }
+    // }
 }
 
 //-------- if a filter gets deselected in the sidebar -------------
@@ -1261,7 +1271,6 @@ function deselectFilter(clickedElement){
     }
     document.getElementById("herr_made").onchange();
 }
-
 
 // ---------------- Code for small bars to show letter amount -----------------
 function create_small_bars(){
@@ -1481,7 +1490,8 @@ function Load(clickedButton){
             loadedLetter.style.color = "#000000";
         }
         loadedLetter = thisButton;
-        thisButton.style.color = "#8b0000";
+        // thisButton.style.color = "#8b0000"; //die sieht man gar nicht
+        thisButton.style.color = "#7b1fa2";
         $("#LetterDiv").load("../../AllLetters/" + clickedButton + ".html");
     }
 }
