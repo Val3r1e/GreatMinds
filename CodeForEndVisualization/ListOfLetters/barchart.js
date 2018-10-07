@@ -40,7 +40,7 @@ function bars(data,version){
     //Color
     var z = d3.scaleOrdinal()
         //      FSchiller, CSchiller, CStein, CGoethe
-        .range(["#9fa8da", "#7b1fa2", "#5c6bc0", "#9575cd"]);
+        .range(["#8f97c4", "#7b1fa2", "#5c6bc0", "#9575cd"]);
 
     var tooltip = d3.select("body").append("div").attr("class", "toolTip");
 
