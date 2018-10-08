@@ -21,15 +21,15 @@ var quoteCounter = 0;
 var csvDataList = [];
 var csvData_1;
 var csvData_5;
+var dataVersion; 
 
 var columns = ["Year", "FSchiller", "CSchiller", "CStein", "CGoethe"];
-var tempArray = [columns, {Year: "1785", FSchiller: 0, CSchiller: 0, CStein: 968, CGoethe: 0, total: 968}];
+//var tempArray = [{CGoethe: 0, CSchiller: 0, CStein: 535, FSchiller: 0, Year: "1785", total: 535}];
 //-------------------- BARCHART -----------------------
 
 function bars(data,version){
 
     d3.csv(data, function(d, i, columns){
-        console.log("1:",columns);
         for (i = 1, t = 0; i < columns.length; ++i) t += d[columns[i]] = +d[columns[i]];
         d.total = t;
         return d;
@@ -39,14 +39,12 @@ function bars(data,version){
         if (error) throw error;
         daten(data,version);
     }); 
-    
-    //daten(tempArray,5);
       
 }
 
 function daten(data,version){
-    console.log("2:",columns);
-    console.log(data);
+
+    dataVersion = version;
 
     // count_visible_letters();
     // var csvData = convertArrayOfObjectsToCSV(csvDataList);
@@ -81,7 +79,7 @@ function daten(data,version){
     var wanted = "0";
     var activeName = "0";
 
-    var keys = data.columns.slice(1);
+    var keys = columns.slice(1);
 
         x.domain(data.map(function(d) { return d.Year; }));
         y.domain([0, d3.max(data, function(d) { return d.total; })]).nice();
@@ -255,7 +253,7 @@ function daten(data,version){
                         d3.select("#id" + wanted + "-" + rectangleClassArray[j])
                         .style("cursor", "none")
                         .style("stroke", "pink")
-                        .style("stroke-width", 0.2);
+                        .style("stroke-width", 0.000001);
                     }
                 }
                 else if(active === "0" && active_link == activeName){
@@ -264,7 +262,7 @@ function daten(data,version){
                         d3.select("#id" + wanted + "-" + rectangleClassArray[j])
                         .style("cursor", "none")
                         .style("stroke", "pink")
-                        .style("stroke-width", 0.2);
+                        .style("stroke-width", 0.000001);
                     }
                 }
 
@@ -1128,7 +1126,8 @@ function init(version){
         })
         .on("click", function(d,i) {
             d3.select("svg").selectAll("*").remove();
-            bars("data/vis_data_1.csv", 1);
+            //bars("data/vis_data_1.csv", 1);
+            daten(csvData_1,1);
         })
 
     d3.select("#data5")
@@ -1146,8 +1145,9 @@ function init(version){
         })
         .on("click", function(d,i) {
             d3.select("svg").selectAll("*").remove();
-            /*bars("data/vis_data_1_all.csv", version);*/
-            bars("data/vis_data_5.csv", 5);
+            //bars("data/vis_data_1_all.csv", version);
+            //bars("data/vis_data_5.csv", 5);
+            daten(csvData_5,5);
         })
 }
 
@@ -1376,6 +1376,14 @@ function trigger_new_cloud(){
     console.log("set parameters to "+ word +" "+ name +" "+ year +" "+ steps);
     setFilter(word, name, year, steps);
     show_corresponding_letters(word);
+
+    // if(dataVersion == 5){
+    //     daten(csvData_5,5);
+    //     console.log("HERE2", csvData_5);
+    // }
+    // else if(dataVersion == 1){
+    //     daten(csvData_1,1);
+    // } 
 }
 
 //------- toggle between opened and closed years and names in the List of Letters:
@@ -1594,7 +1602,7 @@ function getCSVData(){
     csvDataList = [];
     csvData_1 = [];
     csvData_5 = [];
-    keyYears = [1775, 1780, 1785, 1790, 1795, 1800, 1805, 1810, 1815, 1820, 1825, 1831];
+    keyYears = [1780, 1785, 1790, 1795, 1800, 1805, 1810, 1815, 1820];
 
     for(var key in visibleLettersPeople){
         var tmpDict = {"Year":0, "FSchiller":0, "CSchiller":0, "CStein":0, "CGoethe":0, "total":0};
@@ -1629,7 +1637,15 @@ function getCSVData(){
     }
     //console.log(visibleLettersPeople);
     console.log(csvData_1);
-    console.log(csvData_5);
+    console.log("HEEE",csvData_5);
+
+    // if(dataVersion == 5){
+    //     daten(csvData_5,5);
+    //     console.log("HERE2", csvData_5);
+    // }
+    // else if(dataVersion == 1){
+    //     daten(csvData_1,1);
+    // } 
 
 }
 
@@ -1710,6 +1726,13 @@ function show_corresponding_letters(word){
         }
         create_small_bars();
         hide_empty_sections();
+
+        // if(dataVersion == 5){
+        //     daten(csvData_5,5);
+        // }
+        // else if(dataVersion == 1){
+        //     daten(csvData_1,1);
+        // }
         
     });
 }
@@ -1842,6 +1865,14 @@ function render_wordcloud(cloudData){
         clickedWord = word;
         document.getElementById("herr_made").innerHTML = clickedWord;
         document.getElementById("herr_made").onchange();
+
+        // if(dataVersion == 5){
+        //     daten(csvData_5,5);
+        //     console.log("HERE2", csvData_5);
+        // }
+        // else if(dataVersion == 1){
+        //     daten(csvData_1,1);
+        // } 
     });
 }
 
@@ -1873,7 +1904,14 @@ function render_selected_wordcloud(cloudData){
             clickedWord = selectedWord;
             document.getElementById("herr_made").innerHTML = selectedWord ;
             document.getElementById("herr_made").onchange();
-        }  
+        }
+        // if(dataVersion == 5){
+        //     daten(csvData_5,5);
+        //     console.log("HERE", csvData_5);
+        // }
+        // else if(dataVersion == 1){
+        //     daten(csvData_1,1);
+        // }  
     });
 }
 
