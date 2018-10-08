@@ -96,7 +96,7 @@ li img {
 	width:60%;
 	min-height:150px;
 	overflow: scroll;
-	max-height: 600px;
+	max-height: 800px;
 }
 
 /* -------------------------- Loading Screen ---------------------------- */
@@ -178,10 +178,10 @@ li img {
 	text-align: left;
 	font-family: 'Merriweather';
 	width: 300px;
-	position: absolute;
+	position: fixed;
 	transition: 0.3s;
     /* z-index: 1; */
-    top: 600px;
+    top: 140px;
     right: -100px;
     background: #eee;
     overflow-x: hidden;
