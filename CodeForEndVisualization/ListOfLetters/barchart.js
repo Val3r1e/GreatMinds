@@ -19,7 +19,8 @@ var letterLoaded = false;
 var loading;
 var quoteCounter = 0;
 var csvDataList = [];
-var csvData;
+var csvData_1;
+var csvData_5;
 
 var columns = ["Year", "FSchiller", "CSchiller", "CStein", "CGoethe"];
 var tempArray = [columns, {Year: "1785", FSchiller: 0, CSchiller: 0, CStein: 968, CGoethe: 0, total: 968}];
@@ -1542,40 +1543,6 @@ function load_noun_frequencies(callback){
     httpRequest.send();
 }
 
-// ------- somehow ?? Doesn't work ----------
-// https://halistechnology.com/2015/05/28/use-javascript-to-export-your-data-as-csv/
-function convertArrayOfObjectsToCSV(args) {  
-    
-    var result, ctr, keys, columnDelimiter, lineDelimiter, data;
-
-    data = args.data || null;
-    if (data == null || !data.length) {
-        return null;
-    }
-    columnDelimiter = args.columnDelimiter || ',';
-    lineDelimiter = args.lineDelimiter || '\n';
-
-    keys = Object.keys(data[0]);
-
-    result = '';
-    result += keys.join(columnDelimiter);
-    result += lineDelimiter;
-    console.log(result);
-
-    data.forEach(function(item) {
-        ctr = 0;
-        keys.forEach(function(key) {
-            if (ctr > 0) result += columnDelimiter;
-
-            result += item[key];
-            ctr++;
-        });
-        result += lineDelimiter;
-    });
-
-    return result;
-}
-
 //--- count all visible letters so the small bars can be adjusted and years/persons with no letters can be hidden ---
 function count_visible_letters(){
     visibleLetters = {};
@@ -1620,18 +1587,50 @@ function count_visible_letters(){
             }
         }
     }
+    getCSVData();
+}
+
+function getCSVData(){
+    csvDataList = [];
+    csvData_1 = [];
+    csvData_5 = [];
+    keyYears = [1775, 1780, 1785, 1790, 1795, 1800, 1805, 1810, 1815, 1820, 1825, 1831];
 
     for(var key in visibleLettersPeople){
-        var tmpDict = {"Year":0, "FSchiller":0, "CSchiller":0, "CStein":0, "CGoethe":0};
+        var tmpDict = {"Year":0, "FSchiller":0, "CSchiller":0, "CStein":0, "CGoethe":0, "total":0};
         tmpDict["Year"] = key;
         for(var nameKey in visibleLettersPeople[key]){
             tmpDict[nameKey] = visibleLettersPeople[key][nameKey];
         }
+        tmpDict["total"] = tmpDict["FSchiller"] + tmpDict["CSchiller"] + tmpDict["CStein"] + tmpDict["CGoethe"];
         csvDataList.push(tmpDict);
     }
-    // console.log(visibleLettersPeople);
-    csvData = convertArrayOfObjectsToCSV(csvDataList);
- 
+    csvData_1 = csvDataList;
+
+    var tmpDict5 = {};
+    for(i = 0; i < csvDataList.length; i++){
+        for(var j = 0; j < keyYears.length; j++){
+            if(tmpDict5[keyYears[j]] == undefined){
+                tmpDict5[keyYears[j]] = {"Year":keyYears[j], "FSchiller":0, "CSchiller":0, "CStein":0, "CGoethe":0, "total":0};
+            }
+            if(csvDataList[i]["Year"] <= keyYears[j]){
+                tmpDict5[keyYears[j]]["FSchiller"] += csvDataList[i]["FSchiller"];
+                tmpDict5[keyYears[j]]["CSchiller"] += csvDataList[i]["CSchiller"];
+                tmpDict5[keyYears[j]]["CStein"] += csvDataList[i]["CStein"];
+                tmpDict5[keyYears[j]]["CGoethe"] += csvDataList[i]["CGoethe"];
+                tmpDict5[keyYears[j]]["total"] += csvDataList[i]["total"];
+                break;
+            }
+        }
+    }
+
+    for(var key5Year in tmpDict5){
+        csvData_5.push(tmpDict5[key5Year]);
+    }
+    //console.log(visibleLettersPeople);
+    console.log(csvData_1);
+    console.log(csvData_5);
+
 }
 
 //-------- help getting the CSS style for other functions ---------
