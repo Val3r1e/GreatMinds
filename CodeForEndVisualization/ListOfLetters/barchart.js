@@ -362,6 +362,10 @@ function daten(data,version){
                     active = "0";
                     document.getElementById("message_from_bar").onchange();
                 }
+                //First person on legend and no bar is selected then clicking on part of that bar, clicking on legend again
+                /*else if(active_link == activeName && ){
+
+                }*/
             })
             .on('dblclick', function(d) {
                 //source: https://stackoverflow.com/questions/44173693/using-different-d3-versions-on-same-html-page
@@ -616,30 +620,31 @@ function daten(data,version){
             else if(active_link == this.id.split("id").pop() && active != "0"){
                 legendSelected = false;
 
+                console.log("Here2");
+
                 d3.select(this)           
                 .style("stroke", "none");
+
+                active_link = "0";
 
                 for (i = 0; i < legendClassArray.length; i++) {              
                     d3.select("#id" + legendClassArray[i])
                     .style("opacity", 1);
                 }
 
+                //-------------------------------------------------
                 for(j=0; j<legendClassArray.length; j++){
                     if(legendClassArray[j] != active_link){
                         d3.select("#id" + active + "-" + legendClassArray[j])
                         .style("cursor", "pointer")
-                        .style("stroke", "black")
+                        .style("stroke", "red")         //Stroke works for all, should be black
                         .style("stroke-width", 1.5)
-                        .style("opacity", 1);
+                        .style("opacity", 1);           //Opacity doesn't work for some reason
                     }
                 }
 
-                active_link = "0";
                 document.getElementById("message_from_legend").onchange();
             }
-            /*else if(active === "0" && active_link == this.id.split("id").pop()){
-                console.log("Here");
-            }*/
         });
 
     legend.append("text") // Text of legends 
