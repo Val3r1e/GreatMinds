@@ -58,6 +58,7 @@ html, body {
 	position: relative;
 	overflow: scroll;
 	max-height: 600px;
+	/*max-width: 400px;*/
 }
 .open {
 	display: block;
@@ -92,11 +93,11 @@ li img {
 	position: absolute;
 	top: 600px;
 	right: 160px;
-	height:66.67vh;
+	height: 66.67vh;
 	width:60%;
 	min-height:150px;
 	overflow: scroll;
-	max-height: 800px;
+	/*max-height: 600px;*/
 }
 
 /* -------------------------- Loading Screen ---------------------------- */
