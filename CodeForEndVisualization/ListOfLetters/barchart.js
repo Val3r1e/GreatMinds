@@ -22,6 +22,7 @@ var csvDataList = [];
 var csvData_1;
 var csvData_5;
 var dataVersion; 
+var deselectWord = false;
 
 var columns = ["Year", "FSchiller", "CSchiller", "CStein", "CGoethe"];
 //-------------------- BARCHART -----------------------
@@ -696,7 +697,6 @@ function init(version){
         })
         .on("click", function(d,i) {
             d3.select("svg").selectAll("*").remove();
-            //bars("data/vis_data_1.csv", 1);
             daten(csvData_1,1);
         })
 
@@ -724,7 +724,7 @@ function init(version){
 function init_page(){
     document.getElementById("herr_made").innerHTML = "wunschpunsch";
     document.getElementById("herr_made").onchange();
-    create_small_bars();
+    //create_small_bars();
 }
 
 //------------------ LOADINGSCREEN ------------------
@@ -852,6 +852,7 @@ function deselectFilter(clickedElement){
     // }
     if(clickedElement == "filterword"){
         wordClicked = false;
+        deselectWord = true;
         clickedWord = "";
         document.getElementById("herr_made").innerHTML = "wunschpunsch";
     }
@@ -946,13 +947,17 @@ function trigger_new_cloud(){
     setFilter(word, name, year, steps);
     show_corresponding_letters(word);
 
-    // if(dataVersion == 5){
-    //     daten(csvData_5,5);
-    //     console.log("HERE2", csvData_5);
+    // if(!barSelected && wordClicked){
+    //     if(dataVersion == 5){
+    //         d3.select("svg").selectAll("*").remove();
+    //         daten(csvData_5,5);
+    //     }
+    //     else if(dataVersion == 1){
+    //         d3.select("svg").selectAll("*").remove();
+    //         daten(csvData_1,1);
+    //     }
+
     // }
-    // else if(dataVersion == 1){
-    //     daten(csvData_1,1);
-    // } 
 }
 
 //------- toggle between opened and closed years and names in the List of Letters:
@@ -1165,6 +1170,17 @@ function count_visible_letters(){
         }
     }
     getCSVData();
+    // if(wordClicked && ){
+    //     if(dataVersion == 5){
+    //         d3.select("svg").selectAll("*").remove();
+    //         daten(csvData_5,5);
+    //     }
+    //     else if(dataVersion == 1){
+    //         d3.select("svg").selectAll("*").remove();
+    //         daten(csvData_1,1);
+    //     }
+
+    // }
 }
 
 function getCSVData(){
@@ -1248,7 +1264,7 @@ function highlight_word(word){
 function show_corresponding_letters(word){
     //letterIndex contains an Index like this: {'Word1':[list of all letters containing Word1], 'Word2':[...],...}
     //console.log("showing letters of " + word);
-    return_to_normal();
+    other_normal();
     load_letter_Index(function(letterInd){
         var letterIndex = JSON.parse(letterInd);
         var allButtons = document.getElementsByClassName("openLetterButton");
@@ -1296,12 +1312,18 @@ function show_corresponding_letters(word){
         create_small_bars();
         hide_empty_sections();
 
-        // if(dataVersion == 5){
-        //     daten(csvData_5,5);
-        // }
-        // else if(dataVersion == 1){
-        //     daten(csvData_1,1);
-        // }
+        if((!barSelected && wordClicked && !legendSelected) || deselectWord){
+            //console.log("In");
+            if(dataVersion == 5){
+                d3.select("svg").selectAll("*").remove();
+                daten(csvData_5,5);
+            }
+            else if(dataVersion == 1){
+                d3.select("svg").selectAll("*").remove();
+                daten(csvData_1,1);
+            }
+
+        }
         
     });
 }
@@ -1375,6 +1397,11 @@ function return_to_normal(){
     show_all_sections();
 }
 
+function other_normal(){
+    all_buttons_visible();
+    show_all_sections();
+}
+
 //------------- create the wordclouds ---------------
 // function create_wordcloud(name, year, steps){
 function render_wordcloud(cloudData){
@@ -1431,6 +1458,7 @@ function render_wordcloud(cloudData){
     zingchart.bind('LetterDiv','label_click', function(p){
         var word = p.text;
         wordClicked = true;
+        deselectWord = false;
         clickedWord = word;
         document.getElementById("herr_made").innerHTML = clickedWord;
         document.getElementById("herr_made").onchange();
@@ -1443,6 +1471,18 @@ function render_wordcloud(cloudData){
         //     daten(csvData_1,1);
         // } 
     });
+
+    // if(wordClicked){
+    //     if(dataVersion == 5){
+    //         d3.select("svg").selectAll("*").remove();
+    //         daten(csvData_5,5);
+    //     }
+    //     else if(dataVersion == 1){
+    //         d3.select("svg").selectAll("*").remove();
+    //         daten(csvData_1,1);
+    //     }
+
+    // }
 }
 
 //------------ render the wordclouds in which one word is selected --------------
@@ -1463,6 +1503,7 @@ function render_selected_wordcloud(cloudData){
         var selectedWord = p.text;
         //click on the same word = deselect
         if(selectedWord == word){
+            deselectWord = true;
             wordClicked = false;
             clickedWord = "";
             document.getElementById("herr_made").innerHTML = "wunschpunsch";
@@ -1470,16 +1511,21 @@ function render_selected_wordcloud(cloudData){
         }else{ 
             //click on another word: that word gets selected
             wordClicked = true;
+            deselectWord = false;
             clickedWord = selectedWord;
             document.getElementById("herr_made").innerHTML = selectedWord ;
             document.getElementById("herr_made").onchange();
         }
-        // if(dataVersion == 5){
-        //     daten(csvData_5,5);
-        //     console.log("HERE", csvData_5);
-        // }
-        // else if(dataVersion == 1){
-        //     daten(csvData_1,1);
+        // if(wordClicked && selectedWord == word){
+        //     if(dataVersion == 5){
+        //         d3.select("svg").selectAll("*").remove();
+        //         daten(csvData_5,5);
+        //     }
+        //     else if(dataVersion == 1){
+        //         d3.select("svg").selectAll("*").remove();
+        //         daten(csvData_1,1);
+        //     }
+    
         // }  
     });
 }
@@ -1580,4 +1626,15 @@ function wordcloud_data(word, name, year, steps){
             
         });
     });
+    // if(wordClicked){
+    //     if(dataVersion == 5){
+    //         d3.select("svg").selectAll("*").remove();
+    //         daten(csvData_5,5);
+    //     }
+    //     else if(dataVersion == 1){
+    //         d3.select("svg").selectAll("*").remove();
+    //         daten(csvData_1,1);
+    //     }
+
+    // }
 }
