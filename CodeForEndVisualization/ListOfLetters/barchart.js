@@ -1187,7 +1187,6 @@ function count_visible_letters(){
             }
         }
     }
-    // getCSVData();
 }
 
 // ------ computing the data for the barchart on the fly -----------
@@ -1309,9 +1308,8 @@ function highlight_word(word){
     var allWCWords = document.getElementsByTagName("tspan");
     for(i = 0; i < allWCWords.length; i++){
         if(allWCWords[i].innerHTML == word){
-            wordId = allWCWords[i].parentNode.id //+ "-path";
+            wordId = allWCWords[i].parentNode.id;
             document.getElementById(wordId).childNodes[0].style.fill = "#fd00ff"; //"#b81b34";
-            //allWCWords[i].parentNode.style.backgroundColor = "#B6B6B6";
             break;
         }
     }
@@ -1320,8 +1318,7 @@ function highlight_word(word){
 //----------- only show letters in list that match the selection (bar/legend/word) -----------
 function show_corresponding_letters(word){
     //letterIndex contains an Index like this: {'Word1':[list of all letters containing Word1], 'Word2':[...],...}
-    //console.log("showing letters of " + word);
-    other_normal();
+    return_to_normal();
     load_letter_Index(function(letterInd){
         var letterIndex = JSON.parse(letterInd);
         var allButtons = document.getElementsByClassName("openLetterButton");
@@ -1350,8 +1347,7 @@ function show_corresponding_letters(word){
                         thisButton.style.display ="none";
                     }
                 }
-            }
-            //console.log("in " + year + " with steps " + steps);    
+            }   
         }
         if(legendSelected){        
             var name = document.getElementById("message_from_legend").innerHTML;
@@ -1364,7 +1360,6 @@ function show_corresponding_letters(word){
                     }
                 }
             }
-            //console.log("from " + name);
         }
         create_small_bars();
         hide_empty_sections();
@@ -1410,6 +1405,13 @@ function hide_empty_sections(){
     }
 }
 
+//--------- After a word/bar/name is deselected: bring back all hidden elements -----------
+function return_to_normal(){
+    all_buttons_visible();
+    create_small_bars();
+    show_all_sections();
+}
+
  //---------- bring back all years and people -------------
 function show_all_sections(){
     var toggleYears = document.getElementsByClassName("toggle_year");
@@ -1430,20 +1432,6 @@ function all_buttons_visible(){
         var thisButton = allButtons[i]
         thisButton.style.display ="block";
     }
-}
-
-//--------- After a word/bar/name is deselected: bring back all hidden elements -----------
-function return_to_normal(){
-    //bring back all the Letters
-    all_buttons_visible();
-    //update the small bars
-    create_small_bars();
-    show_all_sections();
-}
-
-function other_normal(){
-    all_buttons_visible();
-    show_all_sections();
 }
 
 //------------- create the wordclouds ---------------
