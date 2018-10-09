@@ -21,6 +21,8 @@ var quoteCounter = 0;
 var csvDataList = [];
 var csvData_1;
 var csvData_5;
+var originalCsvData_1;
+var originalCsvData_5;
 var dataVersion; 
 var deselectWord = false;
 var firstLoad = true;
@@ -1296,8 +1298,11 @@ function show_corresponding_letters(word){
         create_small_bars();
         hide_empty_sections();
 
-        if((!barSelected && wordClicked && !legendSelected) || deselectWord || (barSelected && wordClicked)){
-            //console.log("In");
+        //------------------------------ A lot of if's and else's to enable the clicking correctly --------------------------
+
+        //When nothing is selected before and word is selected or deselected
+        if((!barSelected && wordClicked && !legendSelected) || (!barSelected && deselectWord && !legendSelected)){ 
+            
             if(dataVersion == 5){
                 d3.select("svg").selectAll("*").remove();
                 daten(csvData_5,5);
@@ -1306,6 +1311,18 @@ function show_corresponding_letters(word){
                 d3.select("svg").selectAll("*").remove();
                 daten(csvData_1,1);
             }
+
+        }
+        //When only bar is selected and you select or deselect a word  --> What should happen: data changes according to word but bar stays selected and other bars are still visible just not fully colored
+        else if((barSelected && wordClicked && !legendSelected) || (barSelected && deselectWord && !legendSelected)){
+
+        }
+        //Only person on legend is selected and you select or deselect a word  --> What should happen: data changes according to word but person says selected (on legend and bars) and other bars are still visible just grey
+        else if((!barSelected && wordClicked && legendSelected) || (!barSelected && deselectWord && legendSelected)){
+
+        }
+        //Bar and person on legend is selected and you select or deselect word --> What should happen: data changes but person and bar stay selected and other bars are still visible just grey
+        else if((barSelected && wordClicked && legendSelected) || (barSelected && deselectWord && legendSelected)){
 
         }
         
