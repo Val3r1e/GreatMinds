@@ -792,7 +792,7 @@ function setTitle(word, name, year, steps){
         }
     }
     if(steps == 5){
-        year = year + " - " + (year + 4) + "<br>";
+        year = (year - 4) + " - " + year  + "<br>";
     }
     document.getElementById("WCTitle").innerHTML = name + year + word;
 }
@@ -1289,7 +1289,7 @@ function show_corresponding_letters(word){
                 var thisButton = allButtons[i];
                 var thisStyle = getStyle(thisButton, 'display');
                 if(thisStyle == "block"){
-                    if(!((thisButton.id.split("_")[0] >= year) && (thisButton.id.split("_")[0] < parseInt(year) + parseInt(steps)))){
+                    if(!((thisButton.id.split("_")[0] <= year) && (thisButton.id.split("_")[0] > parseInt(year) - parseInt(steps)))){
                         thisButton.style.display ="none";
                     }
                 }
