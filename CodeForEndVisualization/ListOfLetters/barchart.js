@@ -732,7 +732,6 @@ function init(version){
 function init_page(){
     document.getElementById("herr_made").innerHTML = "wunschpunsch";
     document.getElementById("herr_made").onchange();
-    //create_small_bars();
 }
 
 //------------------ LOADINGSCREEN ------------------
@@ -782,7 +781,7 @@ function setTitle(word, name, year, steps){
     if(word == "wunschpunsch"){
         word = "";
     }else{
-        word = capitalizeFirstLetter(word);
+        word = "containing '" + capitalizeFirstLetter(word) + "'";
     }
     if(year == 1111){
         year = "All Letters <br>";
@@ -922,10 +921,13 @@ function small_bar(id){
 
 //---- we need one main function to trigger a new cloud because otherwise it would be a recursive mess --------
 function trigger_new_cloud(){
+
     loadListAndWC();
     loading = setTimeout(showListAndWC, 1500);
 
-    Remove();
+    remove_list();
+    remove_cloud();
+    
     word = document.getElementById("herr_made").innerHTML; //don't put "var" in front of word, it doesn't work, can't remember why though^^ 
     var year = document.getElementById("message_from_bar").innerHTML;
     var name = document.getElementById("message_from_legend").innerHTML;
@@ -936,14 +938,13 @@ function trigger_new_cloud(){
         var this_wc = current[current.length-1].id;
         var elements = this_wc.split("_"); //it's either "ul_<year>" or "ul_<name>_<year>"
         if(elements.length == 2){ //year is open, no person
-            if(!barSelected || toggleWhileBarSelected){
+            if(!barSelected || toggleWhileBarSelected || (barSelected && toggled)){
                 year = elements[1];
                 steps = 1;
             }
             if(!legendSelected){
                 name = 'whole';
             }
-            //console.log("Cloud: " + name, year, steps);
             wordcloud_data(word, name, year, steps);
         }else{ //person is open
             if(!barSelected || toggleWhileBarSelected){
@@ -953,7 +954,6 @@ function trigger_new_cloud(){
             if(!legendSelected){
                 name = elements[1];
             }
-            //console.log("Cloud: " + name, year, steps);
             wordcloud_data(word, name, year, steps);
         }
     }else{ //outside layer
@@ -964,7 +964,6 @@ function trigger_new_cloud(){
         if(!legendSelected){
             name = 'whole';
         }
-        //console.log("Cloud: " + name, year, steps);
         wordcloud_data(word, name, year, steps);
     }
     console.log("set parameters to "+ word +" "+ name +" "+ year +" "+ steps);
@@ -1042,6 +1041,7 @@ function toggle(id, name, year, steps){
         }
         //open element
         if (ulElement.className == 'closed'){
+            toggled = true;
             //to ensure only one year and max. one person is open at the same time:
             if(requestOnYear){
                 if(!yearOpen){
@@ -1072,6 +1072,7 @@ function toggle(id, name, year, steps){
         //close
         }else{
             if(requestOnYear){
+                toggled = false;
                 if(personOpen){
                     change(openPerson,"close");
                     personOpen = false;
@@ -1081,6 +1082,7 @@ function toggle(id, name, year, steps){
                 yearOpen = false;
             }
             if(requestOnPerson){
+                toggled = true;
                 openPerson = "";
                 personOpen = false;
             }
@@ -1092,7 +1094,8 @@ function toggle(id, name, year, steps){
 //------------- Load the letters --------------
 function Load(clickedButton){
     letterLoaded = true;
-    Remove();
+    remove_cloud();
+    remove_list();
     var thisButton = document.getElementById(clickedButton);
     console.log(thisButton);
     if(thisButton == loadedLetter){
@@ -1110,12 +1113,15 @@ function Load(clickedButton){
     }
 }
 
-//-------- Remove previous text/Letters from the div ---------
-function Remove(){
+//-------- Remove previous List from the div ---------
+function remove_list(){
     $("#LetterDiv").empty();
-    zingchart.exec("LetterDiv", "destroy");
 }
 
+//-------- Remove previous List from the div ---------
+function remove_cloud(){
+    zingchart.exec("LetterDiv", "destroy");
+}
 //------------ callback functions to load JSON files ----------
 function load_letter_Index(callback){
     var httpRequestURL = "data/word-letter_index2.json";
@@ -1184,6 +1190,7 @@ function count_visible_letters(){
     // getCSVData();
 }
 
+// ------ computing the data for the barchart on the fly -----------
 function getCSVData(word){
 
     var barChartLettters = {};
@@ -1361,34 +1368,6 @@ function show_corresponding_letters(word){
         }
         create_small_bars();
         hide_empty_sections();
-
-        // //------------------------------ A lot of if's and else's to enable the clicking correctly --------------------------
-
-        // //When nothing is selected before and word is selected or deselected
-        // if((!barSelected && wordClicked && !legendSelected) || (!barSelected && deselectWord && !legendSelected)){ 
-            
-        //     if(dataVersion == 5){
-        //         d3.select("svg").selectAll("*").remove();
-        //         daten(csvData_5,5);
-        //     }
-        //     else if(dataVersion == 1){
-        //         d3.select("svg").selectAll("*").remove();
-        //         daten(csvData_1,1);
-        //     }
-
-        // }
-        // //When only bar is selected and you select or deselect a word  --> What should happen: data changes according to word but bar stays selected and other bars are still visible just not fully colored
-        // else if((barSelected && wordClicked && !legendSelected) || (barSelected && deselectWord && !legendSelected)){
-
-        // }
-        // //Only person on legend is selected and you select or deselect a word  --> What should happen: data changes according to word but person says selected (on legend and bars) and other bars are still visible just grey
-        // else if((!barSelected && wordClicked && legendSelected) || (!barSelected && deselectWord && legendSelected)){
-
-        // }
-        // //Bar and person on legend is selected and you select or deselect word --> What should happen: data changes but person and bar stay selected and other bars are still visible just grey
-        // else if((barSelected && wordClicked && legendSelected) || (barSelected && deselectWord && legendSelected)){
-
-        // }
         
     });
 }
@@ -1584,27 +1563,56 @@ function wordcloud_data(word, name, year, steps){
     var doc_length = 0; //total wordcount
     var numberOfDocs = 0; //number of docs containing the selected word
     var cloudData = [];
-    var totalCount = [];
+    //var totalCount = [];
 
     //toGet is a list of the names of all the letters matching the requested word
     load_letter_Index(function(letterInd){
         var letterIndex = JSON.parse(letterInd); // {word1:[letter1, letter2 ,...], word2[letterx, lettery,...],...}
         var letters = letterIndex[word]; //List of all Letters containing the selected word
 
-        for(i = 0; i < letters.length; i++){
-            var parameters = letters[i].split("_"); //format letter: 'year_name_number'
-            if(year == 1111){ //in this case we need all the letters
-                toGet.push(letters[i]);
-            }else if(name == 'whole'){ //all the letters from the open year
-                if(parameters[0] == year){
-                    toGet.push(letters[i]);
-                }
-            }else{ //year & person open -> year and person have to match
-                if((parameters[0] == year) && (parameters[1] == name)){
-                    toGet.push(letters[i]);
+        if(steps == 0){
+            if(name == 'whole'){ //everything
+                toGet = letters;
+            }else{
+                for(i = 0; i < letters.length; i++){
+                    var letterName = letters[i].split("_")[1];
+                    if(letterName == name){
+                        toGet.push(letters[i]);
+                    }
                 }
             }
         }
+        else if(steps == 1){
+            for(i = 0; i < letters.length; i++){
+                var letterYear = letters[i].split("_")[0];
+                var letterName = letters[i].split("_")[1];
+                if(name == 'whole'){ //all the letters from the open year
+                    if(letterYear == year){
+                        toGet.push(letters[i]);
+                    }
+                }else{ //year & person open -> year and person have to match
+                    if((letterYear == year) && (letterName == name)){
+                        toGet.push(letters[i]);
+                    }
+                }
+            }
+        }
+        else if(steps == 5){
+            for(i = 0; i < letters.length; i++){
+                var letterYear = letters[i].split("_")[0];
+                var letterName = letters[i].split("_")[1];
+                if(name == 'whole'){
+                    if((letterYear >= year - 4)&&(letterYear <=year)){
+                        toGet.push(letters[i]);
+                    }
+                }else{
+                    if((letterYear >= year - 4)&&(letterYear <=year) && (letterName == name)){
+                        toGet.push(letters[i]);
+                    }
+                }
+            }
+        }
+        
         numberOfDocs = toGet.length;
         // console.log(toGet);
         // console.log("Number of Docs: " + numberOfDocs);
@@ -1641,7 +1649,7 @@ function wordcloud_data(word, name, year, steps){
                 var tf_score = (tf_data[key] / doc_length);
 
                 tfIdf_scores[key] = (tf_score * idf_score);
-                totalCount.push({"text":key, "count":tf_data[key]});
+                //totalCount.push({"text":key, "count":tf_data[key]});
                 cloudData.push({"text":key, "count":tfIdf_scores[key]});
                 // if(key == word){
                 //     console.log(word + " : " + tfIdf_scores[word]);
