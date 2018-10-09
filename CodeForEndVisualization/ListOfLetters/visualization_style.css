@@ -48,6 +48,7 @@ html, body {
 	background-color: white;
 	cursor: pointer;
 	font-size: 12px;
+	font-family: 'Merriweather';
 }
 .openLetterButton:hover{
 	/* color: grey; */

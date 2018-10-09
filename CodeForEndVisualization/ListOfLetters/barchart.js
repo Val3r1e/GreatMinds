@@ -26,8 +26,8 @@ var originalCsvData_5;
 var dataVersion; 
 var deselectWord = false;
 var firstLoad = true;
-
 var columns = ["Year", "FSchiller", "CSchiller", "CStein", "CGoethe"];
+
 //-------------------- BARCHART -----------------------
 
 //---------------------- only gets called once at the beginning never again after that!! -----------------------
@@ -734,7 +734,7 @@ function init_page(){
     document.getElementById("herr_made").onchange();
 }
 
-//------------------ LOADINGSCREEN ------------------
+//------------------------ LOADINGSCREEN ------------------
 
 // ----- calculating the clouds and the list takes a while so here is a loading screen: -----------
 function showListAndWC(){
@@ -768,7 +768,7 @@ function newQuote(){
     quoteCounter = (quoteCounter + 1) % quotes.length;
 }
 
-//------------------ SIDEBAR -----------------------
+//------------------------ SIDEBAR -----------------------
 
 function capitalizeFirstLetter(string){
     return string.charAt(0).toUpperCase() + string.slice(1);
@@ -855,7 +855,7 @@ function deselectFilter(clickedElement){
     clickedWord = "";
     document.getElementById("herr_made").innerHTML = "wunschpunsch";
     document.getElementById("herr_made").onchange();
-    getCSVData("wunschpunsch");
+    barchart_data("wunschpunsch");
 
     // ------- In case all the other stuff shoul be deselectable in the sidebar: -------
     // if(clickedElement == "filteryear"){
@@ -877,99 +877,11 @@ function deselectFilter(clickedElement){
     //     document.getElementById("herr_made").innerHTML = "wunschpunsch";
     // }
     // document.getElementById("herr_made").onchange();
-    // getCSVData("wunschpunsch");
+    // barchart_data("wunschpunsch");
     
 }
 
-//----------------------- SMALL BARS ------------------------
-
-// ----- Code for small bars to show letter amount -----
-function create_small_bars(){
-    count_visible_letters();
-    d3.select("div").selectAll("divchart").remove();
-    var allBars = document.getElementsByClassName("spanYear");
-    for(i = 0; i < allBars.length; i++){
-        var id = allBars[i].id;
-        small_bar(id);
-    }
-}
-
-//---- creates the specific small bar, called from the for-Loop --------
-function small_bar(id){
-
-    var barYear = id.split("_")[1];
-    var data = [visibleLetters[barYear]];
-
-    var divs = d3.select("#"+id).selectAll("div")
-    .data(data);
-
-    var newdivs = d3.select("#"+id).selectAll("div")
-    .data(data)
-    .enter().append("div");
-
-    divs = divs.merge(newdivs);
-
-    var color = d3.scaleLinear()
-    .domain([0, 300])
-    .range(["powderblue", "midnightblue"]);
-        
-    divs.style("width", function(d) { return d + "px"; })
-    .attr("class", "divchart")
-    .style("background-color", function(d){ return color(d)})
-    .text(function(d) { return d; });
-}
-
-//---- we need one main function to trigger a new cloud because otherwise it would be a recursive mess --------
-function trigger_new_cloud(){
-
-    loadListAndWC();
-    loading = setTimeout(showListAndWC, 1500);
-
-    remove_list();
-    remove_cloud();
-    
-    word = document.getElementById("herr_made").innerHTML; //don't put "var" in front of word, it doesn't work, can't remember why though^^ 
-    var year = document.getElementById("message_from_bar").innerHTML;
-    var name = document.getElementById("message_from_legend").innerHTML;
-    var steps = document.getElementById("report_steps").innerHTML;
-    var current = document.getElementsByClassName("open");
-    if(current.length > 1){ 
-        //something is open
-        var this_wc = current[current.length-1].id;
-        var elements = this_wc.split("_"); //it's either "ul_<year>" or "ul_<name>_<year>"
-        if(elements.length == 2){ //year is open, no person
-            if(!barSelected || toggleWhileBarSelected || (barSelected && toggled)){
-                year = elements[1];
-                steps = 1;
-            }
-            if(!legendSelected){
-                name = 'whole';
-            }
-            wordcloud_data(word, name, year, steps);
-        }else{ //person is open
-            if(!barSelected || toggleWhileBarSelected){
-                year = elements[2];
-                steps = 1;
-            }
-            if(!legendSelected){
-                name = elements[1];
-            }
-            wordcloud_data(word, name, year, steps);
-        }
-    }else{ //outside layer
-        if(!barSelected){
-            year = 1111;
-            steps = 0;
-        }
-        if(!legendSelected){
-            name = 'whole';
-        }
-        wordcloud_data(word, name, year, steps);
-    }
-    console.log("set parameters to "+ word +" "+ name +" "+ year +" "+ steps);
-    setFilter(word, name, year, steps);
-    show_corresponding_letters(word);
-}
+//---------------------------------- MAIN -----------------------------------
 
 //------- toggle between opened and closed years and names in the List of Letters:
 function toggle(id, name, year, steps){
@@ -1091,106 +1003,288 @@ function toggle(id, name, year, steps){
     }
 }
 
-//------------- Load the letters --------------
-function Load(clickedButton){
-    letterLoaded = true;
-    remove_cloud();
+//---- we need one main function to trigger a new cloud because otherwise it would be a recursive mess --------
+function trigger_new_cloud(){
+
+    loadListAndWC();
+    loading = setTimeout(showListAndWC, 1500);
+
     remove_list();
-    var thisButton = document.getElementById(clickedButton);
-    console.log(thisButton);
-    if(thisButton == loadedLetter){
-        thisButton.style.color = "#000000";
-        letterLoaded = false;
+    remove_cloud();
+    
+    word = document.getElementById("herr_made").innerHTML; //don't put "var" in front of word, it doesn't work, can't remember why though^^ 
+    var year = document.getElementById("message_from_bar").innerHTML;
+    var name = document.getElementById("message_from_legend").innerHTML;
+    var steps = document.getElementById("report_steps").innerHTML;
+    var current = document.getElementsByClassName("open");
+    if(current.length > 1){ 
+        //something is open
+        var this_wc = current[current.length-1].id;
+        var elements = this_wc.split("_"); //it's either "ul_<year>" or "ul_<name>_<year>"
+        if(elements.length == 2){ //year is open, no person
+            if(!barSelected || toggleWhileBarSelected || (barSelected && toggled)){
+                year = elements[1];
+                steps = 1;
+            }
+            if(!legendSelected){
+                name = 'whole';
+            }
+            wordcloud_data(word, name, year, steps);
+        }else{ //person is open
+            if(!barSelected || toggleWhileBarSelected){
+                year = elements[2];
+                steps = 1;
+            }
+            if(!legendSelected){
+                name = elements[1];
+            }
+            wordcloud_data(word, name, year, steps);
+        }
+    }else{ //outside layer
+        if(!barSelected){
+            year = 1111;
+            steps = 0;
+        }
+        if(!legendSelected){
+            name = 'whole';
+        }
+        wordcloud_data(word, name, year, steps);
+    }
+    console.log("set parameters to "+ word +" "+ name +" "+ year +" "+ steps);
+    setFilter(word, name, year, steps);
+    show_corresponding_letters(word);
+}
+
+//-------------------------------- WORDCLOUDS ----------------------------------
+
+// function create_wordcloud(name, year, steps){
+function render_wordcloud(cloudData){
+
+    myConfig = {
+        type: 'wordcloud',
+        options: {
+            words : cloudData,
+            minLength: 4,
+            ignore: ['frau','leben', 'brief'],
+            maxItems: 50,
+            aspect: 'spiral',
+            rotate: false,
+            colorType: 'palette',
+            palette: ["#7b1fa2"],// "#512da8", "#283593", "#6a1b9a", "#0d47a1", "#1565c0", "#01579b", "#0288d1", "#0d47a1", "#6200ea", "#8e24aa"],
+            //['#D32F2F','#1976D2','#9E9E9E','#E53935','#1E88E5','#7E57C2','#F44336','#2196F3','#A1887F'],
+        
+            style: {
+                fontFamily: 'Marcellus SC',
+                padding:"3px",
+                
+                hoverState: {
+                    borderRadius: 10,
+                    fontColor: 'grey'
+                },
+                tooltip: {
+                    text: "'%text'\n tf-idf index: %hits \n Click me!",
+                    visible: true,
+                    alpha: 0.8,
+                    backgroundColor: 'lightgrey',
+                    borderColor: 'none',
+                    borderRadius: 6,
+                    fontColor: 'black',
+                    fontFamily: 'Ubuntu Mono',
+                    fontSize:18,
+                    padding: 5,
+                    textAlpha: 1,
+                    wrapText: true
+                }
+            }
+        }
+    };
+    
+    zingchart.render({ 
+        id: 'LetterDiv', 
+        data: myConfig, 
+        height: '100%', 
+        width: '100%',
+        autoResize: true
+    });
+
+    zingchart.bind('LetterDiv','label_click', function(p){
+        var word = p.text;
+        barchart_data(word);
+        wordClicked = true;
+        deselectWord = false;
+        clickedWord = word;
+        document.getElementById("herr_made").innerHTML = clickedWord;
         document.getElementById("herr_made").onchange();
-    }else{
-        if(loadedLetter!= undefined){
-            loadedLetter.style.color = "#000000";
-        }
-        loadedLetter = thisButton;
-        // thisButton.style.color = "#8b0000"; //die sieht man gar nicht
-        thisButton.style.color = "#a286d6";
-        $("#LetterDiv").load("../../AllLetters/" + clickedButton + ".html");
-    }
+    });
 }
 
-//-------- Remove previous List from the div ---------
-function remove_list(){
-    $("#LetterDiv").empty();
+//------------ render the wordclouds in which one word is selected --------------
+function render_selected_wordcloud(cloudData){
+    var selectedConfig = myConfig;
+    selectedConfig.options.words = cloudData;
+    zingchart.render({
+        id:'LetterDiv',
+        data: selectedConfig,
+        height:'100%',
+        width:'100%',
+        autoResize: true
+    });
+    
+    highlight_word(word);
+    
+    zingchart.bind('LetterDiv','label_click', function(p){
+        var selectedWord = p.text;
+        //click on the same word = deselect
+        if(selectedWord == word){
+            barchart_data("wunschpunsch");
+            deselectWord = true;
+            wordClicked = false;
+            clickedWord = "";
+            document.getElementById("herr_made").innerHTML = "wunschpunsch";
+            document.getElementById("herr_made").onchange();
+        }else{ 
+            barchart_data(selectedWord);
+            //click on another word: that word gets selected
+            wordClicked = true;
+            deselectWord = false;
+            clickedWord = selectedWord;
+            document.getElementById("herr_made").innerHTML = selectedWord ;
+            document.getElementById("herr_made").onchange();
+        } 
+    });
 }
 
-//-------- Remove previous List from the div ---------
-function remove_cloud(){
-    zingchart.exec("LetterDiv", "destroy");
-}
-//------------ callback functions to load JSON files ----------
-function load_letter_Index(callback){
-    var httpRequestURL = "data/word-letter_index2.json";
-    var httpRequest = new XMLHttpRequest();
-    httpRequest.onload = function(){
-        callback(httpRequest.response);
-    };
-    httpRequest.open('GET', httpRequestURL);
-    httpRequest.send();
-}
+// ----------------------------- COMP DATA ON THE FLY --------------------------
 
-function load_noun_frequencies(callback){
-    var httpRequestURL = "data/noun_frequencies.json";
-    var httpRequest = new XMLHttpRequest();
-    httpRequest.onload = function(){
-        callback(httpRequest.response);
-    };
-    httpRequest.open('GET', httpRequestURL);
-    httpRequest.send();
-}
+//---- create the wordclouds in which one word is selected -----------------
+function wordcloud_data(word, name, year, steps){
+    console.log("request on " + word +" "+ name +" "+ year +" "+ steps);
+    setTitle(word, name, year, steps);
+    // d_j: all currently open letters containing the selected Word W = toGet
+    // D: Corpus (here: all currently open letters containing the selected Word W) = d_j = toGet
+    // w_i: word the score is computed for
+    // tf(w_i, d_j) = (# of w_i in d_j) / (total # of words in d_j) 
+    //              = tf_data[key] / doc_length
+    // idf(w_i, D)  = log[(# of CURRENTLY OPEN letters containing the selected word W) / (# of CURRENTLY OPEN letters containing w_i)] 
+    //              = log(numberOfDocs / docs_containing_word[key]) 
+    // tf-idf(w_i, d_j) = tf * idf
 
-//--- count all visible letters so the small bars can be adjusted and years/persons with no letters can be hidden ---
-function count_visible_letters(){
-    visibleLetters = {};
-    visibleLettersPeople = {};
-    var allButtons = document.getElementsByClassName("openLetterButton");
-    for(i = 0; i < allButtons.length; i++){
-        var thisButton = allButtons[i];
-        var thisStyle = getStyle(thisButton, 'display');
-        var letterYear = thisButton.id.split("_")[0];
-        var letterName = thisButton.id.split("_")[1];
-        if(thisStyle == "block"){
-            //visibleLettersPeople = { year : {name:count, otherName:count,...}, otherYear : {name:count, otherName:count,...},...}
-            if(visibleLettersPeople[letterYear] == undefined){
-                visibleLettersPeople[letterYear] = {};
-                visibleLettersPeople[letterYear][letterName] = 0;
-            }
-            if(visibleLettersPeople[letterYear][letterName] == undefined){
-                visibleLettersPeople[letterYear][letterName] = 0;
-            }
-       
-            else{
-                visibleLettersPeople[letterYear][letterName] += 1;
-            }
-            if(visibleLetters[letterYear] == undefined){
-                visibleLetters[letterYear] = 1;
+    var toGet = []; //all the letters that are currently open and are depicted in the wordcloud
+    var tf_data = {}; //collect the frequencies of each word over all the letters
+    var docs_containing_word = {}; //count how many documents contain each of the words
+    var doc_length = 0; //total wordcount
+    var numberOfDocs = 0; //number of docs containing the selected word
+    var cloudData = [];
+    //var totalCount = [];
 
+    //toGet is a list of the names of all the letters matching the requested word
+    load_letter_Index(function(letterInd){
+        var letterIndex = JSON.parse(letterInd); // {word1:[letter1, letter2 ,...], word2[letterx, lettery,...],...}
+        var letters = letterIndex[word]; //List of all Letters containing the selected word
+
+        if(steps == 0){
+            if(name == 'whole'){ //everything
+                toGet = letters;
             }else{
-                visibleLetters[letterYear] += 1;
-            }
-             
-        }else{ //add the invisible ones with counter 0 so they can later be matched for styling reasons
-            if(visibleLettersPeople[letterYear] == undefined){
-                visibleLettersPeople[letterYear] = {};
-                visibleLettersPeople[letterYear][letterName] = 0;
-            }
-            if(visibleLettersPeople[letterYear][letterName] == undefined){
-                visibleLettersPeople[letterYear][letterName] = 0;
-            }
-       
-            if(visibleLetters[letterYear] == undefined){
-                visibleLetters[letterYear] = 0;
+                for(i = 0; i < letters.length; i++){
+                    var letterName = letters[i].split("_")[1];
+                    if(letterName == name){
+                        toGet.push(letters[i]);
+                    }
+                }
             }
         }
-    }
+        else if(steps == 1){
+            for(i = 0; i < letters.length; i++){
+                var letterYear = letters[i].split("_")[0];
+                var letterName = letters[i].split("_")[1];
+                if(name == 'whole'){ //all the letters from the open year
+                    if(letterYear == year){
+                        toGet.push(letters[i]);
+                    }
+                }else{ //year & person open -> year and person have to match
+                    if((letterYear == year) && (letterName == name)){
+                        toGet.push(letters[i]);
+                    }
+                }
+            }
+        }
+        else if(steps == 5){
+            for(i = 0; i < letters.length; i++){
+                var letterYear = letters[i].split("_")[0];
+                var letterName = letters[i].split("_")[1];
+                if(name == 'whole'){
+                    if((letterYear >= year - 4)&&(letterYear <=year)){
+                        toGet.push(letters[i]);
+                    }
+                }else{
+                    if((letterYear >= year - 4)&&(letterYear <=year) && (letterName == name)){
+                        toGet.push(letters[i]);
+                    }
+                }
+            }
+        }
+        
+        numberOfDocs = toGet.length;
+        // console.log(toGet);
+        // console.log("Number of Docs: " + numberOfDocs);
+        
+        load_noun_frequencies(function(noun_freq){
+            var frequencies = JSON.parse(noun_freq); //{letter1:{noun1: x, noun2: y}, letter2:{...}, ...}
+
+            //---- get the Data for the tf-score: -----
+            //go through all the letters and all the nouns in it and compute the absolute number of
+            //occurences of each noun in the data by adding up the frequencies
+            for(i = 0; i < toGet.length; i++){
+                var thisLetter = toGet[i];
+                var noun_frequency = frequencies[thisLetter]; // map of all nouns which letter x contains
+                for(var key in noun_frequency){ //iterate through all nouns of each letter
+                    if(tf_data[key] === undefined){ 
+                        tf_data[key] = noun_frequency[key]; //tf_data: Map of all nouns with their absolute number
+                        docs_containing_word[key] = 1;
+                    }else{
+                        tf_data[key] += noun_frequency[key];
+                        docs_containing_word[key] += 1;
+                    }
+                    doc_length += noun_frequency[key]; //sum of the number of words of all letters containing the word
+                }
+            }
+            // console.log("TF Data: ");
+            // console.log(tf_data);
+            // console.log("Gesamtwortzahl: " + doc_length);
+            
+            //------ compute tf-idf score on the fly (not sure if this is the right way though^^) -----
+            for(var key in tf_data){
+                // var idf_score = compute_idf_score(key);
+                var tfIdf_scores = {};
+                var idf_score = Math.log(numberOfDocs / docs_containing_word[key]);
+                var tf_score = (tf_data[key] / doc_length);
+
+                tfIdf_scores[key] = (tf_score * idf_score);
+                //totalCount.push({"text":key, "count":tf_data[key]});
+                cloudData.push({"text":key, "count":tfIdf_scores[key]});
+                // if(key == word){
+                //     console.log(word + " : " + tfIdf_scores[word]);
+                // }
+            }
+                
+            // console.log("Docs containing word: ");
+            // console.log(docs_containing_word);
+            // console.log(cloudData);
+            if(word != "wunschpunsch"){
+                render_selected_wordcloud(cloudData);
+                //render_selected_wordcloud(totalCount);
+            }else{
+                render_wordcloud(cloudData);
+                //render_wordcloud(totalCount);
+            }
+            
+        });
+    });
 }
 
 // ------ computing the data for the barchart on the fly -----------
-function getCSVData(word){
+function barchart_data(word){
 
     var barChartLettters = {};
 
@@ -1288,6 +1382,146 @@ function getCSVData(word){
         // }
 
     });        
+}
+
+// --------------------- LOADING AND REMOVING STUFF ---------------------
+
+//------------- Load the letters --------------
+function Load(clickedButton){
+    letterLoaded = true;
+    remove_cloud();
+    remove_list();
+    var thisButton = document.getElementById(clickedButton);
+    console.log(thisButton);
+    if(thisButton == loadedLetter){
+        thisButton.style.color = "#000000";
+        letterLoaded = false;
+        document.getElementById("herr_made").onchange();
+    }else{
+        if(loadedLetter!= undefined){
+            loadedLetter.style.color = "#000000";
+        }
+        loadedLetter = thisButton;
+        // thisButton.style.color = "#8b0000"; //die sieht man gar nicht
+        thisButton.style.color = "#a286d6";
+        $("#LetterDiv").load("../../AllLetters/" + clickedButton + ".html");
+    }
+}
+
+//-------- Remove previous List from the div ---------
+function remove_list(){
+    $("#LetterDiv").empty();
+}
+
+//-------- Remove previous List from the div ---------
+function remove_cloud(){
+    zingchart.exec("LetterDiv", "destroy");
+}
+//------------ callback functions to load JSON files ----------
+function load_letter_Index(callback){
+    var httpRequestURL = "data/word-letter_index2.json";
+    var httpRequest = new XMLHttpRequest();
+    httpRequest.onload = function(){
+        callback(httpRequest.response);
+    };
+    httpRequest.open('GET', httpRequestURL);
+    httpRequest.send();
+}
+
+function load_noun_frequencies(callback){
+    var httpRequestURL = "data/noun_frequencies.json";
+    var httpRequest = new XMLHttpRequest();
+    httpRequest.onload = function(){
+        callback(httpRequest.response);
+    };
+    httpRequest.open('GET', httpRequestURL);
+    httpRequest.send();
+}
+
+//----------------------- SMALL BARS ------------------------
+
+// ----- Code for small bars to show letter amount -----
+function create_small_bars(){
+    count_visible_letters();
+    d3.select("div").selectAll("divchart").remove();
+    var allBars = document.getElementsByClassName("spanYear");
+    for(i = 0; i < allBars.length; i++){
+        var id = allBars[i].id;
+        small_bar(id);
+    }
+}
+
+//---- creates the specific small bar, called from the for-Loop --------
+function small_bar(id){
+
+    var barYear = id.split("_")[1];
+    var data = [visibleLetters[barYear]];
+
+    var divs = d3.select("#"+id).selectAll("div")
+    .data(data);
+
+    var newdivs = d3.select("#"+id).selectAll("div")
+    .data(data)
+    .enter().append("div");
+
+    divs = divs.merge(newdivs);
+
+    var color = d3.scaleLinear()
+    .domain([0, 300])
+    .range(["powderblue", "midnightblue"]);
+        
+    divs.style("width", function(d) { return d + "px"; })
+    .attr("class", "divchart")
+    .style("background-color", function(d){ return color(d)})
+    .text(function(d) { return d; });
+}
+
+// ---------------------------- HELPERS -----------------------------
+
+//--- count all visible letters so the small bars can be adjusted and years/persons with no letters can be hidden ---
+function count_visible_letters(){
+    visibleLetters = {};
+    visibleLettersPeople = {};
+    var allButtons = document.getElementsByClassName("openLetterButton");
+    for(i = 0; i < allButtons.length; i++){
+        var thisButton = allButtons[i];
+        var thisStyle = getStyle(thisButton, 'display');
+        var letterYear = thisButton.id.split("_")[0];
+        var letterName = thisButton.id.split("_")[1];
+        if(thisStyle == "block"){
+            //visibleLettersPeople = { year : {name:count, otherName:count,...}, otherYear : {name:count, otherName:count,...},...}
+            if(visibleLettersPeople[letterYear] == undefined){
+                visibleLettersPeople[letterYear] = {};
+                visibleLettersPeople[letterYear][letterName] = 0;
+            }
+            if(visibleLettersPeople[letterYear][letterName] == undefined){
+                visibleLettersPeople[letterYear][letterName] = 0;
+            }
+       
+            else{
+                visibleLettersPeople[letterYear][letterName] += 1;
+            }
+            if(visibleLetters[letterYear] == undefined){
+                visibleLetters[letterYear] = 1;
+
+            }else{
+                visibleLetters[letterYear] += 1;
+            }
+             
+        }else{ //add the invisible ones with counter 0 so they can later be matched for styling reasons
+            if(visibleLettersPeople[letterYear] == undefined){
+                visibleLettersPeople[letterYear] = {};
+                visibleLettersPeople[letterYear][letterName] = 0;
+            }
+            if(visibleLettersPeople[letterYear][letterName] == undefined){
+                visibleLettersPeople[letterYear][letterName] = 0;
+            }
+       
+            if(visibleLetters[letterYear] == undefined){
+                visibleLetters[letterYear] = 0;
+            }
+        }
+    }
 }
 
 //-------- help getting the CSS style for other functions ---------
@@ -1432,229 +1666,4 @@ function all_buttons_visible(){
         var thisButton = allButtons[i]
         thisButton.style.display ="block";
     }
-}
-
-//------------- create the wordclouds ---------------
-// function create_wordcloud(name, year, steps){
-function render_wordcloud(cloudData){
-
-    myConfig = {
-        type: 'wordcloud',
-        options: {
-            words : cloudData,
-            minLength: 4,
-            ignore: ['frau','leben', 'brief'],
-            maxItems: 50,
-            aspect: 'spiral',
-            rotate: false,
-            colorType: 'palette',
-            palette: ["#7b1fa2"],// "#512da8", "#283593", "#6a1b9a", "#0d47a1", "#1565c0", "#01579b", "#0288d1", "#0d47a1", "#6200ea", "#8e24aa"],
-            //['#D32F2F','#1976D2','#9E9E9E','#E53935','#1E88E5','#7E57C2','#F44336','#2196F3','#A1887F'],
-        
-            style: {
-                fontFamily: 'Marcellus SC',
-                padding:"3px",
-                
-                hoverState: {
-                    borderRadius: 10,
-                    fontColor: 'grey'
-                },
-                tooltip: {
-                    text: "'%text'\n tf-idf index: %hits \n Click me!",
-                    visible: true,
-                    alpha: 0.8,
-                    backgroundColor: 'lightgrey',
-                    borderColor: 'none',
-                    borderRadius: 6,
-                    fontColor: 'black',
-                    fontFamily: 'Ubuntu Mono',
-                    fontSize:18,
-                    padding: 5,
-                    textAlpha: 1,
-                    wrapText: true
-                }
-            }
-        }
-    };
-    
-    zingchart.render({ 
-        id: 'LetterDiv', 
-        data: myConfig, 
-        height: '100%', 
-        width: '100%',
-        autoResize: true
-    });
-
-    zingchart.bind('LetterDiv','label_click', function(p){
-        var word = p.text;
-        getCSVData(word);
-        wordClicked = true;
-        deselectWord = false;
-        clickedWord = word;
-        document.getElementById("herr_made").innerHTML = clickedWord;
-        document.getElementById("herr_made").onchange();
-    });
-}
-
-//------------ render the wordclouds in which one word is selected --------------
-function render_selected_wordcloud(cloudData){
-    var selectedConfig = myConfig;
-    selectedConfig.options.words = cloudData;
-    zingchart.render({
-        id:'LetterDiv',
-        data: selectedConfig,
-        height:'100%',
-        width:'100%',
-        autoResize: true
-    });
-    
-    highlight_word(word);
-    
-    zingchart.bind('LetterDiv','label_click', function(p){
-        var selectedWord = p.text;
-        //click on the same word = deselect
-        if(selectedWord == word){
-            getCSVData("wunschpunsch");
-            deselectWord = true;
-            wordClicked = false;
-            clickedWord = "";
-            document.getElementById("herr_made").innerHTML = "wunschpunsch";
-            document.getElementById("herr_made").onchange();
-        }else{ 
-            getCSVData(selectedWord);
-            //click on another word: that word gets selected
-            wordClicked = true;
-            deselectWord = false;
-            clickedWord = selectedWord;
-            document.getElementById("herr_made").innerHTML = selectedWord ;
-            document.getElementById("herr_made").onchange();
-        } 
-    });
-}
-
-//---- create the wordclouds in which one word is selected -----------------
-function wordcloud_data(word, name, year, steps){
-    console.log("request on " + word +" "+ name +" "+ year +" "+ steps);
-    setTitle(word, name, year, steps);
-    // d_j: all currently open letters containing the selected Word W = toGet
-    // D: Corpus (here: all currently open letters containing the selected Word W) = d_j = toGet
-    // w_i: word the score is computed for
-    // tf(w_i, d_j) = (# of w_i in d_j) / (total # of words in d_j) 
-    //              = tf_data[key] / doc_length
-    // idf(w_i, D)  = log[(# of CURRENTLY OPEN letters containing the selected word W) / (# of CURRENTLY OPEN letters containing w_i)] 
-    //              = log(numberOfDocs / docs_containing_word[key]) 
-    // tf-idf(w_i, d_j) = tf * idf
-
-    var toGet = []; //all the letters that are currently open and are depicted in the wordcloud
-    var tf_data = {}; //collect the frequencies of each word over all the letters
-    var docs_containing_word = {}; //count how many documents contain each of the words
-    var doc_length = 0; //total wordcount
-    var numberOfDocs = 0; //number of docs containing the selected word
-    var cloudData = [];
-    //var totalCount = [];
-
-    //toGet is a list of the names of all the letters matching the requested word
-    load_letter_Index(function(letterInd){
-        var letterIndex = JSON.parse(letterInd); // {word1:[letter1, letter2 ,...], word2[letterx, lettery,...],...}
-        var letters = letterIndex[word]; //List of all Letters containing the selected word
-
-        if(steps == 0){
-            if(name == 'whole'){ //everything
-                toGet = letters;
-            }else{
-                for(i = 0; i < letters.length; i++){
-                    var letterName = letters[i].split("_")[1];
-                    if(letterName == name){
-                        toGet.push(letters[i]);
-                    }
-                }
-            }
-        }
-        else if(steps == 1){
-            for(i = 0; i < letters.length; i++){
-                var letterYear = letters[i].split("_")[0];
-                var letterName = letters[i].split("_")[1];
-                if(name == 'whole'){ //all the letters from the open year
-                    if(letterYear == year){
-                        toGet.push(letters[i]);
-                    }
-                }else{ //year & person open -> year and person have to match
-                    if((letterYear == year) && (letterName == name)){
-                        toGet.push(letters[i]);
-                    }
-                }
-            }
-        }
-        else if(steps == 5){
-            for(i = 0; i < letters.length; i++){
-                var letterYear = letters[i].split("_")[0];
-                var letterName = letters[i].split("_")[1];
-                if(name == 'whole'){
-                    if((letterYear >= year - 4)&&(letterYear <=year)){
-                        toGet.push(letters[i]);
-                    }
-                }else{
-                    if((letterYear >= year - 4)&&(letterYear <=year) && (letterName == name)){
-                        toGet.push(letters[i]);
-                    }
-                }
-            }
-        }
-        
-        numberOfDocs = toGet.length;
-        // console.log(toGet);
-        // console.log("Number of Docs: " + numberOfDocs);
-        
-        load_noun_frequencies(function(noun_freq){
-            var frequencies = JSON.parse(noun_freq); //{letter1:{noun1: x, noun2: y}, letter2:{...}, ...}
-
-            //---- get the Data for the tf-score: -----
-            //go through all the letters and all the nouns in it and compute the absolute number of
-            //occurences of each noun in the data by adding up the frequencies
-            for(i = 0; i < toGet.length; i++){
-                var thisLetter = toGet[i];
-                var noun_frequency = frequencies[thisLetter]; // map of all nouns which letter x contains
-                for(var key in noun_frequency){ //iterate through all nouns of each letter
-                    if(tf_data[key] === undefined){ 
-                        tf_data[key] = noun_frequency[key]; //tf_data: Map of all nouns with their absolute number
-                        docs_containing_word[key] = 1;
-                    }else{
-                        tf_data[key] += noun_frequency[key];
-                        docs_containing_word[key] += 1;
-                    }
-                    doc_length += noun_frequency[key]; //sum of the number of words of all letters containing the word
-                }
-            }
-            // console.log("TF Data: ");
-            // console.log(tf_data);
-            // console.log("Gesamtwortzahl: " + doc_length);
-            
-            //------ compute tf-idf score on the fly (not sure if this is the right way though^^) -----
-            for(var key in tf_data){
-                // var idf_score = compute_idf_score(key);
-                var tfIdf_scores = {};
-                var idf_score = Math.log(numberOfDocs / docs_containing_word[key]);
-                var tf_score = (tf_data[key] / doc_length);
-
-                tfIdf_scores[key] = (tf_score * idf_score);
-                //totalCount.push({"text":key, "count":tf_data[key]});
-                cloudData.push({"text":key, "count":tfIdf_scores[key]});
-                // if(key == word){
-                //     console.log(word + " : " + tfIdf_scores[word]);
-                // }
-            }
-                
-            // console.log("Docs containing word: ");
-            // console.log(docs_containing_word);
-            // console.log(cloudData);
-            if(word != "wunschpunsch"){
-                render_selected_wordcloud(cloudData);
-                //render_selected_wordcloud(totalCount);
-            }else{
-                render_wordcloud(cloudData);
-                //render_wordcloud(totalCount);
-            }
-            
-        });
-    });
 }
