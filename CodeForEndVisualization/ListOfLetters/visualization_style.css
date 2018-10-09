@@ -185,7 +185,7 @@ li img {
 	transition: 0.3s;
     /* z-index: 1; */
     top: 140px;
-    right: -100px;
+    right: -180px;
     background: #eee;
     overflow-x: hidden;
 	padding: 20px;
@@ -212,14 +212,17 @@ li img {
 	border-bottom: 1px dotted  #7b1fa2;
 }
 #filterhead{
+	/* display: none; */
 	font-size: 20px;
 }
 #filtersub{
+	display: none;
 	font-size: 13px;
 }
 
 .filterelement{
 	display:none;
+	font-family: 'Merriweather';
 	font-size: 18px;
 	border-style: none;
 	background-color:  #5c6bc0;
@@ -255,6 +258,26 @@ li img {
 
 .filterelement:hover .tooltiptext{
 	visibility: visible;
+}
+
+#resetButton{
+	font-family: 'Merriweather';
+	font-size: 15px;
+	border-style: none;
+	background-color: #814488;
+	opacity: 1;
+	cursor: pointer;
+	border: none;
+	border-radius: 10px;
+    color: white;
+	padding: 10px 15px;
+	margin: 15px;
+    text-align: center;
+    text-decoration: none;
+}
+
+#resetButton:hover{
+	opacity: 0.6;
 }
 
 @media screen and (max-height: 450px) {
