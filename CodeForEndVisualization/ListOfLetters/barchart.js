@@ -846,6 +846,14 @@ function setFilter(word, name, year, steps){
 
 //-------- if a filter gets deselected in the sidebar -------------
 function deselectFilter(clickedElement){
+    wordClicked = false;
+    deselectWord = true;
+    clickedWord = "";
+    document.getElementById("herr_made").innerHTML = "wunschpunsch";
+    document.getElementById("herr_made").onchange();
+    getCSVData("wunschpunsch");
+
+    // ------- In case all the other stuff shoul be deselectable in the sidebar: -------
     // if(clickedElement == "filteryear"){
     //     barSelected = false;
     //     toggleWhileBarSelected = false;
@@ -858,13 +866,15 @@ function deselectFilter(clickedElement){
     //     document.getElementById("filtername").innerHTML = "";
     //     document.getElementById("filtername").style.display = "none";
     // }
-    if(clickedElement == "filterword"){
-        wordClicked = false;
-        deselectWord = true;
-        clickedWord = "";
-        document.getElementById("herr_made").innerHTML = "wunschpunsch";
-    }
-    document.getElementById("herr_made").onchange();
+    // if(clickedElement == "filterword"){
+    //     wordClicked = false;
+    //     deselectWord = true;
+    //     clickedWord = "";
+    //     document.getElementById("herr_made").innerHTML = "wunschpunsch";
+    // }
+    // document.getElementById("herr_made").onchange();
+    // getCSVData("wunschpunsch");
+    
 }
 
 //----------------------- SMALL BARS ------------------------
@@ -1166,58 +1176,107 @@ function count_visible_letters(){
             }
         }
     }
-    getCSVData();
+    // getCSVData();
 }
 
-function getCSVData(){
-    csvDataList = [];
-    csvData_1 = [];
-    csvData_5 = [];
-    keyYears = [1780, 1785, 1790, 1795, 1800, 1805, 1810, 1815, 1820];
+function getCSVData(word){
 
-    for(var key in visibleLettersPeople){
-        var tmpDict = {"Year":0, "FSchiller":0, "CSchiller":0, "CStein":0, "CGoethe":0, "total":0};
-        tmpDict["Year"] = key;
-        for(var nameKey in visibleLettersPeople[key]){
-            tmpDict[nameKey] = visibleLettersPeople[key][nameKey];
-        }
-        tmpDict["total"] = tmpDict["FSchiller"] + tmpDict["CSchiller"] + tmpDict["CStein"] + tmpDict["CGoethe"];
-        csvDataList.push(tmpDict);
-    }
-    csvData_1 = csvDataList;
+    var barChartLettters = {};
 
-    var tmpDict5 = {};
-    for(i = 0; i < csvDataList.length; i++){
-        for(var j = 0; j < keyYears.length; j++){
-            if(tmpDict5[keyYears[j]] == undefined){
-                tmpDict5[keyYears[j]] = {"Year":keyYears[j], "FSchiller":0, "CSchiller":0, "CStein":0, "CGoethe":0, "total":0};
+    load_letter_Index(function(letterInd){
+        var letterIndex = JSON.parse(letterInd);
+        var letters = letterIndex[word];
+        for(var i = 0; i < letters.length; i++){
+            var letterYear = letters[i].split("_")[0];
+            var letterName = letters[i].split("_")[1];
+
+            if(barChartLettters[letterYear] == undefined){
+                barChartLettters[letterYear] = {};
+                barChartLettters[letterYear][letterName] = 0;
             }
-            if(csvDataList[i]["Year"] <= keyYears[j]){
-                tmpDict5[keyYears[j]]["FSchiller"] += csvDataList[i]["FSchiller"];
-                tmpDict5[keyYears[j]]["CSchiller"] += csvDataList[i]["CSchiller"];
-                tmpDict5[keyYears[j]]["CStein"] += csvDataList[i]["CStein"];
-                tmpDict5[keyYears[j]]["CGoethe"] += csvDataList[i]["CGoethe"];
-                tmpDict5[keyYears[j]]["total"] += csvDataList[i]["total"];
-                break;
+            if(barChartLettters[letterYear][letterName] == undefined){
+                barChartLettters[letterYear][letterName] = 0;
+            }else{
+                barChartLettters[letterYear][letterName] += 1;
             }
         }
-    }
+        csvDataList = [];
+        csvData_1 = [];
+        csvData_5 = [];
+        keyYears = [1780, 1785, 1790, 1795, 1800, 1805, 1810, 1815, 1820];
 
-    for(var key5Year in tmpDict5){
-        csvData_5.push(tmpDict5[key5Year]);
-    }
-    //console.log(visibleLettersPeople);
-    console.log(csvData_1);
-    console.log("HEEE",csvData_5);
+        for(var key in barChartLettters){
+            var tmpDict = {"Year":0, "FSchiller":0, "CSchiller":0, "CStein":0, "CGoethe":0, "total":0};
+            tmpDict["Year"] = key;
+            for(var nameKey in barChartLettters[key]){
+                tmpDict[nameKey] = barChartLettters[key][nameKey];
+            }
+            tmpDict["total"] = tmpDict["FSchiller"] + tmpDict["CSchiller"] + tmpDict["CStein"] + tmpDict["CGoethe"];
+            csvDataList.push(tmpDict);
+        }
+        csvData_1 = csvDataList;
 
-    // if(dataVersion == 5){
-    //     daten(csvData_5,5);
-    //     console.log("HERE2", csvData_5);
-    // }
-    // else if(dataVersion == 1){
-    //     daten(csvData_1,1);
-    // } 
+        var tmpDict5 = {};
+        for(i = 0; i < csvDataList.length; i++){
+            for(var j = 0; j < keyYears.length; j++){
+                if(tmpDict5[keyYears[j]] == undefined){
+                    tmpDict5[keyYears[j]] = {"Year":keyYears[j], "FSchiller":0, "CSchiller":0, "CStein":0, "CGoethe":0, "total":0};
+                }
+                if(csvDataList[i]["Year"] <= keyYears[j]){
+                    tmpDict5[keyYears[j]]["FSchiller"] += csvDataList[i]["FSchiller"];
+                    tmpDict5[keyYears[j]]["CSchiller"] += csvDataList[i]["CSchiller"];
+                    tmpDict5[keyYears[j]]["CStein"] += csvDataList[i]["CStein"];
+                    tmpDict5[keyYears[j]]["CGoethe"] += csvDataList[i]["CGoethe"];
+                    tmpDict5[keyYears[j]]["total"] += csvDataList[i]["total"];
+                    break;
+                }
+            }
+        }
 
+        for(var key5Year in tmpDict5){
+            csvData_5.push(tmpDict5[key5Year]);
+        }
+        // console.log(csvData_1);
+        // console.log(csvData_5);
+
+        if(dataVersion == 5){
+            d3.select("svg").selectAll("*").remove();
+            daten(csvData_5,5);
+        }
+        else if(dataVersion == 1){
+            d3.select("svg").selectAll("*").remove();
+            daten(csvData_1,1);
+        }
+
+        //------------------------------ A lot of if's and else's to enable the clicking correctly --------------------------
+
+        //When nothing is selected before and word is selected or deselected
+        // if((!barSelected && wordClicked && !legendSelected) || (!barSelected && deselectWord && !legendSelected)){ 
+            
+        //     if(dataVersion == 5){
+        //         d3.select("svg").selectAll("*").remove();
+        //         daten(csvData_5,5);
+        //     }
+        //     else if(dataVersion == 1){
+        //         d3.select("svg").selectAll("*").remove();
+        //         daten(csvData_1,1);
+        //     }
+
+        // }
+        // //When only bar is selected and you select or deselect a word  --> What should happen: data changes according to word but bar stays selected and other bars are still visible just not fully colored
+        // else if((barSelected && wordClicked && !legendSelected) || (barSelected && deselectWord && !legendSelected)){
+
+        // }
+        // //Only person on legend is selected and you select or deselect a word  --> What should happen: data changes according to word but person says selected (on legend and bars) and other bars are still visible just grey
+        // else if((!barSelected && wordClicked && legendSelected) || (!barSelected && deselectWord && legendSelected)){
+
+        // }
+        // //Bar and person on legend is selected and you select or deselect word --> What should happen: data changes but person and bar stay selected and other bars are still visible just grey
+        // else if((barSelected && wordClicked && legendSelected) || (barSelected && deselectWord && legendSelected)){
+
+        // }
+
+    });        
 }
 
 //-------- help getting the CSS style for other functions ---------
@@ -1298,33 +1357,33 @@ function show_corresponding_letters(word){
         create_small_bars();
         hide_empty_sections();
 
-        //------------------------------ A lot of if's and else's to enable the clicking correctly --------------------------
+        // //------------------------------ A lot of if's and else's to enable the clicking correctly --------------------------
 
-        //When nothing is selected before and word is selected or deselected
-        if((!barSelected && wordClicked && !legendSelected) || (!barSelected && deselectWord && !legendSelected)){ 
+        // //When nothing is selected before and word is selected or deselected
+        // if((!barSelected && wordClicked && !legendSelected) || (!barSelected && deselectWord && !legendSelected)){ 
             
-            if(dataVersion == 5){
-                d3.select("svg").selectAll("*").remove();
-                daten(csvData_5,5);
-            }
-            else if(dataVersion == 1){
-                d3.select("svg").selectAll("*").remove();
-                daten(csvData_1,1);
-            }
+        //     if(dataVersion == 5){
+        //         d3.select("svg").selectAll("*").remove();
+        //         daten(csvData_5,5);
+        //     }
+        //     else if(dataVersion == 1){
+        //         d3.select("svg").selectAll("*").remove();
+        //         daten(csvData_1,1);
+        //     }
 
-        }
-        //When only bar is selected and you select or deselect a word  --> What should happen: data changes according to word but bar stays selected and other bars are still visible just not fully colored
-        else if((barSelected && wordClicked && !legendSelected) || (barSelected && deselectWord && !legendSelected)){
+        // }
+        // //When only bar is selected and you select or deselect a word  --> What should happen: data changes according to word but bar stays selected and other bars are still visible just not fully colored
+        // else if((barSelected && wordClicked && !legendSelected) || (barSelected && deselectWord && !legendSelected)){
 
-        }
-        //Only person on legend is selected and you select or deselect a word  --> What should happen: data changes according to word but person says selected (on legend and bars) and other bars are still visible just grey
-        else if((!barSelected && wordClicked && legendSelected) || (!barSelected && deselectWord && legendSelected)){
+        // }
+        // //Only person on legend is selected and you select or deselect a word  --> What should happen: data changes according to word but person says selected (on legend and bars) and other bars are still visible just grey
+        // else if((!barSelected && wordClicked && legendSelected) || (!barSelected && deselectWord && legendSelected)){
 
-        }
-        //Bar and person on legend is selected and you select or deselect word --> What should happen: data changes but person and bar stay selected and other bars are still visible just grey
-        else if((barSelected && wordClicked && legendSelected) || (barSelected && deselectWord && legendSelected)){
+        // }
+        // //Bar and person on legend is selected and you select or deselect word --> What should happen: data changes but person and bar stay selected and other bars are still visible just grey
+        // else if((barSelected && wordClicked && legendSelected) || (barSelected && deselectWord && legendSelected)){
 
-        }
+        // }
         
     });
 }
@@ -1456,6 +1515,7 @@ function render_wordcloud(cloudData){
 
     zingchart.bind('LetterDiv','label_click', function(p){
         var word = p.text;
+        getCSVData(word);
         wordClicked = true;
         deselectWord = false;
         clickedWord = word;
@@ -1482,12 +1542,14 @@ function render_selected_wordcloud(cloudData){
         var selectedWord = p.text;
         //click on the same word = deselect
         if(selectedWord == word){
+            getCSVData("wunschpunsch");
             deselectWord = true;
             wordClicked = false;
             clickedWord = "";
             document.getElementById("herr_made").innerHTML = "wunschpunsch";
             document.getElementById("herr_made").onchange();
         }else{ 
+            getCSVData(selectedWord);
             //click on another word: that word gets selected
             wordClicked = true;
             deselectWord = false;
