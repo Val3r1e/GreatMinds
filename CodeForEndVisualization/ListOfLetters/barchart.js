@@ -90,7 +90,7 @@ function daten(data,version){
         y.domain([0, d3.max(data, function(d) { return d.total; })]).nice();
         z.domain(keys);
 
-        g.append("g")
+        var rectangle = g.append("g")
             .selectAll("g")
             .data(d3.stack().keys(keys)(data))      // Stack function, stacks bars
             .enter().append("g")
@@ -117,8 +117,9 @@ function daten(data,version){
             })
             .attr("y", function(d) { return y(d[1]); })
             .attr("height", function(d) { return y(d[0]) - y(d[1]); })
-            .attr("width", x.bandwidth()) // Width of bars -1 smaller +1 bigger etc
-            .on("mouseover", function (d) {
+            .attr("width", x.bandwidth()); // Width of bars -1 smaller +1 bigger etc
+            
+            rectangle.on("mouseover", function (d) {
 
                 //The Year of the Bar
                 wanted = this.id.split("id").pop();
@@ -368,9 +369,6 @@ function daten(data,version){
                 }*/
             })
             .on('dblclick', function(d) {
-                //source: https://stackoverflow.com/questions/44173693/using-different-d3-versions-on-same-html-page
-                
-
                 if (active === "0" && active_link === "0"){
                     barSelected = true;
 
@@ -387,25 +385,49 @@ function daten(data,version){
                             if(yearArray[j]!=active){
                                 d3.select("#id" + yearArray[j] + "-" + rectangleClassArray[h])
                                 .style("opacity", 0.5)
-                                .attr("width", x.bandwidth() / 2)
+                                .attr("width", x.bandwidth() / 1.5)
                                 .attr("x", function(d) {
                                     if(yearArray[j] < wanted) {
-                                        return x(d.data.Year) - 5;
+                                        return x(d.data.Year) - 7;
                                     }
-                                    else {
-                                        return x(d.data.Year) + 25;
+                                    else if(yearArray[j] > wanted) {
+                                        return x(d.data.Year) + 10;
                                     }
                                 });
+                            }
+                            else {
+                                d3.select("#id" + yearArray[j] + "-" + rectangleClassArray[h])
+                                .remove();
+                                g.append("g").selectAll("rect")
+                                    .data(d3.stack().keys(keys)(data))
+                                    .enter().append("g")
+                                    .attr("fill", function(d,i){ return z(i); })     // Coloring the bars, z-axis
+                                    .attr("class", function(d,i){
+                                        classLabel = rectangleClassArray[i];
+                                        return "class" + classLabel;
+                                    })
+                                    .selectAll("rect")
+                                    .data(function(d) { return d;})
+                                    .enter().append("rect")
+                                    .attr("x", function(d) { return x(d.data.Year);})
+                                    .attr("y", function(d) { return y(d[1]); })
+                                    .attr("height", function(d) { return y(d[0]) - y(d[1]); })
+                                    .attr("width", x.bandwidth());
+
+                                //create_new_bars(wanted);
+
+                                
                             }
                         }
                     }
                     document.getElementById("message_from_bar").innerHTML = d.data.Year;
                     document.getElementById("report_steps").innerHTML = version;
                     document.getElementById("message_from_bar").onchange();
-                    // In "wanted" ist das Jahr und in "activeName" der eigene Name!
+
+                    
+                    
                     
                 }
-                //create_new_bars();
             })
 
         //----------------------- NEW BARS ------------------------
