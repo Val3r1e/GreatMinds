@@ -24,9 +24,9 @@ var csvData_5;
 var dataVersion; 
 
 var columns = ["Year", "FSchiller", "CSchiller", "CStein", "CGoethe"];
-//var tempArray = [{CGoethe: 0, CSchiller: 0, CStein: 535, FSchiller: 0, Year: "1785", total: 535}];
 //-------------------- BARCHART -----------------------
 
+//---------------------- only gets called once at the beginning never again after that!! -----------------------
 function bars(data,version){
 
     d3.csv(data, function(d, i, columns){
@@ -42,6 +42,7 @@ function bars(data,version){
       
 }
 
+//----------------------- if you  want to call the visualization again with a different data set call this one with an Array (not cvs) ---------------------
 function daten(data,version){
 
     dataVersion = version;
@@ -714,9 +715,8 @@ function init(version){
         })
         .on("click", function(d,i) {
             d3.select("svg").selectAll("*").remove();
-            bars("data/vis_data_1_all.csv", version);
-            //bars("data/vis_data_5.csv", 5);
-            //daten(csvData_5,5);
+            //bars("data/vis_data_1_all.csv", version);
+            daten(csvData_5,5);
         })
 }
 
