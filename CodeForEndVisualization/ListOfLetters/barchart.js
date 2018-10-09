@@ -312,7 +312,9 @@ function daten(data,version){
                     for(j=0; j<yearArray.length; j++){
                         for(h=0; h<rectangleClassArray.length; h++){
                             d3.select("#id" + yearArray[j] + "-" + rectangleClassArray[h])
-                            .style("opacity", 1);
+                            .style("opacity", 1)
+                            .attr("width", x.bandwidth())
+                            .attr("x", function(d) {return x(d.data.Year);});
                         }
                     }
                     document.getElementById("message_from_bar").onchange();
@@ -358,7 +360,7 @@ function daten(data,version){
             })
             .on('dblclick', function(d) {
                 //source: https://stackoverflow.com/questions/44173693/using-different-d3-versions-on-same-html-page
-                //if (error) throw error;
+                
 
                 if (active === "0" && active_link === "0"){
                     barSelected = true;
