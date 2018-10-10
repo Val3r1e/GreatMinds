@@ -56,7 +56,7 @@ function daten(data,version){
     // console.log(csvData);
 
     var svg = d3.select("svg"),
-        margin = {top: 20, right: 20, bottom: 30, left: 40},
+        margin = {top: 20, right: 20, bottom: 30, left: 85},
         width = 2000 - margin.left - margin.right,
         height = 600 - margin.top - margin.bottom,
         g = svg.append("g").attr("transform", "translate(" + margin.left + "," + margin.top + ")");
@@ -139,7 +139,6 @@ function daten(data,version){
                         }
                     }
                 }
-
             }
             
             rectangle.on("mouseover", function (d) {
@@ -521,26 +520,33 @@ function daten(data,version){
             .attr("class", "axis")
             .attr("transform", "translate(0," + height + ")")
             .attr("font-weight", "bold")        // Bold Years
-            .call(d3.axisBottom(x));
+            .call(d3.axisBottom(x))
+            .attr("font-family", "Merriweather") // Schriftart
+            .attr("font-size", 15);  // Schriftgröße;
 
         /* -------- Amount tag on the top left -------- */
         g.append("g")
             .attr("class", "axis")
             .call(d3.axisLeft(y).ticks(null, "s"))
             .attr("font-weight", "bold")        // Bold y-axis
+            .attr("font-family", "Merriweather") // Schriftart
+            .attr("font-size", 15)  // Schriftgröße
             .append("text")
             .attr("x", 2)       // Hight x-axis
             .attr("y", y(y.ticks().pop()) + 0.5)    // Hight y-axis
             .attr("dy", "0.32em")
             .attr("fill", "#000")
             .attr("font-weight", "bold")    // bold text
+            .attr("font-family", "Merriweather") // Schriftart
+            .attr("font-size", 15)  // Schriftgröße
             .attr("text-anchor", "start")   // text position
             .text("Amount");    // Text
 
     /* --------- Legend in top right corner --------- */
     var legend = g.append("g")
-        .attr("font-family", "sans-serif") // Schriftart
-        .attr("font-size", 10)  // Schriftgröße
+        // .attr("font-family", "sans-serif") // Schriftart
+        .attr("font-family", "Merriweather") // Schriftart
+        .attr("font-size", 15)  // Schriftgröße
         .attr("font-weight", "bold")
         .attr("text-anchor", "end")
         .selectAll("g")
@@ -551,14 +557,14 @@ function daten(data,version){
             legendClassArray.push(d); 
             return "legend";
         })
-        .attr("transform", function(d, i) { return "translate(0," + i * 20 + ")"; });
+        .attr("transform", function(d, i) { return "translate(0," + i * 40 + ")"; });
 
     legendClassArray = legendClassArray.reverse();
 
     legend.append("rect")  // Rectangles of legend
         .attr("x", width - 50)  
-        .attr("width", 19)
-        .attr("height", 19)
+        .attr("width", 30)
+        .attr("height", 30)
         .attr("fill", z)
         //------------- Add Id-------------
         .attr("id", function (d) {
@@ -731,7 +737,7 @@ function daten(data,version){
 
     legend.append("text") // Text of legends 
         .attr("x", width - 60)  // Same -x moves it closer to y-axis
-        .attr("y", 9.5)         //The higher the x the farther down it goes (closer to x-axis)
+        .attr("y", 15)         //The higher the x the farther down it goes (closer to x-axis)
         .attr("dy", "0.32em")
         .text(function(d) { return d; });
 
