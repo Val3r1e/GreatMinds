@@ -405,116 +405,50 @@ function daten(data,version){
 
                     for(j=0; j<yearArray.length; j++){
                         for(h=0; h<rectangleClassArray.length; h++){
-                            if(yearArray[j]!=active){
+                            if(yearArray[j] != active){
                                 d3.select("#id" + yearArray[j] + "-" + rectangleClassArray[h])
                                 .style("opacity", 0.5)
-                                .attr("width", x.bandwidth() / 1.5)
+                                .attr("width", x.bandwidth() / 1.3)
                                 .attr("x", function(d) {
                                     if(yearArray[j] < wanted) {
-                                        return x(d.data.Year) - 7;
+                                        return x(d.data.Year) - 40;
                                     }
                                     else if(yearArray[j] > wanted) {
-                                        return x(d.data.Year) + 10;
+                                        return x(d.data.Year) + 40;
                                     }
                                 });
                             }
                             else {
                                 d3.select("#id" + yearArray[j] + "-" + rectangleClassArray[h])
                                 .remove();
+
                                 g.append("g").selectAll("rect")
-                                    .data(d3.stack().keys(keys)(data))
-                                    .enter().append("g")
-                                    .attr("fill", function(d,i){ return z(i); })     // Coloring the bars, z-axis
-                                    .attr("class", function(d,i){
-                                        classLabel = rectangleClassArray[i];
-                                        return "class" + classLabel;
-                                    })
-                                    .selectAll("rect")
-                                    .data(function(d) { return d;})
-                                    .enter().append("rect")
-                                    .attr("x", function(d) { return x(d.data.Year);})
-                                    .attr("y", function(d) { return y(d[1]); })
-                                    .attr("height", function(d) { return y(d[0]) - y(d[1]); })
-                                    .attr("width", x.bandwidth());
-
-                                //create_new_bars(wanted);
-
-                                
+                                .data(d3.stack().keys(keys)(data))
+                                .enter().append("g")
+                                .attr("fill", function(d,i){ return z(i); })     // Coloring the bars, z-axis
+                                .attr("class", function(d,i){
+                                    classLabel = rectangleClassArray[i];
+                                    return "class" + classLabel;
+                                })
+                                .selectAll("rect")
+                                .data(function(d) { return d;})
+                                .enter().append("rect")
+                                .attr("x", function(d) { return x(d.data.Year);})
+                                .attr("y", function(d) { return y(d[1]); })
+                                .attr("height", function(d) { return y(d[0]) - y(d[1]); })
+                                .attr("width", x.bandwidth());
                             }
                         }
                     }
                     document.getElementById("message_from_bar").innerHTML = d.data.Year;
                     document.getElementById("report_steps").innerHTML = version;
-                    document.getElementById("message_from_bar").onchange();
-
-                    
-                    
-                    
+                    document.getElementById("message_from_bar").onchange();  
                 }
             })
 
         //----------------------- NEW BARS ------------------------
 
-        // ----- Code for small bars to show letter amount -----
-        function create_new_bars(){
-            count_visible_letters();
-            d3.select("svg").selectAll("rect").remove();
-            var allBars = document.getElementsByClassName("toggle_year");
-            for(i = 0; i < allBars.length; i++){
-                var id = allBars[i].id;
-                g.append("g")
-                    .data(d3.stack().keys(keys)(data))      // Stack function, stacks bars
-                    .enter(new_bar(id)).append("g")
-                    .attr("fill", function(d,i){ return z(i); })     // Coloring the bars, z-axis
-                    .attr("class", function(d,i){
-                        classLabel = rectangleClassArray[i];
-                        return "class" + classLabel;
-                    })
-                    .selectAll("rect")
-                    .data(function(d) { return d;})
-                    .enter().append("rect")
-                    .attr("x", function(d) { return x(d.data.Year);})
-                    .attr("id", function(d,i){
-                        var a = 0;
-                        for(f=0; f<yearArray.length; f++){
-                            if(d.data.Year == yearArray[f]){
-                                a += 1;
-                            }
-                        }
-    
-                        yearArray.push(d.data.Year);
-    
-                        return ("id" + d.data.Year + "-" + rectangleClassArray[a]);
-                    })
-                    .attr("y", function(d) { return y(d[1]); })
-                    .attr("height", function(d) { return y(d[0]) - y(d[1]); })
-                    .attr("width", x.bandwidth());
-            }
-            
-        }
-
-        function new_bar(id){
-
-            var barYear = id.split("_")[1];
-            var data = [visibleLetters[barYear]];
-        
-            var divs = d3.select("#"+id).selectAll("svg")
-            .data(data);
-        
-            var newdivs = d3.select("#"+id).selectAll("svg")
-            .data(data)
-            .enter().append("svg");
-        
-            divs = divs.merge(newdivs);
-        
-            var color = d3.scaleLinear()
-            .domain([0, 300])
-            .range(["powderblue", "midnightblue"]);
-                
-            divs.style("width", function(d) { return d + x.bandwidth; })
-            .attr("class", "rect")
-            .style("background-color", function(d){ return color(d)});
-        }
+       
             
         /* --------- x-axis --------- */
         g.append("g")
