@@ -21,11 +21,11 @@ var quoteCounter = 0;
 var csvDataList = [];
 var csvData_1;
 var csvData_5;
-var originalCsvData_1;
-var originalCsvData_5;
 var dataVersion; 
 var deselectWord = false;
 var firstLoad = true;
+var clickedBar = 0;     //Braucht Jahr
+var clickedPerson = 0;  //Braucht Name
 var columns = ["Year", "FSchiller", "CSchiller", "CStein", "CGoethe"];
 
 //-------------------- BARCHART -----------------------
@@ -57,7 +57,7 @@ function daten(data,version){
 
     var svg = d3.select("svg"),
         margin = {top: 20, right: 20, bottom: 30, left: 40},
-        width = 1250 - margin.left - margin.right,
+        width = 2000 - margin.left - margin.right,
         height = 600 - margin.top - margin.bottom,
         g = svg.append("g").attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
@@ -363,10 +363,6 @@ function daten(data,version){
                     active = "0";
                     document.getElementById("message_from_bar").onchange();
                 }
-                //First person on legend and no bar is selected then clicking on part of that bar, clicking on legend again
-                /*else if(active_link == activeName && ){
-
-                }*/
             })
             .on('dblclick', function(d) {
                 if (active === "0" && active_link === "0"){
@@ -676,6 +672,7 @@ function daten(data,version){
         .text(function(d) { return d; });
 
     function erase(d){
+        console.log("erase");
         
         class_keep = d.id.split("id").pop();
 
@@ -691,18 +688,17 @@ function daten(data,version){
     } 
 
     function putBack(d){
-
-        console.log("here2");
+        console.log("putBack");
 
         //make other bars visible again
         for (j = 0; j < legendClassArray.length; j++) {
-            //if (legendClassArray[j] != class_keep){
+            if (legendClassArray[j] != class_keep){
                 d3.selectAll(".class" + legendClassArray[j])
                 .transition()
                 .duration(1000)
                 //.delay(750)
                 .style("opacity", 1);
-            //}
+            }
         }
     }
 }
@@ -727,7 +723,8 @@ function init(version){
         })
         .on("click", function(d,i) {
             d3.select("svg").selectAll("*").remove();
-            daten(csvData_1,1);
+            //daten(csvData_1,1);
+            bars("data/vis_data_1.csv", 1);
         })
 
     d3.select("#data5")
@@ -746,7 +743,8 @@ function init(version){
         .on("click", function(d,i) {
             d3.select("svg").selectAll("*").remove();
             //bars("data/vis_data_1_all.csv", version);
-            daten(csvData_5,5);
+            //daten(csvData_5,5);
+            bars("data/vis_data_5.csv", 5);
         })
 }
 
@@ -1082,6 +1080,7 @@ function render_wordcloud(cloudData){
             style: {
                 fontFamily: 'Marcellus SC',
                 padding:"3px",
+                cursor: 'hand',
                 
                 hoverState: {
                     borderRadius: 10,
