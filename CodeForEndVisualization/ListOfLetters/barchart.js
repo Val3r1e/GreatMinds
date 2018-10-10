@@ -26,6 +26,7 @@ var firstLoad = true;
 var clickedBar = 0;     //Braucht Jahr
 var clickedPerson = 0;  //Braucht Name
 var columns = ["Year", "FSchiller", "CSchiller", "CStein", "CGoethe"];
+var newBarData = false;
 
 //-------------------- BARCHART -----------------------
 
@@ -763,6 +764,7 @@ function showListAndWC(){
     document.getElementById("quoteAuthor").style.display = "none";
     document.getElementById("LetterDiv").style.display = "block";
     document.getElementById("ButtonDiv").style.display = "block";
+    document.getElementById("barchart").style.display = "block";
 
     if(firstLoad){
         init(5);
@@ -772,11 +774,23 @@ function showListAndWC(){
 
 function loadListAndWC(){
     newQuote();
+    if(firstLoad || newBarData){
+        console.log("hello sailor!");
+        document.getElementById("loader").style.top = "50%";
+        document.getElementById("quote").style.top = "60%";
+        document.getElementById("quoteAuthor").style.top = "67%";
+        document.getElementById("barchart").style.display = "none";
+    }else{
+        document.getElementById("loader").style.top = "70%";
+        document.getElementById("quote").style.top = "80%";
+        document.getElementById("quoteAuthor").style.top = "87%"; 
+    }
     document.getElementById("loader").style.display = "block";
     document.getElementById("quote").style.display = "block";
     document.getElementById("quoteAuthor").style.display = "block";
     document.getElementById("LetterDiv").style.display = "none";
     document.getElementById("ButtonDiv").style.display = "none";
+    
 }
 
 //------ some short quotes to make the waiting more pleasant (feel free to add some) --------
@@ -877,9 +891,11 @@ function deselectFilter(clickedElement){
     wordClicked = false;
     deselectWord = true;
     clickedWord = "";
+    newBarData = true;
+    barchart_data("wunschpunsch");
     document.getElementById("herr_made").innerHTML = "wunschpunsch";
     document.getElementById("herr_made").onchange();
-    barchart_data("wunschpunsch");
+    newBarData = false;
 
     // ------- In case all the other stuff shoul be deselectable in the sidebar: -------
     // if(clickedElement == "filteryear"){
@@ -1114,12 +1130,14 @@ function render_wordcloud(cloudData){
 
     zingchart.bind('LetterDiv','label_click', function(p){
         var word = p.text;
+        newBarData = true;
         barchart_data(word);
         wordClicked = true;
         deselectWord = false;
         clickedWord = word;
         document.getElementById("herr_made").innerHTML = clickedWord;
         document.getElementById("herr_made").onchange();
+        newBarData = false;
     });
 }
 
@@ -1141,20 +1159,23 @@ function render_selected_wordcloud(cloudData){
         var selectedWord = p.text;
         //click on the same word = deselect
         if(selectedWord == word){
+            newBarData = true;
             barchart_data("wunschpunsch");
             deselectWord = true;
             wordClicked = false;
             clickedWord = "";
             document.getElementById("herr_made").innerHTML = "wunschpunsch";
             document.getElementById("herr_made").onchange();
-        }else{ 
+            newBarData = false;
+        }else{  //click on another word: that word gets selected
+            newBarData = true;
             barchart_data(selectedWord);
-            //click on another word: that word gets selected
             wordClicked = true;
             deselectWord = false;
             clickedWord = selectedWord;
             document.getElementById("herr_made").innerHTML = selectedWord ;
             document.getElementById("herr_made").onchange();
+            newBarData = false;
         } 
     });
 }
