@@ -17,11 +17,11 @@ def get_frequencies():
             with open(filename,'r') as f:
                 raw = f.read()
                 tokens = word_tokenize(raw)
-                words = [w.lower() for w in tokens]
+                words = [w.casefold() for w in tokens]
                 word_counter = Counter(words)
                 data[name] = word_counter
 
-    json.dump(data, open("../noun_frequencies/whole.json", 'w'))
+    json.dump(data, open("../noun_frequencies/noun_frequencies.json", 'w'))
 
 get_frequencies()
         

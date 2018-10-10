@@ -775,7 +775,6 @@ function showListAndWC(){
 function loadListAndWC(){
     newQuote();
     if(firstLoad || newBarData){
-        console.log("hello sailor!");
         document.getElementById("loader").style.top = "50%";
         document.getElementById("quote").style.top = "60%";
         document.getElementById("quoteAuthor").style.top = "67%";
@@ -850,12 +849,10 @@ function setFilter(word, name, year, steps){
 
     if(word != "wunschpunsch"){
         word = capitalizeFirstLetter(word);
-        // document.getElementById("filterhead").style.display = "block";
         document.getElementById("filtersub").style.display = "block";
         document.getElementById("filterword").innerHTML = word + "<span class='tooltiptext'>&nbsp;X&nbsp;</span>";
         document.getElementById("filterword").style.display = "block";
     }else{
-        // document.getElementById("filterhead").style.display = "none";
         document.getElementById("filtersub").style.display = "none";
         document.getElementById("filterword").innerHTML = "";
         document.getElementById("filterword").style.display = "none";
@@ -1086,7 +1083,7 @@ function render_wordcloud(cloudData){
             words : cloudData,
             minLength: 4,
             ignore: ['frau','leben', 'brief'],
-            maxItems: 50,
+            maxItems: 80,
             aspect: 'spiral',
             rotate: false,
             colorType: 'palette',
@@ -1186,6 +1183,7 @@ function render_selected_wordcloud(cloudData){
 function wordcloud_data(word, name, year, steps){
     console.log("request on " + word +" "+ name +" "+ year +" "+ steps);
     setTitle(word, name, year, steps);
+    
     // d_j: all currently open letters containing the selected Word W = toGet
     // D: Corpus (here: all currently open letters containing the selected Word W) = d_j = toGet
     // w_i: word the score is computed for
@@ -1252,8 +1250,7 @@ function wordcloud_data(word, name, year, steps){
         }
         
         numberOfDocs = toGet.length;
-        // console.log(toGet);
-        // console.log("Number of Docs: " + numberOfDocs);
+        console.log(toGet);
         
         load_noun_frequencies(function(noun_freq){
             var frequencies = JSON.parse(noun_freq); //{letter1:{noun1: x, noun2: y}, letter2:{...}, ...}
@@ -1275,32 +1272,32 @@ function wordcloud_data(word, name, year, steps){
                     doc_length += noun_frequency[key]; //sum of the number of words of all letters containing the word
                 }
             }
+
             // console.log("TF Data: ");
             // console.log(tf_data);
+
+            // console.log("Wort: ", word);
+            // console.log("Number of ", word, " in doc: ", tf_data[word]);
             // console.log("Gesamtwortzahl: " + doc_length);
-            
+            // console.log("Number of Letters containing ", word, ": ", numberOfDocs);
+            // console.log("Number of Letters in D containing ", word, ": ", docs_containing_word[word]);
+
             //------ compute tf-idf score on the fly (not sure if this is the right way though^^) -----
             var tfIdf_scores = {};
             for(var key in tf_data){
                 // var idf_score = compute_idf_score(key);
-                
+
                 var idf_score = Math.log(numberOfDocs / docs_containing_word[key]);
                 var tf_score = (tf_data[key] / doc_length);
 
                 tfIdf_scores[key] = (tf_score * idf_score);
                 //totalCount.push({"text":key, "count":tf_data[key]});
                 cloudData.push({"text":key, "count":tfIdf_scores[key]});
-                // if(key == word){
-                //     console.log(word + " : " + tfIdf_scores[word]);
-                // }
             }
             if(wordClicked){
-                //console.log(clickedWord, ": ", tfIdf_scores[clickedWord]);
+                console.log(clickedWord, ": ", tfIdf_scores[clickedWord]);
             }
-            
-            // console.log("Docs containing word: ");
-            // console.log(docs_containing_word);
-            // console.log(cloudData);
+
             if(word != "wunschpunsch"){
                 render_selected_wordcloud(cloudData);
                 //render_selected_wordcloud(totalCount);
@@ -1462,7 +1459,7 @@ function load_img_element(id){
 }
 //------------ callback functions to load JSON files ----------
 function load_letter_Index(callback){
-    var httpRequestURL = "data/word-letter_index2.json";
+    var httpRequestURL = "data/word-letter_index3.json";
     var httpRequest = new XMLHttpRequest();
     httpRequest.onload = function(){
         callback(httpRequest.response);

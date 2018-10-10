@@ -68,10 +68,36 @@ def create_word_index():
     json.dump(index, open("word-letter_index2.json", 'w'))
     #json.dump(visibility, open("visibility.json", 'w'))
 
+def create_word_index2():
+    
+    root = "../filtered_letters/" 
+    letter_root = "../../../AllLetters"
+    words = get_all_words()
+    names = ["CSchiller", "CStein", "CGoethe", "FSchiller"]
+    index = {}
+    wunschpunsch = [file.replace(".html", "") for file in os.listdir(letter_root)]
+    #visibility = {}
+
+    for word in words:
+        filenames = []
+        for file in os.listdir(root):
+            filename = os.path.join(root, file)
+            f_name = file.replace(".txt", "")
+            # visibility[f_name] = False;
+            with open(filename, 'r') as openfile:
+                text = (openfile.read()).casefold()
+                if word.casefold() in text:
+                    filenames.append(f_name)
+        
+        index[word] = filenames
+    
+    index["wunschpunsch"] = wunschpunsch
+    json.dump(index, open("word-letter_index3.json", 'w'))
+    #json.dump(visibility, open("visibility.json", 'w'))
 
 def main():
     
-    create_word_index()
+    create_word_index2()
     #get_all_words()
 
 if __name__ == '__main__':
