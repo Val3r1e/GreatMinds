@@ -118,6 +118,29 @@ function daten(data,version){
             .attr("y", function(d) { return y(d[1]); })
             .attr("height", function(d) { return y(d[0]) - y(d[1]); })
             .attr("width", x.bandwidth()); // Width of bars -1 smaller +1 bigger etc
+
+            if(clickedBar != 0){
+
+                barSelected = true;
+
+                for (j = 0; j < rectangleClassArray.length; j++) {
+                    d3.select("#id" + clickedBar + "-" + rectangleClassArray[j])
+                    .style("stroke", "black")
+                    .style("stroke-width", 1.5);
+                }
+
+                active = clickedBar;
+
+                for(j=0; j<yearArray.length; j++){
+                    for(h=0; h<rectangleClassArray.length; h++){
+                        if(yearArray[j]!=active){
+                            d3.select("#id" + yearArray[j] + "-" + rectangleClassArray[h])
+                            .style("opacity", 0.5);
+                        }
+                    }
+                }
+
+            }
             
             rectangle.on("mouseover", function (d) {
 
@@ -288,6 +311,7 @@ function daten(data,version){
                     }
 
                     active = d.data.Year;
+                    clickedBar = active;
 
                     for(j=0; j<yearArray.length; j++){
                         for(h=0; h<rectangleClassArray.length; h++){
@@ -304,7 +328,7 @@ function daten(data,version){
                   
                 }
                 //Bar is selected but no person on legend, clicking on selected part
-                else if (active === d.data.Year && active_link === "0"){
+                else if (active === d.data.Year && active_link === "0" /*|| clickedBar === d.data.Year*/){
                     barSelected = false;
                     toggleWhileBarSelected = false;
 
@@ -314,6 +338,7 @@ function daten(data,version){
                     }
 
                     active = "0";
+                    clickedBar = 0;
 
                     for(j=0; j<yearArray.length; j++){
                         for(h=0; h<rectangleClassArray.length; h++){
@@ -340,6 +365,7 @@ function daten(data,version){
                         }
                     }
                     active = d.data.Year;
+                    clickedBar = active;
 
                     document.getElementById("message_from_bar").innerHTML = d.data.Year;
                     document.getElementById("report_steps").innerHTML = version;
@@ -361,6 +387,7 @@ function daten(data,version){
                         }
                     }
                     active = "0";
+                    clickedBar = 0;
                     document.getElementById("message_from_bar").onchange();
                 }
             })
@@ -538,7 +565,7 @@ function daten(data,version){
             return ("id" + d);
         })
         .on("mouseover", function(){ 
-            if (active_link === "0"){
+            if (active_link === "0" /*|| clickedPerson === this.id.split("id").pop()*/){
                 d3.select(this)
                 .style("stroke","purple")
                 .style("stroke-width",0.8)
@@ -561,6 +588,7 @@ function daten(data,version){
                 .style("stroke-width", 1);
 
                 active_link = this.id.split("id").pop();
+                clickedPerson = active_link;
 
                 erase(this);
 
@@ -581,6 +609,7 @@ function daten(data,version){
                 .style("stroke", "none");
 
                 active_link = "0"; 
+                clickedPerson = active_link;
 
                 for (i = 0; i < legendClassArray.length; i++) {              
                     d3.select("#id" + legendClassArray[i])
@@ -613,6 +642,7 @@ function daten(data,version){
 
                 //Person
                 active_link = this.id.split("id").pop();
+                clickedPerson = active_link;
 
                 for (j = 0; j < legendClassArray.length; j++){
                     if (legendClassArray[j] != active_link) {
@@ -644,6 +674,7 @@ function daten(data,version){
                 .style("stroke", "none");
 
                 active_link = "0";
+                clickedPerson = active_link;
 
                 for (i = 0; i < legendClassArray.length; i++) {              
                     d3.select("#id" + legendClassArray[i])
@@ -665,6 +696,39 @@ function daten(data,version){
             }
         });
 
+        //If new dataset is loaded but Person was selected bfore
+        /*if(clickedPerson != "0"){
+            legendSelected = true;
+    
+            console.log("in clicked person");
+
+            active_link = clickedPerson;
+    
+            for (i = 0; i < legendClassArray.length; i++){
+                if (legendClassArray[i] == clickedPerson) {
+                    d3.select("#id" + legendClassArray[i])
+                    .style("stroke", "black")
+                    .style("stroke-width", 1);
+                }
+            }
+
+            for (i = 0; i < legendClassArray.length; i++){
+                if (legendClassArray[i] != active_link) {
+                    d3.select("#id" + legendClassArray[i])
+                    .style("opacity", 0.5);
+                }
+            }
+    
+            for (i = 0; i < legendClassArray.length; i++) {
+                if (legendClassArray[i] != clickedPerson) {
+                    d3.selectAll(".class" + legendClassArray[i])
+                    .transition()
+                    .duration(1000)          
+                    .style("opacity", 0.5);
+                }
+            }
+        }*/
+
     legend.append("text") // Text of legends 
         .attr("x", width - 60)  // Same -x moves it closer to y-axis
         .attr("y", 9.5)         //The higher the x the farther down it goes (closer to x-axis)
@@ -672,7 +736,6 @@ function daten(data,version){
         .text(function(d) { return d; });
 
     function erase(d){
-        console.log("erase");
         
         class_keep = d.id.split("id").pop();
 
@@ -688,7 +751,6 @@ function daten(data,version){
     } 
 
     function putBack(d){
-        console.log("putBack");
 
         //make other bars visible again
         for (j = 0; j < legendClassArray.length; j++) {
@@ -696,7 +758,6 @@ function daten(data,version){
                 d3.selectAll(".class" + legendClassArray[j])
                 .transition()
                 .duration(1000)
-                //.delay(750)
                 .style("opacity", 1);
             }
         }
@@ -1356,6 +1417,8 @@ function barchart_data(word){
         if(dataVersion == 5){
             d3.select("svg").selectAll("*").remove();
             daten(csvData_5,5);
+            console.log(clickedBar);
+            console.log(clickedPerson);
         }
         else if(dataVersion == 1){
             d3.select("svg").selectAll("*").remove();
