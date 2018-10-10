@@ -1,5 +1,4 @@
 //-------------------------- Global Variables ------------------------------
-
 var wordClicked = false;
 var clickedWord = "";
 var wordId;
@@ -505,7 +504,7 @@ function daten(data,version){
             return ("id" + d);
         })
         .on("mouseover", function(){ 
-            if (active_link === "0" /*|| clickedPerson === this.id.split("id").pop()*/){
+            if (active_link === "0" || clickedPerson === this.id.split("id").pop()){
                 d3.select(this)
                 .style("stroke","purple")
                 .style("stroke-width",0.8)
@@ -637,7 +636,7 @@ function daten(data,version){
         });
 
         //If new dataset is loaded but Person was selected bfore
-        /*if(clickedPerson != "0"){
+        if(clickedPerson != "0"){
             legendSelected = true;
     
             console.log("in clicked person");
@@ -667,7 +666,7 @@ function daten(data,version){
                     .style("opacity", 0.5);
                 }
             }
-        }*/
+        }
 
     legend.append("text") // Text of legends 
         .attr("x", width - 60)  // Same -x moves it closer to y-axis
@@ -681,7 +680,7 @@ function daten(data,version){
 
         //Make all other bars less visible
         for (i = 0; i < legendClassArray.length; i++) {
-            if (legendClassArray[i] != class_keep) {
+            if (legendClassArray[i] != clickedPerson) {
                 d3.selectAll(".class" + legendClassArray[i])
                 .transition()
                 .duration(1000)          
@@ -694,7 +693,7 @@ function daten(data,version){
 
         //make other bars visible again
         for (j = 0; j < legendClassArray.length; j++) {
-            if (legendClassArray[j] != class_keep){
+            if (legendClassArray[j] != clickedPerson){
                 d3.selectAll(".class" + legendClassArray[j])
                 .transition()
                 .duration(1000)
