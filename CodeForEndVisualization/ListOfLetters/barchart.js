@@ -27,6 +27,7 @@ var clickedBar = 0;     //Braucht Jahr
 var clickedPerson = 0;  //Braucht Name
 var columns = ["Year", "FSchiller", "CSchiller", "CStein", "CGoethe"];
 var newBarData = false;
+var zoomData;
 
 //-------------------- BARCHART -----------------------
 
@@ -1010,7 +1011,7 @@ function deselectFilter(clickedElement){
     deselectWord = true;
     clickedWord = "";
     newBarData = true;
-    barchart_data("wunschpunsch");
+    barchart_data("wunschpunsch", 0);
     document.getElementById("herr_made").innerHTML = "wunschpunsch";
     document.getElementById("herr_made").onchange();
     newBarData = false;
@@ -1249,7 +1250,7 @@ function render_wordcloud(cloudData){
     zingchart.bind('LetterDiv','label_click', function(p){
         var word = p.text;
         newBarData = true;
-        barchart_data(word);
+        barchart_data(word, 0);
         wordClicked = true;
         deselectWord = false;
         clickedWord = word;
@@ -1278,7 +1279,7 @@ function render_selected_wordcloud(cloudData){
         //click on the same word = deselect
         if(selectedWord == word){
             newBarData = true;
-            barchart_data("wunschpunsch");
+            barchart_data("wunschpunsch", 0);
             deselectWord = true;
             wordClicked = false;
             clickedWord = "";
@@ -1287,7 +1288,7 @@ function render_selected_wordcloud(cloudData){
             newBarData = false;
         }else{  //click on another word: that word gets selected
             newBarData = true;
-            barchart_data(selectedWord);
+            barchart_data(selectedWord, 0);
             wordClicked = true;
             deselectWord = false;
             clickedWord = selectedWord;
@@ -1432,7 +1433,7 @@ function wordcloud_data(word, name, year, steps){
 }
 
 // ------ computing the data for the barchart on the fly -----------
-function barchart_data(word){
+function barchart_data(word, zoomYear){
 
     var barChartLettters = {};
 
@@ -1440,7 +1441,7 @@ function barchart_data(word){
         var letterIndex = JSON.parse(letterInd);
         var letters = letterIndex[word];
         for(var i = 0; i < letters.length; i++){
-            var letterYear = letters[i].split("_")[0];
+            var letterYear = parseInt(letters[i].split("_")[0]);
             var letterName = letters[i].split("_")[1];
 
             if(barChartLettters[letterYear] == undefined){
@@ -1454,6 +1455,7 @@ function barchart_data(word){
             }
         }
         csvDataList = [];
+        csvData5List = [];
         csvData_1 = [];
         csvData_5 = [];
         keyYears = [1780, 1785, 1790, 1795, 1800, 1805, 1810, 1815, 1820];
@@ -1467,7 +1469,7 @@ function barchart_data(word){
             tmpDict["total"] = tmpDict["FSchiller"] + tmpDict["CSchiller"] + tmpDict["CStein"] + tmpDict["CGoethe"];
             csvDataList.push(tmpDict);
         }
-        csvData_1 = csvDataList;
+        
 
         var tmpDict5 = {};
         for(i = 0; i < csvDataList.length; i++){
@@ -1487,21 +1489,72 @@ function barchart_data(word){
         }
 
         for(var key5Year in tmpDict5){
-            csvData_5.push(tmpDict5[key5Year]);
+            csvData5List.push(tmpDict5[key5Year]);
         }
+
+        if(zoomYear == 0){
+
+            csvData_1 = csvDataList;
+            csvData_5 = csvData5List;
+
+            if(dataVersion == 5){
+                d3.select("svg").selectAll("*").remove();
+                daten(csvData_5,5);
+                console.log(clickedBar);
+                console.log(clickedPerson);
+            }
+            else if(dataVersion == 1){
+                d3.select("svg").selectAll("*").remove();
+                daten(csvData_1,1);
+            }
+        }else{
+            zoomData = [];
+            zoomYear = parseInt(zoomYear);
+            console.log(csvDataList);
+            if(zoomYear != 0){
+                var zoomYears = [zoomYear-4, zoomYear-3, zoomYear-2, zoomYear-1, zoomYear];
+                var zoomYearsList = [];
+                for(var k = 0; k < csvDataList.length; k++){
+                    for(var zoomKey in csvDataList[k]){
+                        for(var m = 0; m < zoomYears.length; m++){
+                            if(csvDataList[k][zoomKey] == zoomYears[m]){
+                                zoomYearsList.push(csvDataList[k]);
+                                zoomYears.splice(m, 1);
+                            }
+                        }
+                    
+                    }
+                }
+                //console.log("Liste: ", zoomYearsList);
+                var year1 = zoomYearsList[0];
+                var year2 = zoomYearsList[1];
+                var year3 = zoomYearsList[2];
+                var year4 = zoomYearsList[3];
+                var year5 = zoomYearsList[4];
+                var indexOfZommYear;
+                for(var n = 0; n < csvData5List.length; n++){
+                    var br = false;
+                    for(var zoom5Key in csvData5List){
+                        if(csvData5List[n][zoom5Key] == zoomYear){
+                            indexOfZommYear = n;
+                            br = true;
+                            break;
+                        }
+                    }
+                    if(br){break;}
+                }
+                csvData5List.splice(indexOfZommYear, 1, year1, year2, year3, year4, year5);
+                zoomData = csvData5List;
+                console.log("ZoomData: ", zoomData);
+            }
+
+        }
+
         // console.log(csvData_1);
         // console.log(csvData_5);
 
-        if(dataVersion == 5){
-            d3.select("svg").selectAll("*").remove();
-            daten(csvData_5,5);
-            console.log(clickedBar);
-            console.log(clickedPerson);
-        }
-        else if(dataVersion == 1){
-            d3.select("svg").selectAll("*").remove();
-            daten(csvData_1,1);
-        }
+
+        
 
         //------------------------------ A lot of if's and else's to enable the clicking correctly --------------------------
 
