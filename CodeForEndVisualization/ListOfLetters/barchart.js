@@ -222,7 +222,7 @@ function daten(data,version){
             .attr("height", function(d) { return y(d[0]) - y(d[1]); })
             .attr("width", x.bandwidth()); // Width of bars -1 smaller +1 bigger etc
 
-            if(clickedBar != 0){
+            if(clickedBar != 0 && clickedPerson == 0){
 
                 barSelected = true;
 
@@ -231,6 +231,27 @@ function daten(data,version){
                     .style("stroke", "black")
                     .style("stroke-width", 1.5);
                 }
+
+                active = clickedBar;
+
+                for(j=0; j<yearArray.length; j++){
+                    for(h=0; h<rectangleClassArray.length; h++){
+                        if(yearArray[j]!=active){
+                            d3.select("#id" + yearArray[j] + "-" + rectangleClassArray[h])
+                            .style("opacity", 0.5);
+                        }
+                    }
+                }
+            }
+            else if(clickedBar != 0 && clickedPerson != 0){
+
+                barSelected = true;
+
+                //for (j = 0; j < rectangleClassArray.length; j++) {
+                    d3.select("#id" + clickedBar + "-" + clickedPerson)
+                    .style("stroke", "black")
+                    .style("stroke-width", 1.5);
+                //}
 
                 active = clickedBar;
 
@@ -403,7 +424,7 @@ function daten(data,version){
             .on("click", function(d){
 
                 //No Bar or Person on legend is selected
-                if (active === "0" && active_link === "0"){
+                if (active == "0" && active_link == "0"){
                     barSelected = true;
 
                     for (j = 0; j < rectangleClassArray.length; j++) {
@@ -430,7 +451,7 @@ function daten(data,version){
                   
                 }
                 //Bar is selected but no person on legend, clicking on selected part
-                else if (active === d.data.Year && active_link === "0" /*|| clickedBar === d.data.Year*/){
+                else if (active == d.data.Year && active_link == "0" /*|| clickedBar === d.data.Year*/){
                     barSelected = false;
                     toggleWhileBarSelected = false;
 
@@ -454,7 +475,7 @@ function daten(data,version){
                     
                 }
                 //No bar but person on legend is selected, clicking on part of bar of that person
-                else if(active === "0" && active_link == activeName){
+                else if(active == "0" && active_link == activeName){
                     barSelected = true;
                     d3.select(this)
                     .style("stroke", "black")
@@ -476,7 +497,7 @@ function daten(data,version){
                     
                 }
                 //Bar and person on legend is selected, clicking on part of bar of that person
-                else if(active === d.data.Year && active_link == activeName){
+                else if(active == d.data.Year && active_link == activeName){
                     barSelected = false;
                     toggleWhileBarSelected = false;
                     d3.select(this)
@@ -495,7 +516,7 @@ function daten(data,version){
             })
             .on('dblclick', function(d) {
                 if (dataVersion == 5) {
-                    if (active === "0" && active_link === "0"){
+                    if (active == "0" && active_link == "0"){
                         barSelected = true;
     
                         for (j = 0; j < rectangleClassArray.length; j++) {
@@ -722,14 +743,13 @@ function daten(data,version){
                     .style("opacity", 1);
                 }
 
-                //-------------------------------------------------
                 for(j=0; j<legendClassArray.length; j++){
                     if(legendClassArray[j] != active_link){
                         d3.select("#id" + active + "-" + legendClassArray[j])
                         .style("cursor", "pointer")
-                        .style("stroke", "red")         //Stroke works for all, should be black
+                        .style("stroke", "black")         
                         .style("stroke-width", 1.5)
-                        .style("opacity", 1);           //Opacity doesn't work for some reason
+                        .style("opacity", 1);           
                     }
                 }
 
@@ -737,7 +757,7 @@ function daten(data,version){
             }
         });
 
-        //If new dataset is loaded but Person was selected bfore
+        //If new dataset is loaded but Person was selected before
         if(clickedPerson != "0"){
             legendSelected = true;
     
@@ -759,13 +779,15 @@ function daten(data,version){
                     .style("opacity", 0.5);
                 }
             }
-    
-            for (i = 0; i < legendClassArray.length; i++) {
-                if (legendClassArray[i] != clickedPerson) {
-                    d3.selectAll(".class" + legendClassArray[i])
-                    .transition()
-                    .duration(1000)          
-                    .style("opacity", 0.5);
+
+            for(j=0; j < yearArray.length; j++){
+                for (i = 0; i < legendClassArray.length; i++) {
+                    if (legendClassArray[i] != clickedPerson) {
+                        d3.select("#id" + yearArray[j] + "-" + legendClassArray[i])   
+                        .transition()
+                        .duration(1000)          
+                        .style("opacity", 0.5);
+                    }
                 }
             }
         }
@@ -776,29 +798,27 @@ function daten(data,version){
         .attr("dy", "0.32em")
         .text(function(d) { return d; });
 
-    function erase(d){
-        
-        class_keep = d.id.split("id").pop();
+    function erase(){
 
-        //Make all other bars less visible
-        for (i = 0; i < legendClassArray.length; i++) {
-            if (legendClassArray[i] != clickedPerson) {
-                d3.selectAll(".class" + legendClassArray[i])
-                .transition()
-                .duration(1000)          
-                .style("opacity", 0.5);
+        for(j=0; j < yearArray.length; j++){
+            for (i = 0; i < legendClassArray.length; i++) {
+                if (legendClassArray[i] != clickedPerson) {
+                    d3.select("#id" + yearArray[j] + "-" + legendClassArray[i])   
+                    .transition()
+                    .duration(1000)          
+                    .style("opacity", 0.5);
+                }
             }
         }
     } 
 
-    function putBack(d){
+    function putBack(){
 
-        //make other bars visible again
-        for (j = 0; j < legendClassArray.length; j++) {
-            if (legendClassArray[j] != clickedPerson){
-                d3.selectAll(".class" + legendClassArray[j])
+        for(j=0; j < yearArray.length; j++){
+            for (i = 0; i < legendClassArray.length; i++) {
+                d3.select("#id" + yearArray[j] + "-" + legendClassArray[i])   
                 .transition()
-                .duration(1000)
+                .duration(1000)          
                 .style("opacity", 1);
             }
         }

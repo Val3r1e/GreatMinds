@@ -100,7 +100,8 @@ li img {
 	position: absolute;
 	top: 600px;
 	right: 160px;
-	height: 66.67vh;
+	/*height: 66.67vh;*/
+	height: 100.67vh;
 	width:60%;
 	min-height:150px;
 	overflow: scroll;
