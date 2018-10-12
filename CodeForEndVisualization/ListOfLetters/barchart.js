@@ -47,109 +47,6 @@ function bars(data,version){
       
 }
 
-function new_bar(data, version, idx) {
-    d3.csv(data, function(d, i, columns){
-        for (i = 1, t = 0; i < columns.length; ++i) t += d[columns[i]] = +d[columns[i]];
-        d.total = t;
-        return d;
-    }, 
-
-    function(error,data){
-        if (error) throw error;
-        daten(data,version);
-        var rectangleClassArray = ["FSchiller","CSchiller", "CStein", "CGoethe"];
-        for(i = 0; i < data.length; i++) {
-            for(h=0; h<rectangleClassArray.length; h++){
-                if(data[i].Year != idx && data[i].Year != idx - 1 && data[i].Year != idx - 2 && data[i].Year != idx - 3 && data[i].Year != idx - 4) {
-                    d3.select("#id" + data[i].Year + "-" + rectangleClassArray[h]).remove();
-                    d3.select("#id" + data[4].Year + "-" + rectangleClassArray[h]).remove();
-                    d3.select("#id" + data[9].Year + "-" + rectangleClassArray[h]).remove();
-                    d3.select("#id" + data[14].Year + "-" + rectangleClassArray[h]).remove();
-                    d3.select("#id" + data[19].Year + "-" + rectangleClassArray[h]).remove();
-                    d3.select("#id" + data[24].Year + "-" + rectangleClassArray[h]).remove();
-                    d3.select("#id" + data[29].Year + "-" + rectangleClassArray[h]).remove();
-                    d3.select("#id" + data[34].Year + "-" + rectangleClassArray[h]).remove();
-                    d3.select("#id" + data[39].Year + "-" + rectangleClassArray[h]).remove();
-                }
-                /*else{
-                    if(data[i].Year = data[4].Year) {
-                        d3.select("#id" + data[9].Year + "-" + rectangleClassArray[h]).remove();
-                        d3.select("#id" + data[14].Year + "-" + rectangleClassArray[h]).remove();
-                        d3.select("#id" + data[19].Year + "-" + rectangleClassArray[h]).remove();
-                        d3.select("#id" + data[24].Year + "-" + rectangleClassArray[h]).remove();
-                        d3.select("#id" + data[29].Year + "-" + rectangleClassArray[h]).remove();
-                        d3.select("#id" + data[34].Year + "-" + rectangleClassArray[h]).remove();
-                        d3.select("#id" + data[39].Year + "-" + rectangleClassArray[h]).remove();
-                    }
-                    else if(data[i].Year = data[9].Year) {
-                        d3.select("#id" + data[4].Year + "-" + rectangleClassArray[h]).remove();
-                        d3.select("#id" + data[14].Year + "-" + rectangleClassArray[h]).remove();
-                        d3.select("#id" + data[19].Year + "-" + rectangleClassArray[h]).remove();
-                        d3.select("#id" + data[24].Year + "-" + rectangleClassArray[h]).remove();
-                        d3.select("#id" + data[29].Year + "-" + rectangleClassArray[h]).remove();
-                        d3.select("#id" + data[34].Year + "-" + rectangleClassArray[h]).remove();
-                        d3.select("#id" + data[39].Year + "-" + rectangleClassArray[h]).remove();
-                    }
-                    else if(data[i].Year = data[14].Year) {
-                        d3.select("#id" + data[4].Year + "-" + rectangleClassArray[h]).remove();
-                        d3.select("#id" + data[9].Year + "-" + rectangleClassArray[h]).remove();
-                        d3.select("#id" + data[19].Year + "-" + rectangleClassArray[h]).remove();
-                        d3.select("#id" + data[24].Year + "-" + rectangleClassArray[h]).remove();
-                        d3.select("#id" + data[29].Year + "-" + rectangleClassArray[h]).remove();
-                        d3.select("#id" + data[34].Year + "-" + rectangleClassArray[h]).remove();
-                        d3.select("#id" + data[39].Year + "-" + rectangleClassArray[h]).remove();
-                    }
-                    else if(data[i].Year = data[19].Year) {
-                        d3.select("#id" + data[4].Year + "-" + rectangleClassArray[h]).remove();
-                        d3.select("#id" + data[9].Year + "-" + rectangleClassArray[h]).remove();
-                        d3.select("#id" + data[14].Year + "-" + rectangleClassArray[h]).remove();
-                        d3.select("#id" + data[24].Year + "-" + rectangleClassArray[h]).remove();
-                        d3.select("#id" + data[29].Year + "-" + rectangleClassArray[h]).remove();
-                        d3.select("#id" + data[34].Year + "-" + rectangleClassArray[h]).remove();
-                        d3.select("#id" + data[39].Year + "-" + rectangleClassArray[h]).remove();
-                    }
-                    else if(data[i].Year = data[24].Year) {
-                        d3.select("#id" + data[4].Year + "-" + rectangleClassArray[h]).remove();
-                        d3.select("#id" + data[9].Year + "-" + rectangleClassArray[h]).remove();
-                        d3.select("#id" + data[14].Year + "-" + rectangleClassArray[h]).remove();
-                        d3.select("#id" + data[19].Year + "-" + rectangleClassArray[h]).remove();
-                        d3.select("#id" + data[29].Year + "-" + rectangleClassArray[h]).remove();
-                        d3.select("#id" + data[34].Year + "-" + rectangleClassArray[h]).remove();
-                        d3.select("#id" + data[39].Year + "-" + rectangleClassArray[h]).remove();
-                    }
-                    else if (data[i].Year = data[29].Year) {
-                        d3.select("#id" + data[4].Year + "-" + rectangleClassArray[h]).remove();
-                        d3.select("#id" + data[9].Year + "-" + rectangleClassArray[h]).remove();
-                        d3.select("#id" + data[14].Year + "-" + rectangleClassArray[h]).remove();
-                        d3.select("#id" + data[19].Year + "-" + rectangleClassArray[h]).remove();
-                        d3.select("#id" + data[24].Year + "-" + rectangleClassArray[h]).remove();
-                        d3.select("#id" + data[34].Year + "-" + rectangleClassArray[h]).remove();
-                        d3.select("#id" + data[39].Year + "-" + rectangleClassArray[h]).remove();
-                    }
-                    else if (data[i].Year = data[34].Year) {
-                        d3.select("#id" + data[4].Year + "-" + rectangleClassArray[h]).remove();
-                        d3.select("#id" + data[9].Year + "-" + rectangleClassArray[h]).remove();
-                        d3.select("#id" + data[14].Year + "-" + rectangleClassArray[h]).remove();
-                        d3.select("#id" + data[19].Year + "-" + rectangleClassArray[h]).remove();
-                        d3.select("#id" + data[24].Year + "-" + rectangleClassArray[h]).remove();
-                        d3.select("#id" + data[29].Year + "-" + rectangleClassArray[h]).remove();
-                        d3.select("#id" + data[39].Year + "-" + rectangleClassArray[h]).remove();
-                    }
-                    else {
-                        d3.select("#id" + data[4].Year + "-" + rectangleClassArray[h]).remove();
-                        d3.select("#id" + data[9].Year + "-" + rectangleClassArray[h]).remove();
-                        d3.select("#id" + data[14].Year + "-" + rectangleClassArray[h]).remove();
-                        d3.select("#id" + data[19].Year + "-" + rectangleClassArray[h]).remove();
-                        d3.select("#id" + data[24].Year + "-" + rectangleClassArray[h]).remove();
-                        d3.select("#id" + data[29].Year + "-" + rectangleClassArray[h]).remove();
-                        d3.select("#id" + data[34].Year + "-" + rectangleClassArray[h]).remove();
-                    }
-                }*/
-            }
-        }
-    });
-}
-
 //----------------------- if you  want to call the visualization again with a different data set call this one with an Array (not cvs) ---------------------
 function daten(data,version){
 
@@ -525,52 +422,35 @@ function daten(data,version){
                             .style("stroke", "black")
                             .style("stroke-width", 1.5);
                         }
+                        
     
                         active = d.data.Year;
+                        barchart_data("wunschpunsch", active);
     
-                        for(j=0; j<yearArray.length; j++){
+                        /*for(j=0; j<yearArray.length; j++){
                             for(h=0; h<rectangleClassArray.length; h++){
                                 if(yearArray[j] != active){
-                                    
-                                    /*g.append("g").selectAll("rect")
-                                        .data(d3.stack().keys(keys)(data))
-                                        .enter().append("g")
-                                        .attr("fill", function(d,i){ return z(i); })     // Coloring the bars, z-axis
-                                        .attr("class", function(d,i){
-                                            classLabel = rectangleClassArray[i];
-                                            return "class" + classLabel;
-                                        })
-                                        .selectAll("rect")
-                                        .data(function(d) { return d;})
-                                        .enter().append("rect")
-                                        .attr("x", function(d) { return x(d.data.Year);})
-                                        .attr("y", function(d) { return y(d[1]); })
-                                        .attr("height", function(d) { return y(d[0]) - y(d[1]); })
-                                        .attr("width", x.bandwidth());*/
+                                    d3.select("#id" + yearArray[j] + "-" + activeName)
+                                    .style("opacity", 0.5);
 
                                 }
                                 else {
                                     d3.select("#id" + yearArray[j] + "-" + rectangleClassArray[h])
                                     .remove();
     
-                                    updateBar(active);
+                                    //barchart_data("wunschpunsch", active);
+                                    //updateBar(zoom);
+                                    //daten(zoom, dataVersion);
+                                    
                                 }
                             }
-                        }
+                        }*/
                         document.getElementById("message_from_bar").innerHTML = d.data.Year;
                         document.getElementById("report_steps").innerHTML = version;
                         document.getElementById("message_from_bar").onchange();  
                     }
                 }
             })
-
-        
-        //----------------------- NEW BARS ------------------------
-        
-        function updateBar(idx) {
-            new_bar("data/vis_data_1.csv", 1, idx);
-            
-        }
             
         /* --------- x-axis --------- */
         g.append("g")
@@ -1539,6 +1419,8 @@ function barchart_data(word, zoomYear){
                 csvData5List.splice(indexOfZommYear, 1, year1, year2, year3, year4, year5);
                 zoomData = csvData5List;
                 console.log("ZoomData: ", zoomData);
+                d3.select("svg").selectAll("*").remove();
+                daten(zoomData,5);
             }
         }
 
