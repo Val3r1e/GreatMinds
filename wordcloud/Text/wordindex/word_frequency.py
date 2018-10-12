@@ -12,11 +12,12 @@ def get_frequencies():
     for file in os.listdir(direc):
         if file.endswith(".txt"):
             name = file.replace(".txt","")
+            print(file)
             filename = os.path.join(direc, file)
-            #print(filename)
             with open(filename,'r') as f:
                 raw = f.read()
                 tokens = word_tokenize(raw)
+                print(tokens)
                 words = [w.casefold() for w in tokens]
                 word_counter = Counter(words)
                 data[name] = word_counter
@@ -24,4 +25,3 @@ def get_frequencies():
     json.dump(data, open("../noun_frequencies/noun_frequencies.json", 'w'))
 
 get_frequencies()
-        

@@ -14,9 +14,25 @@ import pickle
 
 def filter_txt():
     '''filter letter by stopwords'''
-
+    
+    #direc = "Text/missing_letters/"
     direc = "../../Letters/"
     stopWords = set(stopwords.words('german'))
+
+    # for file in os.listdir(direc):
+    #     text = ""
+    #     filtered = ""
+    #     filename = os.path.join(direc, file)
+    #     with open(filename, "r") as openfile:
+    #         lines = openfile.readLines()
+    #         text = "".join(lines)
+    #     text = nltk.word_tokenize(text)
+
+    #     for w in text:
+    #         if(w.casefold()).strip() not in stopWords:
+    #             filtered += w + " "
+    #     name = filename.replace(direc,"")
+    #     intoTxt(filtered, file)
 
     for subdir, dirs, files in os.walk(direc):
         for file in files:
@@ -42,51 +58,79 @@ def filter_txt():
 def noun_filter():
     '''filter letters so only the nouns come through'''
 
-    direc = "../../Letters/"
+    direc = "../Text/missing_letters/"
+    #direc = "../../Letters/"
     stopWords = set(stopwords.words('german'))
     with open('../POS_tagger/nltk_german_classifier_data.pickle', 'rb') as t:
         tagger = pickle.load(t)
     
-    for subdir, dirs, files in os.walk(direc):
-        for file in files:
-            if subdir.split("/")[-1] == "txt":
-                wordlist = PlaintextCorpusReader(subdir, '.*')
-                text = ""
-                filtered = ""
-                if file.endswith(".txt"):
-                    filename = os.path.join(subdir, file)
-                    to_tag_name = (filename.split("/"))[-1]
-                    to_tag = wordlist.words(to_tag_name)
-                    tagged = tagger.tag(to_tag)
-                    to_tag_name = to_tag_name.replace(".txt", "")
-                    path = "../Text/tagged_letters/"
-                    with open('%stagged_%s.pickle' %(path, file.replace(".txt","")), 'wb') as f:
-                        pickle.dump(tagged, f)
-                    #print("dumped", file.replace(".txt",""))
+    wordlist = PlaintextCorpusReader(direc, ".*")
+    for file in os.listdir(direc):
+        text = ""
+        filtered = ""
+        filename = os.path.join(direc, file)
+        to_tag = wordlist.words(file)
+        tagged = tagger.tag(to_tag)
+        path = "../Text/tagged_letters/"
+        with open('%stagged_%s.pickle' %(path, file.replace(".txt","")), 'wb') as f:
+            pickle.dump(tagged, f)
+        
 
-                    nouns = []
-                    for word in tagged:
-                        if word[1] == 'NN':
-                            nouns.append(word[0])
-                    # print(file)
-                    # print(nouns)
+        nouns = []
+        for word in tagged:
+            if word[1] == 'NN':
+                nouns.append(word[0])
+
+        for w in nouns:
+            word = w.casefold().strip()
+            if word not in stopWords:
+                filtered += w + " "
+
+        name = filename.replace(direc,"")
+        #name = name.replace("html", "txt")
+
+        intoTxt(filtered, file.replace("html", "txt"))
+    
+    # for subdir, dirs, files in os.walk(direc):
+    #     for file in files:
+    #         if subdir.split("/")[-1] == "txt":
+    #             wordlist = PlaintextCorpusReader(subdir, '.*')
+    #             text = ""
+    #             filtered = ""
+    #             if file.endswith(".txt"):
+    #                 filename = os.path.join(subdir, file)
+    #                 to_tag_name = (filename.split("/"))[-1]
+    #                 to_tag = wordlist.words(to_tag_name)
+    #                 tagged = tagger.tag(to_tag)
+    #                 to_tag_name = to_tag_name.replace(".txt", "")
+    #                 path = "../Text/tagged_letters/"
+    #                 with open('%stagged_%s.pickle' %(path, file.replace(".txt","")), 'wb') as f:
+    #                     pickle.dump(tagged, f)
+    #                 #print("dumped", file.replace(".txt",""))
+
+    #                 nouns = []
+    #                 for word in tagged:
+    #                     if word[1] == 'NN':
+    #                         nouns.append(word[0])
+    #                 # print(file)
+    #                 # print(nouns)
                     
-                    # with open(filename, "r") as openfile:
-                    #     lines = openfile.readlines()
-                    #     text = "".join(lines)
+    #                 # with open(filename, "r") as openfile:
+    #                 #     lines = openfile.readlines()
+    #                 #     text = "".join(lines)
 
-                    # text = nltk.word_tokenize(text)
+    #                 # text = nltk.word_tokenize(text)
 
-                    for w in nouns:
-                        word = w.lower().strip()
-                        if word not in stopWords:
-                            filtered += w + " "
-                    #print(filtered)
-                    name = filename.replace(direc,"")
+    #                 for w in nouns:
+    #                     word = w.lower().strip()
+    #                     if word not in stopWords:
+    #                         filtered += w + " "
+    #                 #print(filtered)
+    #                 name = filename.replace(direc,"")
                     
-                    intoTxt(filtered, file)
-            else:
-                pass
+    #                 intoTxt(filtered, file)
+    #         else:
+    #             pass
 
 
 def intoTxt(whole, name):

@@ -6,12 +6,14 @@ import bs4
 import re
 import nltk
 from nltk.corpus import PlaintextCorpusReader as PCR
+from nltk import word_tokenize
 import json
 import pickle
 
 def get_all_words():
 
-    direc = "../nouns_steps/whole/"
+    #direc = "../nouns_steps/whole/"
+    direc = "../filtered_letters/"
 
     words = set()
 
@@ -71,28 +73,33 @@ def create_word_index():
 def create_word_index2():
     
     root = "../filtered_letters/" 
-    letter_root = "../../../AllLetters"
     words = get_all_words()
     names = ["CSchiller", "CStein", "CGoethe", "FSchiller"]
     index = {}
-    wunschpunsch = [file.replace(".html", "") for file in os.listdir(letter_root)]
-    #visibility = {}
+    wunschpunsch = [file.replace(".txt", "") for file in os.listdir(root)]
 
     for word in words:
+        print(word)
         filenames = []
         for file in os.listdir(root):
-            filename = os.path.join(root, file)
-            f_name = file.replace(".txt", "")
-            # visibility[f_name] = False;
-            with open(filename, 'r') as openfile:
-                text = (openfile.read()).casefold()
-                if word.casefold() in text:
-                    filenames.append(f_name)
+            if file.endswith(".txt"):
+                filename = os.path.join(root, file)
+                f_name = file.replace(".txt", "")
+                # visibility[f_name] = False;
+                with open(filename, 'r') as openfile:
+                    #print(filename)
+                    raw = openfile.read()
+                    tokens = word_tokenize(raw)
+                    letter_words = [w.casefold() for w in tokens]
+                    if word.casefold() in letter_words:
+                        filenames.append(f_name)
+            else:
+                pass
         
         index[word] = filenames
     
     index["wunschpunsch"] = wunschpunsch
-    json.dump(index, open("word-letter_index3.json", 'w'))
+    json.dump(index, open("word-letter_index5.json", 'w'))
     #json.dump(visibility, open("visibility.json", 'w'))
 
 def main():

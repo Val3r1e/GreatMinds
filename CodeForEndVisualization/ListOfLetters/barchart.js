@@ -1372,7 +1372,7 @@ function wordcloud_data(word, name, year, steps){
         }
         
         numberOfDocs = toGet.length;
-        console.log(toGet);
+        // console.log(toGet);
         
         load_noun_frequencies(function(noun_freq){
             var frequencies = JSON.parse(noun_freq); //{letter1:{noun1: x, noun2: y}, letter2:{...}, ...}
@@ -1380,11 +1380,13 @@ function wordcloud_data(word, name, year, steps){
             //---- get the Data for the tf-score: -----
             //go through all the letters and all the nouns in it and compute the absolute number of
             //occurences of each noun in the data by adding up the frequencies
+
             for(i = 0; i < toGet.length; i++){
                 var thisLetter = toGet[i];
                 var noun_frequency = frequencies[thisLetter]; // map of all nouns which letter x contains
                 for(var key in noun_frequency){ //iterate through all nouns of each letter
-                    if(tf_data[key] === undefined){ 
+                    //if(tf_data[key] === undefined){
+                    if(!tf_data.hasOwnProperty(key)){ 
                         tf_data[key] = noun_frequency[key]; //tf_data: Map of all nouns with their absolute number
                         docs_containing_word[key] = 1;
                     }else{
@@ -1395,9 +1397,6 @@ function wordcloud_data(word, name, year, steps){
                 }
             }
 
-            // console.log("TF Data: ");
-            // console.log(tf_data);
-
             // console.log("Wort: ", word);
             // console.log("Number of ", word, " in doc: ", tf_data[word]);
             // console.log("Gesamtwortzahl: " + doc_length);
@@ -1407,17 +1406,11 @@ function wordcloud_data(word, name, year, steps){
             //------ compute tf-idf score on the fly (not sure if this is the right way though^^) -----
             var tfIdf_scores = {};
             for(var key in tf_data){
-                // var idf_score = compute_idf_score(key);
-
                 var idf_score = Math.log(numberOfDocs / docs_containing_word[key]);
                 var tf_score = (tf_data[key] / doc_length);
-
                 tfIdf_scores[key] = (tf_score * idf_score);
-                //totalCount.push({"text":key, "count":tf_data[key]});
                 cloudData.push({"text":key, "count":tfIdf_scores[key]});
-            }
-            if(wordClicked){
-                console.log(clickedWord, ": ", tfIdf_scores[clickedWord]);
+                //totalCount.push({"text":key, "count":tf_data[key]});
             }
 
             if(word != "wunschpunsch"){
@@ -1547,43 +1540,10 @@ function barchart_data(word, zoomYear){
                 zoomData = csvData5List;
                 console.log("ZoomData: ", zoomData);
             }
-
         }
 
         // console.log(csvData_1);
         // console.log(csvData_5);
-
-
-        
-
-        //------------------------------ A lot of if's and else's to enable the clicking correctly --------------------------
-
-        //When nothing is selected before and word is selected or deselected
-        // if((!barSelected && wordClicked && !legendSelected) || (!barSelected && deselectWord && !legendSelected)){ 
-            
-        //     if(dataVersion == 5){
-        //         d3.select("svg").selectAll("*").remove();
-        //         daten(csvData_5,5);
-        //     }
-        //     else if(dataVersion == 1){
-        //         d3.select("svg").selectAll("*").remove();
-        //         daten(csvData_1,1);
-        //     }
-
-        // }
-        // //When only bar is selected and you select or deselect a word  --> What should happen: data changes according to word but bar stays selected and other bars are still visible just not fully colored
-        // else if((barSelected && wordClicked && !legendSelected) || (barSelected && deselectWord && !legendSelected)){
-
-        // }
-        // //Only person on legend is selected and you select or deselect a word  --> What should happen: data changes according to word but person says selected (on legend and bars) and other bars are still visible just grey
-        // else if((!barSelected && wordClicked && legendSelected) || (!barSelected && deselectWord && legendSelected)){
-
-        // }
-        // //Bar and person on legend is selected and you select or deselect word --> What should happen: data changes but person and bar stay selected and other bars are still visible just grey
-        // else if((barSelected && wordClicked && legendSelected) || (barSelected && deselectWord && legendSelected)){
-
-        // }
-
     });        
 }
 
@@ -1633,7 +1593,7 @@ function load_img_element(id){
 }
 //------------ callback functions to load JSON files ----------
 function load_letter_Index(callback){
-    var httpRequestURL = "data/word-letter_index3.json";
+    var httpRequestURL = "data/word-letter_index.json";
     var httpRequest = new XMLHttpRequest();
     httpRequest.onload = function(){
         callback(httpRequest.response);
