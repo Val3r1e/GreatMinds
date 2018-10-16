@@ -739,7 +739,6 @@ function init(version){
         })
         .on("click", function(d,i) {
             d3.select("svg").selectAll("*").remove();
-            //bars("data/vis_data_1_all.csv", version);
             //daten(csvData_5,5);
             bars("data/vis_data_5.csv", 5);
         })
