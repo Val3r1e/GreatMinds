@@ -25,6 +25,7 @@ var deselectWord = false;
 var firstLoad = true;
 var clickedBar = 0;     //Braucht Jahr
 var clickedPerson = 0;  //Braucht Name
+var dblclickedBar = 0;
 var columns = ["Year", "FSchiller", "CSchiller", "CStein", "CGoethe"];
 var newBarData = false;
 var zoomData;
@@ -413,42 +414,35 @@ function daten(data,version){
                 }
             })
             .on('dblclick', function(d) {
-                if (dataVersion == 5) {
-                    if (active == "0" && active_link == "0"){
-                        barSelected = true;
-    
-                        for (j = 0; j < rectangleClassArray.length; j++) {
-                            d3.select("#id" + wanted + "-" + rectangleClassArray[j])
-                            .style("stroke", "black")
-                            .style("stroke-width", 1.5);
-                        }
-                        
-    
-                        active = d.data.Year;
-                        barchart_data("wunschpunsch", active);
-    
-                        /*for(j=0; j<yearArray.length; j++){
-                            for(h=0; h<rectangleClassArray.length; h++){
-                                if(yearArray[j] != active){
-                                    d3.select("#id" + yearArray[j] + "-" + activeName)
-                                    .style("opacity", 0.5);
-
-                                }
-                                else {
-                                    d3.select("#id" + yearArray[j] + "-" + rectangleClassArray[h])
-                                    .remove();
-    
-                                    //barchart_data("wunschpunsch", active);
-                                    //updateBar(zoom);
-                                    //daten(zoom, dataVersion);
-                                    
-                                }
+                if (dblclickedBar == 0) {
+                    dblclickedBar = 1;
+                    if (dataVersion == 5) {
+                        if (active == "0" && active_link == "0"){
+                            barSelected = true;
+        
+                            for (j = 0; j < rectangleClassArray.length; j++) {
+                                d3.select("#id" + wanted + "-" + rectangleClassArray[j])
+                                .style("stroke", "black")
+                                .style("stroke-width", 1.5);
                             }
-                        }*/
-                        document.getElementById("message_from_bar").innerHTML = d.data.Year;
-                        document.getElementById("report_steps").innerHTML = version;
-                        document.getElementById("message_from_bar").onchange();  
+                            tooltip
+                            .style("display","none");
+                            
+        
+                            active = d.data.Year;
+                            barchart_data("wunschpunsch", active);
+    
+                            document.getElementById("message_from_bar").innerHTML = d.data.Year;
+                            document.getElementById("report_steps").innerHTML = version;
+                            document.getElementById("message_from_bar").onchange();  
+                        }
                     }
+                }
+                else {
+                    dblclickedBar = 0;
+                    barchart_data("wunschpunsch", 0);
+                    tooltip
+                    .style("display","none");
                 }
             })
             
@@ -1404,19 +1398,19 @@ function barchart_data(word, zoomYear){
                 var year3 = zoomYearsList[2];
                 var year4 = zoomYearsList[3];
                 var year5 = zoomYearsList[4];
-                var indexOfZommYear;
+                var indexOfZoomYear;
                 for(var n = 0; n < csvData5List.length; n++){
                     var br = false;
                     for(var zoom5Key in csvData5List){
                         if(csvData5List[n][zoom5Key] == zoomYear){
-                            indexOfZommYear = n;
+                            indexOfZoomYear = n;
                             br = true;
                             break;
                         }
                     }
                     if(br){break;}
                 }
-                csvData5List.splice(indexOfZommYear, 1, year1, year2, year3, year4, year5);
+                csvData5List.splice(indexOfZoomYear, 0, year1, year2, year3, year4, year5);
                 zoomData = csvData5List;
                 console.log("ZoomData: ", zoomData);
                 d3.select("svg").selectAll("*").remove();
