@@ -17,7 +17,6 @@ var loadedLetter;
 var letterLoaded = false;
 var loading;
 var quoteCounter = 0;
-var csvDataList = [];
 var csvData_1;
 var csvData_5;
 var dataVersion; 
@@ -29,6 +28,11 @@ var dblclickedBar = 0;
 var columns = ["Year", "FSchiller", "CSchiller", "CStein", "CGoethe"];
 var newBarData = false;
 var zoomData;
+// var keyYears = [];
+//     for(var a = 1776; a < 1821; a++){
+//         keyYears.push(a);
+//     }
+var key5Years = [1780, 1785, 1790, 1795, 1800, 1805, 1810, 1815, 1820];
 
 //-------------------- BARCHART -----------------------
 
@@ -1320,35 +1324,37 @@ function barchart_data(word, zoomYear){
                 barChartLettters[letterYear][letterName] += 1;
             }
         }
-        csvDataList = [];
-        csvData5List = [];
+        console.log("BarChartLetters: ", barChartLettters);
+        var csvDataList = [];
         csvData_1 = [];
-        csvData_5 = [];
-        keyYears = [1780, 1785, 1790, 1795, 1800, 1805, 1810, 1815, 1820];
-
-        for(var key in barChartLettters){
+        
+        for(var kYear = 1776; kYear < 1821; kYear++){
             var tmpDict = {"Year":0, "FSchiller":0, "CSchiller":0, "CStein":0, "CGoethe":0, "total":0};
-            tmpDict["Year"] = key;
-            for(var nameKey in barChartLettters[key]){
-                tmpDict[nameKey] = barChartLettters[key][nameKey];
+            tmpDict["Year"] = kYear;
+            if(barChartLettters[kYear] != undefined){
+                for(var nameKey in barChartLettters[kYear]){
+                    tmpDict[nameKey] = barChartLettters[kYear][nameKey];
+                }
+                tmpDict["total"] = tmpDict["FSchiller"] + tmpDict["CSchiller"] + tmpDict["CStein"] + tmpDict["CGoethe"];
             }
-            tmpDict["total"] = tmpDict["FSchiller"] + tmpDict["CSchiller"] + tmpDict["CStein"] + tmpDict["CGoethe"];
             csvDataList.push(tmpDict);
         }
         
-
+        console.log("1 Year List:", csvDataList);
+        var csvData5List = [];
+        csvData_5 = [];
         var tmpDict5 = {};
         for(i = 0; i < csvDataList.length; i++){
-            for(var j = 0; j < keyYears.length; j++){
-                if(tmpDict5[keyYears[j]] == undefined){
-                    tmpDict5[keyYears[j]] = {"Year":keyYears[j], "FSchiller":0, "CSchiller":0, "CStein":0, "CGoethe":0, "total":0};
+            for(var j = 0; j < key5Years.length; j++){
+                if(tmpDict5[key5Years[j]] == undefined){
+                    tmpDict5[key5Years[j]] = {"Year":key5Years[j], "FSchiller":0, "CSchiller":0, "CStein":0, "CGoethe":0, "total":0};
                 }
-                if(csvDataList[i]["Year"] <= keyYears[j]){
-                    tmpDict5[keyYears[j]]["FSchiller"] += csvDataList[i]["FSchiller"];
-                    tmpDict5[keyYears[j]]["CSchiller"] += csvDataList[i]["CSchiller"];
-                    tmpDict5[keyYears[j]]["CStein"] += csvDataList[i]["CStein"];
-                    tmpDict5[keyYears[j]]["CGoethe"] += csvDataList[i]["CGoethe"];
-                    tmpDict5[keyYears[j]]["total"] += csvDataList[i]["total"];
+                if(csvDataList[i]["Year"] <= key5Years[j] && csvDataList[i]["Year"] > key5Years[j]-5){
+                    tmpDict5[key5Years[j]]["FSchiller"] += csvDataList[i]["FSchiller"];
+                    tmpDict5[key5Years[j]]["CSchiller"] += csvDataList[i]["CSchiller"];
+                    tmpDict5[key5Years[j]]["CStein"] += csvDataList[i]["CStein"];
+                    tmpDict5[key5Years[j]]["CGoethe"] += csvDataList[i]["CGoethe"];
+                    tmpDict5[key5Years[j]]["total"] += csvDataList[i]["total"];
                     break;
                 }
             }
@@ -1357,6 +1363,7 @@ function barchart_data(word, zoomYear){
         for(var key5Year in tmpDict5){
             csvData5List.push(tmpDict5[key5Year]);
         }
+        console.log("5 List:" ,csvData5List);
 
         if(zoomYear == 0){
 
@@ -1376,7 +1383,7 @@ function barchart_data(word, zoomYear){
         }else{
             zoomData = [];
             zoomYear = parseInt(zoomYear);
-            console.log(csvDataList);
+  
             if(zoomYear != 0){
                 var zoomYears = [zoomYear-4, zoomYear-3, zoomYear-2, zoomYear-1, zoomYear];
                 var zoomYearsList = [];
@@ -1391,7 +1398,6 @@ function barchart_data(word, zoomYear){
                     
                     }
                 }
-                //console.log("Liste: ", zoomYearsList);
                 var year1 = zoomYearsList[0];
                 var year2 = zoomYearsList[1];
                 var year3 = zoomYearsList[2];
@@ -1401,7 +1407,7 @@ function barchart_data(word, zoomYear){
                 for(var n = 0; n < csvData5List.length; n++){
                     var br = false;
                     for(var zoom5Key in csvData5List){
-                        if(csvData5List[n][zoom5Key] == zoomYear){
+                        if(csvData5List[n]["Year"] == zoomYear){
                             indexOfZoomYear = n;
                             br = true;
                             break;
@@ -1409,9 +1415,9 @@ function barchart_data(word, zoomYear){
                     }
                     if(br){break;}
                 }
-                csvData5List.splice(indexOfZoomYear, 0, year1, year2, year3, year4, year5);
-                zoomData = csvData5List;
-                console.log("ZoomData: ", zoomData);
+                var tmpZoomList = csvData5List;
+                tmpZoomList.splice(indexOfZoomYear, 1, year1, year2, year3, year4, year5);
+                zoomData = tmpZoomList;
                 d3.select("svg").selectAll("*").remove();
                 daten(zoomData,5);
             }
