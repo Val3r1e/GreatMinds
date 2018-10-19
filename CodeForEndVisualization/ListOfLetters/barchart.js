@@ -125,7 +125,7 @@ function daten(data,version){
             .attr("height", function(d) { return y(d[0]) - y(d[1]); })
             .attr("width", x.bandwidth()); // Width of bars -1 smaller +1 bigger etc
 
-            if(clickedBar != 0 && clickedPerson == 0){
+            if(clickedBar != 0 && clickedPerson == 0 && dblclickedBar == 0){
 
                 barSelected = true;
 
@@ -146,7 +146,7 @@ function daten(data,version){
                     }
                 }
             }
-            else if(clickedBar != 0 && clickedPerson != 0){
+            else if(clickedBar != 0 && clickedPerson != 0 && dblclickedBar == 0){
 
                 barSelected = true;
 
@@ -167,6 +167,66 @@ function daten(data,version){
                     }
                 }
             }
+            else if(clickedBar != 0 && clickedPerson == 0 && dblclickedBar != 0) {
+                barSelected = true;
+
+                for (j = 0; j < rectangleClassArray.length; j++) {
+                    d3.select("#id" + clickedBar + "-" + rectangleClassArray[j])
+                    .style("stroke", "black")
+                    .style("stroke-width", 1.5);
+                }
+
+                active = clickedBar;
+
+                for(j=0; j<zoomData.length; j++){
+                    for(h=0; h<rectangleClassArray.length; h++){
+                        if(zoomData[j]["Year"] != active){
+                            d3.select("#id" + zoomData[j]["Year"] + "-" + rectangleClassArray[h])
+                            .style("opacity", 0.5);
+                        }
+                    }
+                }
+            }
+            else if(clickedBar != 0 && clickedPerson != 0 && dblclickedBar != 0) {
+                barSelected = true;
+
+                //for (j = 0; j < rectangleClassArray.length; j++) {
+                    d3.select("#id" + clickedBar + "-" + clickedPerson)
+                    .style("stroke", "black")
+                    .style("stroke-width", 1.5);
+                //}
+
+                active = clickedBar;
+
+                for(j=0; j<zoomData.length; j++){
+                    for(h=0; h<rectangleClassArray.length; h++){
+                        if(zoomData[j]["Year"] != active){
+                            d3.select("#id" + zoomData[j]["Year"] + "-" + rectangleClassArray[h])
+                            .style("opacity", 0.5);
+                        }
+                    }
+                }
+            }
+            else if(dblclickedBar != 0 && clickedBar == 0 && clickedPerson == 0) {
+                for (j = 0; j < zoomData.length; j++) {
+                    var year_1 = dblclickedBar - 4;
+                    var year_2 = dblclickedBar - 3;
+                    var year_3 = dblclickedBar - 2;
+                    var year_4 = dblclickedBar - 1;
+                    var year_5 = dblclickedBar;
+                    for(h=0; h<rectangleClassArray.length; h++){
+                        if(zoomData[j]["Year"] != year_5 && zoomData[j]["Year"] != year_4 && zoomData[j]["Year"] != year_3 && zoomData[j]["Year"] != year_2 && zoomData[j]["Year"] != year_1){
+                            d3.select("#id" + zoomData[j]["Year"] + "-" + rectangleClassArray[h])
+                            .style("cursor", "default")
+                            .style("opacity", 0.5);
+                        }
+                        else if(zoomData[j]["Year"] == year_5 || zoomData[j]["Year"] == year_4 || zoomData[j]["Year"] == year_3 || zoomData[j]["Year"] == year_2 || zoomData[j]["Year"] == year_1){
+                            d3.select("#id" + zoomData[j]["Year"] + "-" + rectangleClassArray[h])
+                            .style("cursor", "pointer");
+                        }
+                    }
+                }
+            }
             
             rectangle.on("mouseover", function (d) {
 
@@ -178,8 +238,8 @@ function daten(data,version){
                 activeName = this.id.split("id").pop();
                 activeName = activeName.slice(5);
 
-                //No Bar and nothing on legend selected
-                if(active === "0" && active_link === "0"){
+                //No Bar and nothing on legend selected and no dblclicked
+                if(active === "0" && active_link === "0" && dblclickedBar == 0){
 
                     for (j = 0; j < rectangleClassArray.length; j++){
                         d3.select("#id" + wanted + "-" + rectangleClassArray[j])
@@ -193,8 +253,8 @@ function daten(data,version){
                     .style("display", "inline-block")
                     .html(d.data.Year + ": " + d.data.total); 
                 }
-                //One Bar and nothing on legend selected and hovering above selected Bar
-                else if(active == d.data.Year && active_link === "0"){
+                //One Bar and nothing on legend selected and not dblclicked and hovering above selected Bar
+                else if(active == d.data.Year && active_link === "0" && dblclickedBar == 0){
 
                     for (j = 0; j < rectangleClassArray.length; j++){
                         d3.select("#id" + wanted + "-" + rectangleClassArray[j])
@@ -206,8 +266,8 @@ function daten(data,version){
                     .style("display", "inline-block")
                     .html(d.data.Year + ": " + d.data.total); 
                 }
-                //One Bar and nothing on legend selected and hovering above not selected Bar
-                else if(active != d.data.Year && active_link === "0"){
+                //One Bar and nothing on legend selected and no dblclicked and hovering above not selected Bar
+                else if(active != d.data.Year && active_link === "0" && dblclickedBar == 0){
 
                     for (j = 0; j < rectangleClassArray.length; j++){
                         d3.select("#id" + wanted + "-" + rectangleClassArray[j])
@@ -216,8 +276,8 @@ function daten(data,version){
                     tooltip
                     .style("display","none");
                 }
-                //No Bar and one Person on legend selected and hovering above selected person bar
-                else if(active === "0" && active_link == activeName){
+                //No Bar and one Person on legend selected and no dblclicked and hovering above selected person bar
+                else if(active === "0" && active_link == activeName && dblclickedBar == 0){
                     d3.select("#id" + wanted + "-" + activeName)
                     .style("cursor", "pointer")
                     .style("stroke", "purple")
@@ -231,16 +291,16 @@ function daten(data,version){
                     .style("display", "inline-block")
                     .html(activeName + ": " + amount); 
                 }
-                //No Bar and one Person on legend selected and hovering above not selected person part
-                else if(active === "0" && active_link != activeName){
+                //No Bar and one Person on legend selected and no dblclicked and hovering above not selected person part
+                else if(active === "0" && active_link != activeName && dblclickedBar == 0){
 
                     for (j = 0; j < rectangleClassArray.length; j++){
                         d3.select("#id" + wanted + "-" + rectangleClassArray[j])
                         .style("cursor", "default");
                     } 
                 }
-                //First one Bar and then one Person on legend selected and hovering above selected person part
-                else if(active == d.data.Year && active_link == activeName){
+                //First one Bar and then one Person on legend selected and no dblclicked and hovering above selected person part
+                else if(active == d.data.Year && active_link == activeName && dblclickedBar == 0){
 
                     d3.select(this)
                     .style("cursor", "pointer");
@@ -252,22 +312,22 @@ function daten(data,version){
                     .style("display", "inline-block")
                     .html(activeName + ": " + amount); 
                 }
-                //First one Bar and then one Person on legend selected and hovering above not selected person part but on selected bar
-                else if(active == d.data.Year && active_link != activeName){
+                //First one Bar and then one Person on legend selected and no dblclicked and hovering above not selected person part but on selected bar
+                else if(active == d.data.Year && active_link != activeName && dblclickedBar == 0){
                     for (j = 0; j < rectangleClassArray.length; j++){
                         d3.select("#id" + wanted + "-" + rectangleClassArray[j])
                         .style("cursor", "default");
                     } 
                 }
-                //First one Bar and then one Person on legend selected but hovering above not selected bar and parts
-                else if(active != d.data.Year && active_link != activeName){
+                //First one Bar and then one Person on legend selected and no dblclicked but hovering above not selected bar and parts
+                else if(active != d.data.Year && active_link != activeName && dblclickedBar == 0){
                     for (j = 0; j < rectangleClassArray.length; j++){
                         d3.select("#id" + wanted + "-" + rectangleClassArray[j])
                         .style("cursor", "default");
                     }
                 }
-                //First person on legend then one Bar selected and hovering above selected person part
-                else if(active_link == activeName && active == d.data.Year){
+                //First person on legend then one Bar selected and no dblclicked and hovering above selected person part
+                else if(active_link == activeName && active == d.data.Year && dblclickedBar == 0){
                     d3.select(this)
                     .style("cursor", "pointer");
                     
@@ -278,22 +338,147 @@ function daten(data,version){
                     .style("display", "inline-block")
                     .html(activeName + ": " + amount); 
                 }
-                //First person on legend then one Bar selected and hovering above not selected person part but on selected bar
-                else if(active_link != activeName && active == d.data.Year){
+                //First person on legend then one Bar selected and no dblclicked and hovering above not selected person part but on selected bar
+                else if(active_link != activeName && active == d.data.Year && dblclickedBar == 0){
                     for (j = 0; j < rectangleClassArray.length; j++){
                         d3.select("#id" + wanted + "-" + rectangleClassArray[j])
                         .style("cursor", "default");
                     }
                 }
-                //First person on legend then one Bar selected but hovering above not selected bar or parts
-                else if(active_link != activeName && active != d.data.Year){
+                //First person on legend then one Bar selected and no dblclicked but hovering above not selected bar or parts
+                else if(active_link != activeName && active != d.data.Year && dblclickedBar == 0){
                     for (j = 0; j < rectangleClassArray.length; j++){
                         d3.select("#id" + wanted + "-" + rectangleClassArray[j])
                         .style("cursor", "default");
                     }
                 }
-                //First person on legend then one BAr selected but hovering above same name part but different year
-                else if(active_link == activeName && active != d.data.Year){
+                //First person on legend then one Bar selected and no dblclicked but hovering above same name part but different year
+                else if(active_link == activeName && active != d.data.Year && dblclickedBar == 0){
+                    for (j = 0; j < rectangleClassArray.length; j++){
+                        d3.select("#id" + wanted + "-" + rectangleClassArray[j])
+                        .style("cursor", "default");
+                    }
+                }
+                //No Bar and nothing on legend selected and dblclicked
+                else if(active === "0" && active_link === "0" && dblclickedBar != 0){
+                    console.log("wanted:", wanted);
+                    console.log("dbl:", dblclickedBar);
+
+                    if(wanted == dblclickedBar || wanted == dblclickedBar -1 || wanted == dblclickedBar - 2 || wanted == dblclickedBar - 3 || wanted == dblclickedBar - 4) {
+                        for (j = 0; j < rectangleClassArray.length; j++){
+                            d3.select("#id" + wanted + "-" + rectangleClassArray[j])
+                            .style("cursor", "pointer")
+                            .style("stroke", "purple")
+                            .style("stroke-width", 1.3);
+                        }  
+                        tooltip
+                        .style("left", d3.event.pageX - 50 + "px")
+                        .style("top", d3.event.pageY - 70 + "px")
+                        .style("display", "inline-block")
+                        .html(d.data.Year + ": " + d.data.total); 
+                    }
+                }
+                //One Bar and nothing on legend selected and dblclicked and hovering above selected Bar
+                else if(active == d.data.Year && active_link === "0" && dblclickedBar != 0){
+
+                    for (j = 0; j < rectangleClassArray.length; j++){
+                        d3.select("#id" + wanted + "-" + rectangleClassArray[j])
+                        .style("cursor", "pointer");
+                    }
+                    tooltip
+                    .style("left", d3.event.pageX - 50 + "px")
+                    .style("top", d3.event.pageY - 70 + "px")
+                    .style("display", "inline-block")
+                    .html(d.data.Year + ": " + d.data.total); 
+                }
+                //One Bar and nothing on legend selected and dblclicked and hovering above not selected Bar
+                else if(active != d.data.Year && active_link === "0" && dblclickedBar != 0){
+
+                    for (j = 0; j < rectangleClassArray.length; j++){
+                        d3.select("#id" + wanted + "-" + rectangleClassArray[j])
+                        .style("cursor", "default");
+                    }   
+                    tooltip
+                    .style("display","none");
+                }
+                //No Bar and one Person on legend selected and dblclicked and hovering above selected person bar
+                else if(active === "0" && active_link == activeName && dblclickedBar != 0){
+                    d3.select("#id" + wanted + "-" + activeName)
+                    .style("cursor", "pointer")
+                    .style("stroke", "purple")
+                    .style("stroke-width", 1.3);
+
+                    amount = d[1]-d[0];
+
+                    tooltip
+                    .style("left", d3.event.pageX - 50 + "px")
+                    .style("top", d3.event.pageY - 70 + "px")
+                    .style("display", "inline-block")
+                    .html(activeName + ": " + amount); 
+                }
+                //No Bar and one Person on legend selected and dblclicked and hovering above not selected person part
+                else if(active === "0" && active_link != activeName && dblclickedBar != 0){
+
+                    for (j = 0; j < rectangleClassArray.length; j++){
+                        d3.select("#id" + wanted + "-" + rectangleClassArray[j])
+                        .style("cursor", "default");
+                    } 
+                }
+                //First one Bar and then one Person on legend selected and dblclicked and hovering above selected person part
+                else if(active == d.data.Year && active_link == activeName && dblclickedBar != 0){
+
+                    d3.select(this)
+                    .style("cursor", "pointer");
+
+                    amount = d[1]-d[0];
+                    tooltip
+                    .style("left", d3.event.pageX - 50 + "px")
+                    .style("top", d3.event.pageY - 70 + "px")
+                    .style("display", "inline-block")
+                    .html(activeName + ": " + amount); 
+                }
+                //First one Bar and then one Person on legend selected and dblclicked and hovering above not selected person part but on selected bar
+                else if(active == d.data.Year && active_link != activeName && dblclickedBar != 0){
+                    for (j = 0; j < rectangleClassArray.length; j++){
+                        d3.select("#id" + wanted + "-" + rectangleClassArray[j])
+                        .style("cursor", "default");
+                    } 
+                }
+                //First one Bar and then one Person on legend selected and dblclicked but hovering above not selected bar and parts
+                else if(active != d.data.Year && active_link != activeName && dblclickedBar != 0){
+                    for (j = 0; j < rectangleClassArray.length; j++){
+                        d3.select("#id" + wanted + "-" + rectangleClassArray[j])
+                        .style("cursor", "default");
+                    }
+                }
+                //First person on legend then one Bar selected and dblclicked and hovering above selected person part
+                else if(active_link == activeName && active == d.data.Year && dblclickedBar != 0){
+                    d3.select(this)
+                    .style("cursor", "pointer");
+                    
+                    amount = d[1]-d[0];
+                    tooltip
+                    .style("left", d3.event.pageX - 50 + "px")
+                    .style("top", d3.event.pageY - 70 + "px")
+                    .style("display", "inline-block")
+                    .html(activeName + ": " + amount); 
+                }
+                //First person on legend then one Bar selected and dblclicked and hovering above not selected person part but on selected bar
+                else if(active_link != activeName && active == d.data.Year && dblclickedBar != 0){
+                    for (j = 0; j < rectangleClassArray.length; j++){
+                        d3.select("#id" + wanted + "-" + rectangleClassArray[j])
+                        .style("cursor", "default");
+                    }
+                }
+                //First person on legend then one Bar selected and dblclicked but hovering above not selected bar or parts
+                else if(active_link != activeName && active != d.data.Year && dblclickedBar != 0){
+                    for (j = 0; j < rectangleClassArray.length; j++){
+                        d3.select("#id" + wanted + "-" + rectangleClassArray[j])
+                        .style("cursor", "default");
+                    }
+                }
+                //First person on legend then one Bar selected and dblclicked but hovering above same name part but different year
+                else if(active_link == activeName && active != d.data.Year && dblclickedBar != 0){
                     for (j = 0; j < rectangleClassArray.length; j++){
                         d3.select("#id" + wanted + "-" + rectangleClassArray[j])
                         .style("cursor", "default");
@@ -326,7 +511,7 @@ function daten(data,version){
             })
             .on("click", function(d){
 
-                //No Bar or Person on legend is selected
+                //No Bar or Person on legend is selected and no dblclicked
                 if (active == "0" && active_link == "0"){
                     barSelected = true;
 
@@ -353,8 +538,32 @@ function daten(data,version){
                     // In "wanted" ist das Jahr und in "activeName" der eigene Name!
                   
                 }
-                //Bar is selected but no person on legend, clicking on selected part
-                else if (active == d.data.Year && active_link == "0" /*|| clickedBar === d.data.Year*/){
+                //No Bar or Person on legend is selected but dblclicked
+                else if(active == "0" && active_link == "0" && dblclickedBar != 0) {
+                    barSelected = true;
+
+                    for (j = 0; j < rectangleClassArray.length; j++) {
+                        d3.select("#id" + wanted + "-" + rectangleClassArray[j])
+                        .style("stroke", "black")
+                        .style("stroke-width", 1.5);
+                    }
+
+                    active = d.data.Year;
+                    clickedBar = active;
+                    for (j = 0; j < zoomData.length; j++) {
+                        for(h=0; h<rectangleClassArray.length; h++){
+                            if(zoomData[j]["Year"] != active) {
+                                d3.select("#id" + yearArray[j] + "-" + rectangleClassArray[h])
+                                .style("opacity", 0.5);
+                            }
+                        }
+                    }
+                    document.getElementById("message_from_bar").innerHTML = d.data.Year;
+                    document.getElementById("report_steps").innerHTML = version;
+                    document.getElementById("message_from_bar").onchange();
+                }
+                //Bar is selected but no person on legend and no dblclicked, clicking on selected part
+                else if (active == d.data.Year && active_link == "0" && dblclickedBar == 0/*|| clickedBar === d.data.Year*/){
                     barSelected = false;
                     toggleWhileBarSelected = false;
 
@@ -377,8 +586,38 @@ function daten(data,version){
                     document.getElementById("message_from_bar").onchange();
                     
                 }
-                //No bar but person on legend is selected, clicking on part of bar of that person
-                else if(active == "0" && active_link == activeName){
+                //Bar is selected but no person on legend and dblclicked, clicking on selected part
+                else if (active == d.data.Year && active_link == "0" && dblclickedBar != 0/*|| clickedBar === d.data.Year*/){
+                    barSelected = false;
+                    toggleWhileBarSelected = false;
+                    console.log("dblclicked1", dblclickedBar);
+
+                    for (j = 0; j < zoomData.length; j++) {
+                        var year_1 = dblclickedBar - 4;
+                        var year_2 = dblclickedBar - 3;
+                        var year_3 = dblclickedBar - 2;
+                        var year_4 = dblclickedBar - 1;
+                        var year_5 = dblclickedBar;
+                        for(h=0; h<rectangleClassArray.length; h++){
+                            if(zoomData[j]["Year"] != year_5 && zoomData[j]["Year"] != year_4 && zoomData[j]["Year"] != year_3 && zoomData[j]["Year"] != year_2 && zoomData[j]["Year"] != year_1){
+                                d3.select("#id" + zoomData[j]["Year"] + "-" + rectangleClassArray[h])
+                                .style("cursor", "default")
+                                .style("opacity", 0.5);
+                            }
+                            else if(zoomData[j]["Year"] == year_5 || zoomData[j]["Year"] == year_4 || zoomData[j]["Year"] == year_3 || zoomData[j]["Year"] == year_2 || zoomData[j]["Year"] == year_1){
+                                d3.select("#id" + zoomData[j]["Year"] + "-" + rectangleClassArray[h])
+                                .style("opacity", 1)
+                                .style("cursor", "pointer");
+                            }
+                        }
+                    }
+                    active = "0";
+                    clickedBar = 0;
+                    document.getElementById("message_from_bar").onchange();
+                    
+                }
+                //No bar but person on legend is selected, clicking on part of bar of that person and no dblclicked
+                else if(active == "0" && active_link == activeName && dblclickedBar == 0){
                     barSelected = true;
                     d3.select(this)
                     .style("stroke", "black")
@@ -395,12 +634,30 @@ function daten(data,version){
 
                     document.getElementById("message_from_bar").innerHTML = d.data.Year;
                     document.getElementById("report_steps").innerHTML = version;
-                    document.getElementById("message_from_bar").onchange();
-
-                    
+                    document.getElementById("message_from_bar").onchange(); 
                 }
-                //Bar and person on legend is selected, clicking on part of bar of that person
-                else if(active == d.data.Year && active_link == activeName){
+                //No bar but person on legend is selected, clicking on part of bar of that person and dblclicked
+                else if(active == "0" && active_link == activeName && dblclickedBar != 0){
+                    barSelected = true;
+                    d3.select(this)
+                    .style("stroke", "black")
+                    .style("stroke-width", 1.5);
+
+                    for (j = 0; j < zoomData.length; j++) {
+                        if(zoomData[j]["Year"] != wanted){
+                            d3.select("#id" + zoomData[j]["Year"] + "-" + activeName)
+                            .style("opacity", 0.5);
+                        }
+                    }
+                    active = d.data.Year;
+                    clickedBar = active;
+
+                    document.getElementById("message_from_bar").innerHTML = d.data.Year;
+                    document.getElementById("report_steps").innerHTML = version;
+                    document.getElementById("message_from_bar").onchange();
+                }
+                //Bar and person on legend is selected, clicking on part of bar of that person and no dblclicked
+                else if(active == d.data.Year && active_link == activeName && dblclickedBar == 0){
                     barSelected = false;
                     toggleWhileBarSelected = false;
                     d3.select(this)
@@ -416,29 +673,47 @@ function daten(data,version){
                     clickedBar = 0;
                     document.getElementById("message_from_bar").onchange();
                 }
+                //Bar and person on legend is selected, clicking on part of bar of that person and dblclicked
+                else if(active == d.data.Year && active_link == activeName && dblclickedBar != 0){
+                    barSelected = false;
+                    toggleWhileBarSelected = false;
+                    d3.select(this)
+                    .style("stroke", "none");
+                    
+                    for (j = 0; j < zoomData.length; j++) {
+                        var year_1 = dblclickedBar - 4;
+                        var year_2 = dblclickedBar - 3;
+                        var year_3 = dblclickedBar - 2;
+                        var year_4 = dblclickedBar - 1;
+                        var year_5 = dblclickedBar;
+                        for(h=0; h<rectangleClassArray.length; h++){
+                            if(zoomData[j]["Year"] != year_5 && zoomData[j]["Year"] != year_4 && zoomData[j]["Year"] != year_3 && zoomData[j]["Year"] != year_2 && zoomData[j]["Year"] != year_1){
+                                d3.select("#id" + zoomData[j]["Year"] + "-" + rectangleClassArray[h])
+                                .style("cursor", "default")
+                                .style("opacity", 0.5);
+                            }
+                            else if(zoomData[j]["Year"] == year_5 || zoomData[j]["Year"] == year_4 || zoomData[j]["Year"] == year_3 || zoomData[j]["Year"] == year_2 || zoomData[j]["Year"] == year_1){
+                                d3.select("#id" + zoomData[j]["Year"] + "-" + rectangleClassArray[h])
+                                .style("opacity", 1)
+                                .style("cursor", "pointer");
+                            }
+                        }
+                    }
+                    active = "0";
+                    clickedBar = 0;
+                    document.getElementById("message_from_bar").onchange();
+                }
             })
             .on('dblclick', function(d) {
                 if (dblclickedBar == 0) {
-                    dblclickedBar = 1;
                     if (dataVersion == 5) {
                         if (active == "0" && active_link == "0"){
-                            barSelected = true;
         
-                            for (j = 0; j < rectangleClassArray.length; j++) {
-                                d3.select("#id" + wanted + "-" + rectangleClassArray[j])
-                                .style("stroke", "black")
-                                .style("stroke-width", 1.5);
-                            }
                             tooltip
                             .style("display","none");
                             
-        
-                            active = d.data.Year;
-                            barchart_data("wunschpunsch", active);
-    
-                            document.getElementById("message_from_bar").innerHTML = d.data.Year;
-                            document.getElementById("report_steps").innerHTML = version;
-                            document.getElementById("message_from_bar").onchange();  
+                            dblclickedBar = d.data.Year;
+                            barchart_data("wunschpunsch", dblclickedBar); 
                         }
                     }
                 }
@@ -448,6 +723,10 @@ function daten(data,version){
                     tooltip
                     .style("display","none");
                 }
+
+                document.getElementById("message_from_bar").innerHTML = d.data.Year;
+                document.getElementById("report_steps").innerHTML = version;
+                document.getElementById("message_from_bar").onchange();
             })
             
         /* --------- x-axis --------- */
@@ -521,8 +800,8 @@ function daten(data,version){
             }
         })
         .on("click", function(d){
-            //No person on legend and no bar selected
-            if(active_link === "0" && active === "0"){
+            //No person on legend and no bar selected and no dblclicked
+            if(active_link === "0" && active === "0" && dblclickedBar == 0){
                 legendSelected = true;
                 d3.select(this)           
                 .style("stroke", "black")
@@ -543,8 +822,30 @@ function daten(data,version){
                 document.getElementById("message_from_legend").onchange();
                 
             }
-            //Person on legend was selected but no bar
-            else if(active_link === this.id.split("id").pop() && active === "0"){
+            //No person on legend and no bar selected and dblclicked
+            else if(active_link === "0" && active === "0" && dblclickedBar != 0){
+                legendSelected = true;
+                d3.select(this)           
+                .style("stroke", "black")
+                .style("stroke-width", 1);
+
+                active_link = this.id.split("id").pop();
+                clickedPerson = active_link;
+
+                erase(this);
+
+                for (i = 0; i < legendClassArray.length; i++){
+                    if (legendClassArray[i] != active_link) {
+                        d3.select("#id" + legendClassArray[i])
+                        .style("opacity", 0.5);
+                    }
+                }
+                document.getElementById("message_from_legend").innerHTML = active_link;
+                document.getElementById("message_from_legend").onchange();
+                
+            }
+            //Person on legend was selected but no bar and no dblclicked
+            else if(active_link === this.id.split("id").pop() && active === "0" && dblclickedBar == 0){
                 legendSelected = false;
                 d3.select(this)           
                 .style("stroke", "none");
@@ -573,8 +874,50 @@ function daten(data,version){
                 document.getElementById("message_from_legend").onchange();
                     
             }
-            //No person on legend but person on bar was selected  
-            else if(active_link === "0" && active != "0"){
+            //Person on legend was selected but no bar and dblclicked
+            else if(active_link === this.id.split("id").pop() && active === "0" && dblclickedBar != 0){
+                legendSelected = false;
+                d3.select(this)           
+                .style("stroke", "none");
+
+                active_link = "0"; 
+                clickedPerson = active_link;
+
+                for (i = 0; i < legendClassArray.length; i++) {              
+                    d3.select("#id" + legendClassArray[i])
+                    .style("opacity", 1);
+                }
+
+                putBack(d);
+
+                //make other bars visible again
+                for (j = 0; j < zoomData.length; j++) {
+                    var year_1 = dblclickedBar - 4;
+                    var year_2 = dblclickedBar - 3;
+                    var year_3 = dblclickedBar - 2;
+                    var year_4 = dblclickedBar - 1;
+                    var year_5 = dblclickedBar;
+                    for(h=0; h<rectangleClassArray.length; h++){
+                        if(zoomData[j]["Year"] != year_5 && zoomData[j]["Year"] != year_4 && zoomData[j]["Year"] != year_3 && zoomData[j]["Year"] != year_2 && zoomData[j]["Year"] != year_1){
+                            d3.select("#id" + zoomData[j]["Year"] + "-" + rectangleClassArray[h])
+                            .style("cursor", "default")
+                            .transition()
+                            .duration(1000)
+                            .style("opacity", 0.5);
+                        }
+                        else if(zoomData[j]["Year"] == year_5 || zoomData[j]["Year"] == year_4 || zoomData[j]["Year"] == year_3 || zoomData[j]["Year"] == year_2 || zoomData[j]["Year"] == year_1){
+                            d3.select("#id" + zoomData[j]["Year"] + "-" + rectangleClassArray[h])
+                            .transition()
+                            .duration(1000)
+                            .style("opacity", 1)
+                            .style("cursor", "pointer");
+                        }
+                    }
+                }
+                document.getElementById("message_from_legend").onchange(); 
+            }
+            //No person on legend but person on bar was selected and no dblclicked  
+            else if(active_link === "0" && active != "0" && dblclickedBar == 0){
                 legendSelected = true;
                 
                 d3.select(this)           
@@ -605,8 +948,40 @@ function daten(data,version){
                 document.getElementById("message_from_legend").innerHTML = active_link;
                 document.getElementById("message_from_legend").onchange();
             }
-            //Person on legend and bar selected 
-            else if(active_link == this.id.split("id").pop() && active != "0"){
+            //No person on legend but person on bar was selected and dblclicked  
+            else if(active_link === "0" && active != "0" && dblclickedBar != 0){
+                legendSelected = true;
+                
+                d3.select(this)           
+                .style("stroke", "black")
+                .style("stroke-width", 1);
+
+                //Person
+                active_link = this.id.split("id").pop();
+                clickedPerson = active_link;
+
+                for (j = 0; j < legendClassArray.length; j++){
+                    if (legendClassArray[j] != active_link) {
+                        d3.select("#id" + legendClassArray[j])
+                        .style("opacity", 0.5)
+                        .style("cursor", "default");
+                    }
+                }
+
+                for(j=0; j<legendClassArray.length; j++){
+                    if(legendClassArray[j] != active_link){
+                        d3.select("#id" + active + "-" + legendClassArray[j])
+                        .style("cursor", "default")
+                        .style("stroke", "pink")
+                        .style("stroke-width", 0.2)
+                        .style("opacity", 0.5);
+                    }
+                }
+                document.getElementById("message_from_legend").innerHTML = active_link;
+                document.getElementById("message_from_legend").onchange();
+            }
+            //Person on legend and bar selected and no dblclicked
+            else if(active_link == this.id.split("id").pop() && active != "0" && dblclickedBar == 0){
                 legendSelected = false;
 
                 console.log("Here2");
@@ -634,10 +1009,38 @@ function daten(data,version){
 
                 document.getElementById("message_from_legend").onchange();
             }
+            //Person on legend and bar selected and dblclicked
+            else if(active_link == this.id.split("id").pop() && active != "0" && dblclickedBar != 0){
+                legendSelected = false;
+
+                console.log("Here2");
+
+                d3.select(this)           
+                .style("stroke", "none");
+
+                active_link = "0";
+                clickedPerson = active_link;
+
+                for (i = 0; i < legendClassArray.length; i++) {              
+                    d3.select("#id" + legendClassArray[i])
+                    .style("opacity", 1);
+                }
+
+                for(j=0; j<legendClassArray.length; j++){
+                    if(legendClassArray[j] != active_link){
+                        d3.select("#id" + active + "-" + legendClassArray[j])
+                        .style("cursor", "pointer")
+                        .style("stroke", "black")         
+                        .style("stroke-width", 1.5)
+                        .style("opacity", 1);           
+                    }
+                }
+                document.getElementById("message_from_legend").onchange();
+            }
         });
 
-        //If new dataset is loaded but Person was selected before
-        if(clickedPerson != "0"){
+        //If new dataset is loaded but Person was selected before and no dblclicked
+        if(clickedPerson != "0" && dblclickedBar == 0){
             legendSelected = true;
     
             console.log("in clicked person");
@@ -669,6 +1072,42 @@ function daten(data,version){
                     }
                 }
             }
+        }
+        //If new dataset is loaded but Person was selected before and dblclicked
+        else if(clickedPerson != "0" && dblclickedBar != 0){
+            legendSelected = true;
+    
+            console.log("in clicked person");
+
+            active_link = clickedPerson;
+    
+            for (i = 0; i < legendClassArray.length; i++){
+                if (legendClassArray[i] == clickedPerson) {
+                    d3.select("#id" + legendClassArray[i])
+                    .style("stroke", "black")
+                    .style("stroke-width", 1);
+                }
+            }
+
+            for (i = 0; i < legendClassArray.length; i++){
+                if (legendClassArray[i] != active_link) {
+                    d3.select("#id" + legendClassArray[i])
+                    .style("opacity", 0.5);
+                }
+            }
+
+            for(j=0; j < yearArray.length; j++){
+                for (i = 0; i < legendClassArray.length; i++) {
+                    if (legendClassArray[i] != clickedPerson) {
+                        d3.select("#id" + yearArray[j] + "-" + legendClassArray[i])   
+                        .transition()
+                        .duration(1000)          
+                        .style("opacity", 0.5);
+                    }
+                }
+            }
+            dblclickedBar = 0;
+            active = 0;
         }
 
     legend.append("text") // Text of legends 
@@ -835,8 +1274,11 @@ function setTitle(word, name, year, steps){
             name = "Charlotte von Stein<br>"
         }
     }
-    if(steps == 5){
+    if(steps == 5 && dblclickedBar == 0){
         year = (year - 4) + " - " + year  + "<br>";
+    }
+    else if(steps == 5 && dblclickedBar != 0){
+        year = year + "<br>";
     }
     document.getElementById("WCTitle").innerHTML = name + year + word;
 }
@@ -1419,7 +1861,7 @@ function barchart_data(word, zoomYear){
                 tmpZoomList.splice(indexOfZoomYear, 1, year1, year2, year3, year4, year5);
                 zoomData = tmpZoomList;
                 d3.select("svg").selectAll("*").remove();
-                daten(zoomData,5);
+                daten(zoomData,5);  
             }
         }
 
