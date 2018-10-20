@@ -222,6 +222,7 @@ function daten(data,version){
                         }
                         else if(zoomData[j]["Year"] == year_5 || zoomData[j]["Year"] == year_4 || zoomData[j]["Year"] == year_3 || zoomData[j]["Year"] == year_2 || zoomData[j]["Year"] == year_1){
                             d3.select("#id" + zoomData[j]["Year"] + "-" + rectangleClassArray[h])
+                            .style("opacity", 1)
                             .style("cursor", "pointer");
                         }
                     }
@@ -376,6 +377,14 @@ function daten(data,version){
                         .style("top", d3.event.pageY - 70 + "px")
                         .style("display", "inline-block")
                         .html(d.data.Year + ": " + d.data.total); 
+                    }
+                    else if (wanted != dblclickedBar && wanted != dblclickedBar -1 && wanted != dblclickedBar - 2 && wanted != dblclickedBar - 3 && wanted != dblclickedBar - 4){
+                        for (j = 0; j < rectangleClassArray.length; j++){
+                            d3.select("#id" + wanted + "-" + rectangleClassArray[j])
+                            .style("cursor", "default");
+                        }   
+                        tooltip
+                        .style("display","none");
                     }
                 }
                 //One Bar and nothing on legend selected and dblclicked and hovering above selected Bar
@@ -542,18 +551,21 @@ function daten(data,version){
                 else if(active == "0" && active_link == "0" && dblclickedBar != 0) {
                     barSelected = true;
 
-                    for (j = 0; j < rectangleClassArray.length; j++) {
-                        d3.select("#id" + wanted + "-" + rectangleClassArray[j])
-                        .style("stroke", "black")
-                        .style("stroke-width", 1.5);
+                    if (wanted == dblclickedBar || wanted == dblclickedBar - 1 || wanted == dblclickedBar - 2 || wanted == dblclickedBar - 3 || wanted == dblclickedBar - 4) {
+                        for (j = 0; j < rectangleClassArray.length; j++) {
+                            d3.select("#id" + wanted + "-" + rectangleClassArray[j])
+                            .style("stroke", "black")
+                            .style("stroke-width", 1.5);
+                        }
                     }
-
+                    
                     active = d.data.Year;
                     clickedBar = active;
                     for (j = 0; j < zoomData.length; j++) {
                         for(h=0; h<rectangleClassArray.length; h++){
                             if(zoomData[j]["Year"] != active) {
-                                d3.select("#id" + yearArray[j] + "-" + rectangleClassArray[h])
+                                d3.select("#id" + zoomData[j]["Year"] + "-" + rectangleClassArray[h])
+                                .style("cursor", "default")
                                 .style("opacity", 0.5);
                             }
                         }
@@ -713,13 +725,17 @@ function daten(data,version){
                             .style("display","none");
                             
                             dblclickedBar = d.data.Year;
-                            barchart_data("wunschpunsch", dblclickedBar); 
+                            newBarData = true;
+                            barchart_data("wunschpunsch", dblclickedBar);
+                            newBarData = false;
                         }
                     }
                 }
                 else {
                     dblclickedBar = 0;
+                    newBarData = true;
                     barchart_data("wunschpunsch", 0);
+                    newBarData = false;
                     tooltip
                     .style("display","none");
                 }
