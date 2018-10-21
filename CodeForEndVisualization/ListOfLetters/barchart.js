@@ -552,28 +552,35 @@ function daten(data,version){
                 else if(active == "0" && active_link == "0" && dblclickedBar != 0) {
                     barSelected = true;
 
-                    if (wanted == dblclickedBar || wanted == dblclickedBar - 1 || wanted == dblclickedBar - 2 || wanted == dblclickedBar - 3 || wanted == dblclickedBar - 4) {
-                        for (j = 0; j < rectangleClassArray.length; j++) {
-                            d3.select("#id" + wanted + "-" + rectangleClassArray[j])
-                            .style("stroke", "black")
-                            .style("stroke-width", 1.5);
-                        }
-                    }
-                    
-                    active = d.data.Year;
-                    clickedBar = active;
-                    for (j = 0; j < zoomData.length; j++) {
-                        for(h=0; h<rectangleClassArray.length; h++){
-                            if(zoomData[j]["Year"] != active) {
-                                d3.select("#id" + zoomData[j]["Year"] + "-" + rectangleClassArray[h])
-                                .style("cursor", "default")
-                                .style("opacity", 0.5);
+                    if(wanted == dblclickedBar || wanted == dblclickedBar - 1 || wanted == dblclickedBar - 2 || wanted == dblclickedBar - 3 || wanted == dblclickedBar - 4) {
+                        if (wanted == dblclickedBar || wanted == dblclickedBar - 1 || wanted == dblclickedBar - 2 || wanted == dblclickedBar - 3 || wanted == dblclickedBar - 4) {
+                            for (j = 0; j < rectangleClassArray.length; j++) {
+                                d3.select("#id" + wanted + "-" + rectangleClassArray[j])
+                                .style("stroke", "black")
+                                .style("stroke-width", 1.5);
                             }
                         }
+                        
+                        active = d.data.Year;
+                        clickedBar = active;
+                        for (j = 0; j < zoomData.length; j++) {
+                            for(h=0; h<rectangleClassArray.length; h++){
+                                if(zoomData[j]["Year"] != active) {
+                                    d3.select("#id" + zoomData[j]["Year"] + "-" + rectangleClassArray[h])
+                                    .style("cursor", "default")
+                                    .style("opacity", 0.5);
+                                }
+                            }
+                        }
+                        document.getElementById("message_from_bar").innerHTML = d.data.Year;
+                        document.getElementById("report_steps").innerHTML = 1;
+                        document.getElementById("message_from_bar").onchange();
                     }
-                    document.getElementById("message_from_bar").innerHTML = d.data.Year;
-                    document.getElementById("report_steps").innerHTML = 1;
-                    document.getElementById("message_from_bar").onchange();
+                    else {
+                        console.log("clicked on grayed bar");
+                    }
+
+                    
                 }
                 //Bar is selected but no person on legend and no dblclicked, clicking on selected part
                 else if (active == d.data.Year && active_link == "0" && dblclickedBar == 0/*|| clickedBar === d.data.Year*/){
@@ -743,15 +750,19 @@ function daten(data,version){
                 else {
                     dblclickedBar = 0;
                     dblclicked = false;
+                    active = 0;
+                    clickedBar = 0;
                     newBarData = true;
+                    document.getElementById("message_from_bar").innerHTML = 1111;
+                    document.getElementById("report_steps").innerHTML = 0;
+                    document.getElementById("message_from_bar").onchange();
+                    
                     barchart_data("wunschpunsch", 0);
                     newBarData = false;
                     tooltip
                     .style("display","none");
 
-                    document.getElementById("message_from_bar").innerHTML = 1111;
-                    document.getElementById("report_steps").innerHTML = version;
-                    document.getElementById("message_from_bar").onchange();
+                    
                 }
 
                 
