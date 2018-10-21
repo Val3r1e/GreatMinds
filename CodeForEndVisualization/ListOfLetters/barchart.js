@@ -25,6 +25,7 @@ var firstLoad = true;
 var clickedBar = 0;     //Braucht Jahr
 var clickedPerson = 0;  //Braucht Name
 var dblclickedBar = 0;
+var dblclicked = false;
 var columns = ["Year", "FSchiller", "CSchiller", "CStein", "CGoethe"];
 var newBarData = false;
 var zoomData;
@@ -171,12 +172,12 @@ function daten(data,version){
                 barSelected = true;
 
                 for (j = 0; j < rectangleClassArray.length; j++) {
-                    d3.select("#id" + clickedBar + "-" + rectangleClassArray[j])
+                    d3.select("#id" + dblclickedBar + "-" + rectangleClassArray[j])
                     .style("stroke", "black")
                     .style("stroke-width", 1.5);
                 }
 
-                active = clickedBar;
+                active = dblclickedBar;
 
                 for(j=0; j<zoomData.length; j++){
                     for(h=0; h<rectangleClassArray.length; h++){
@@ -191,12 +192,12 @@ function daten(data,version){
                 barSelected = true;
 
                 //for (j = 0; j < rectangleClassArray.length; j++) {
-                    d3.select("#id" + clickedBar + "-" + clickedPerson)
+                    d3.select("#id" + dblclickedBar + "-" + clickedPerson)
                     .style("stroke", "black")
                     .style("stroke-width", 1.5);
                 //}
 
-                active = clickedBar;
+                active = dblclickedBar;
 
                 for(j=0; j<zoomData.length; j++){
                     for(h=0; h<rectangleClassArray.length; h++){
@@ -217,7 +218,6 @@ function daten(data,version){
                     for(h=0; h<rectangleClassArray.length; h++){
                         if(zoomData[j]["Year"] != year_5 && zoomData[j]["Year"] != year_4 && zoomData[j]["Year"] != year_3 && zoomData[j]["Year"] != year_2 && zoomData[j]["Year"] != year_1){
                             d3.select("#id" + zoomData[j]["Year"] + "-" + rectangleClassArray[h])
-                            .style("cursor", "default")
                             .style("opacity", 0.5);
                         }
                         else if(zoomData[j]["Year"] == year_5 || zoomData[j]["Year"] == year_4 || zoomData[j]["Year"] == year_3 || zoomData[j]["Year"] == year_2 || zoomData[j]["Year"] == year_1){
@@ -225,8 +225,11 @@ function daten(data,version){
                             .style("opacity", 1)
                             .style("cursor", "pointer");
                         }
-                    }
+                    } 
                 }
+                document.getElementById("message_from_bar").innerHTML = dblclickedBar;
+                document.getElementById("report_steps").innerHTML = version;
+                document.getElementById("message_from_bar").onchange();
             }
             
             rectangle.on("mouseover", function (d) {
@@ -362,8 +365,6 @@ function daten(data,version){
                 }
                 //No Bar and nothing on legend selected and dblclicked
                 else if(active === "0" && active_link === "0" && dblclickedBar != 0){
-                    console.log("wanted:", wanted);
-                    console.log("dbl:", dblclickedBar);
 
                     if(wanted == dblclickedBar || wanted == dblclickedBar -1 || wanted == dblclickedBar - 2 || wanted == dblclickedBar - 3 || wanted == dblclickedBar - 4) {
                         for (j = 0; j < rectangleClassArray.length; j++){
@@ -521,7 +522,7 @@ function daten(data,version){
             .on("click", function(d){
 
                 //No Bar or Person on legend is selected and no dblclicked
-                if (active == "0" && active_link == "0"){
+                if (active == "0" && active_link == "0" && dblclickedBar == 0){
                     barSelected = true;
 
                     for (j = 0; j < rectangleClassArray.length; j++) {
@@ -571,7 +572,7 @@ function daten(data,version){
                         }
                     }
                     document.getElementById("message_from_bar").innerHTML = d.data.Year;
-                    document.getElementById("report_steps").innerHTML = version;
+                    document.getElementById("report_steps").innerHTML = 1;
                     document.getElementById("message_from_bar").onchange();
                 }
                 //Bar is selected but no person on legend and no dblclicked, clicking on selected part
@@ -602,7 +603,6 @@ function daten(data,version){
                 else if (active == d.data.Year && active_link == "0" && dblclickedBar != 0/*|| clickedBar === d.data.Year*/){
                     barSelected = false;
                     toggleWhileBarSelected = false;
-                    console.log("dblclicked1", dblclickedBar);
 
                     for (j = 0; j < zoomData.length; j++) {
                         var year_1 = dblclickedBar - 4;
@@ -625,6 +625,8 @@ function daten(data,version){
                     }
                     active = "0";
                     clickedBar = 0;
+                    document.getElementById("message_from_bar").innerHTML = dblclickedBar;
+                    document.getElementById("report_steps").innerHTML = 5;
                     document.getElementById("message_from_bar").onchange();
                     
                 }
@@ -720,29 +722,39 @@ function daten(data,version){
                 if (dblclickedBar == 0) {
                     if (dataVersion == 5) {
                         if (active == "0" && active_link == "0"){
-        
+                            
+                            dblclicked = true;
+                            
                             tooltip
                             .style("display","none");
                             
                             dblclickedBar = d.data.Year;
                             newBarData = true;
                             barchart_data("wunschpunsch", dblclickedBar);
+                            
                             newBarData = false;
+
+                            document.getElementById("message_from_bar").innerHTML = dblclickedBar;
+                            document.getElementById("report_steps").innerHTML = version;
+                            document.getElementById("message_from_bar").onchange();
                         }
                     }
                 }
                 else {
                     dblclickedBar = 0;
+                    dblclicked = false;
                     newBarData = true;
                     barchart_data("wunschpunsch", 0);
                     newBarData = false;
                     tooltip
                     .style("display","none");
+
+                    document.getElementById("message_from_bar").innerHTML = 1111;
+                    document.getElementById("report_steps").innerHTML = version;
+                    document.getElementById("message_from_bar").onchange();
                 }
 
-                document.getElementById("message_from_bar").innerHTML = d.data.Year;
-                document.getElementById("report_steps").innerHTML = version;
-                document.getElementById("message_from_bar").onchange();
+                
             })
             
         /* --------- x-axis --------- */
@@ -1123,6 +1135,7 @@ function daten(data,version){
                 }
             }
             dblclickedBar = 0;
+            dblclicked = false;
             active = 0;
         }
 
@@ -1290,10 +1303,10 @@ function setTitle(word, name, year, steps){
             name = "Charlotte von Stein<br>"
         }
     }
-    if(steps == 5 && dblclickedBar == 0){
+    if(steps == 5 && !barSelected){
         year = (year - 4) + " - " + year  + "<br>";
     }
-    else if(steps == 5 && dblclickedBar != 0){
+    else {
         year = year + "<br>";
     }
     document.getElementById("WCTitle").innerHTML = name + year + word;
@@ -1346,7 +1359,12 @@ function deselectFilter(clickedElement){
     deselectWord = true;
     clickedWord = "";
     newBarData = true;
-    barchart_data("wunschpunsch", 0);
+    if(dblclickedBar == 0) {
+        barchart_data("wunschpunsch", 0);
+    }
+    else {
+        barchart_data("wunschpunsch", dblclickedBar);
+    }    
     document.getElementById("herr_made").innerHTML = "wunschpunsch";
     document.getElementById("herr_made").onchange();
     newBarData = false;
@@ -1480,7 +1498,8 @@ function trigger_new_cloud(){
                     }else{
                         close_everyting();
                     }
-                }else{
+                }
+                else{
                     year = elements[1];
                     steps = 1;
                 }
@@ -1488,6 +1507,7 @@ function trigger_new_cloud(){
             if(!legendSelected){
                 name = 'whole';
             }
+            
             wordcloud_data(word, name, year, steps);
         }else{ //person is open
             var nameStays = true;
@@ -1516,9 +1536,13 @@ function trigger_new_cloud(){
             wordcloud_data(word, name, year, steps);
         }
     }else{ //outside layer
-        if(!barSelected){
+        if(!barSelected && !dblclicked){
             year = 1111;
             steps = 0;
+        }
+        else if(!barSelected && dblclicked) {
+            year = dblclickedBar;
+            steps = 5;
         }
         if(!legendSelected){
             name = 'whole';
@@ -1585,7 +1609,12 @@ function render_wordcloud(cloudData){
     zingchart.bind('LetterDiv','label_click', function(p){
         var word = p.text;
         newBarData = true;
-        barchart_data(word, 0);
+        if(!dblclicked) {
+            barchart_data(word, 0);
+        }
+        else {
+            barchart_data(word, dblclickedBar);
+        }        
         wordClicked = true;
         deselectWord = false;
         clickedWord = word;
@@ -1614,16 +1643,27 @@ function render_selected_wordcloud(cloudData){
         //click on the same word = deselect
         if(selectedWord == word){
             newBarData = true;
-            barchart_data("wunschpunsch", 0);
+            if (!dblclicked) {
+                barchart_data("wunschpunsch", 0);
+            }
+            else {
+                barchart_data("wunschpunsch", dblclickedBar);
+            }
             deselectWord = true;
             wordClicked = false;
             clickedWord = "";
             document.getElementById("herr_made").innerHTML = "wunschpunsch";
             document.getElementById("herr_made").onchange();
             newBarData = false;
-        }else{  //click on another word: that word gets selected
+        }
+        else{  //click on another word: that word gets selected
             newBarData = true;
-            barchart_data(selectedWord, 0);
+            if (!dblclicked) {
+                barchart_data(selectedWord, 0);
+            }
+            else {
+                barchart_data(selectedWord, dblclickedBar);
+            } 
             wordClicked = true;
             deselectWord = false;
             clickedWord = selectedWord;
@@ -1694,11 +1734,17 @@ function wordcloud_data(word, name, year, steps){
             for(i = 0; i < letters.length; i++){
                 var letterYear = letters[i].split("_")[0];
                 var letterName = letters[i].split("_")[1];
-                if(name == 'whole'){
+                if(name == 'whole' && !dblclicked){
                     if((letterYear >= year - 4)&&(letterYear <=year)){
                         toGet.push(letters[i]);
                     }
-                }else{
+                }
+                else if(name == 'whole' && dblclicked) {
+                    if((letterYear >= dblclickedBar - 4) && (letterYear <= dblclickedBar)) {
+                        toGet.push(letters[i]);
+                    }
+                }
+                else{
                     if((letterYear >= year - 4)&&(letterYear <=year) && (letterName == name)){
                         toGet.push(letters[i]);
                     }
@@ -1782,7 +1828,7 @@ function barchart_data(word, zoomYear){
                 barChartLettters[letterYear][letterName] += 1;
             }
         }
-        console.log("BarChartLetters: ", barChartLettters);
+        //console.log("BarChartLetters: ", barChartLettters);
         var csvDataList = [];
         csvData_1 = [];
         
@@ -1798,7 +1844,7 @@ function barchart_data(word, zoomYear){
             csvDataList.push(tmpDict);
         }
         
-        console.log("1 Year List:", csvDataList);
+        //console.log("1 Year List:", csvDataList);
         var csvData5List = [];
         csvData_5 = [];
         var tmpDict5 = {};
@@ -1821,7 +1867,7 @@ function barchart_data(word, zoomYear){
         for(var key5Year in tmpDict5){
             csvData5List.push(tmpDict5[key5Year]);
         }
-        console.log("5 List:" ,csvData5List);
+        //console.log("5 List:" ,csvData5List);
 
         if(zoomYear == 0){
 
@@ -1831,8 +1877,8 @@ function barchart_data(word, zoomYear){
             if(dataVersion == 5){
                 d3.select("svg").selectAll("*").remove();
                 daten(csvData_5,5);
-                console.log(clickedBar);
-                console.log(clickedPerson);
+                //console.log(clickedBar);
+                //console.log(clickedPerson);
             }
             else if(dataVersion == 1){
                 d3.select("svg").selectAll("*").remove();
@@ -2148,6 +2194,19 @@ function show_corresponding_letters(word){
                     }
                 }
             }   
+        }
+        if(!barSelected && dblclicked) {
+            var year = document.getElementById("message_from_bar").innerHTML;
+            var steps = document.getElementById("report_steps").innerHTML;
+            for(i = 0; i < allButtons.length; i++){
+                var thisButton = allButtons[i];
+                var thisStyle = getStyle(thisButton, 'display');
+                if(thisStyle == "block"){
+                    if(!((thisButton.id.split("_")[0] <= year) && (thisButton.id.split("_")[0] > parseInt(year) - parseInt(steps)))){
+                        thisButton.style.display ="none";
+                    }
+                }
+            }
         }
         if(legendSelected){        
             var name = document.getElementById("message_from_legend").innerHTML;
