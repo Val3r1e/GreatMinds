@@ -754,12 +754,11 @@ function daten(data,version){
                             newBarData = true;
                             //barchart_data("wunschpunsch", dblclickedBar);
                             barchart_data(clickedWord, dblclickedBar);
-                            
-                            newBarData = false;
 
                             document.getElementById("message_from_bar").innerHTML = dblclickedBar;
                             document.getElementById("report_steps").innerHTML = version;
                             document.getElementById("message_from_bar").onchange();
+                            newBarData = false;
                         }
                     }
                 }
@@ -787,12 +786,14 @@ function daten(data,version){
                     dblclicked = false;
                     active = 0;
                     clickedBar = 0;
+                    newBarData = true;
                     //barchart_data("wunschpunsch", 0);
                     barchart_data(clickedWord, 0);
 
                     document.getElementById("message_from_bar").innerHTML = d.data.Year;
                     document.getElementById("report_steps").innerHTML = version;
                     document.getElementById("message_from_bar").onchange();
+                    newBarData = false;
                     
                     tooltip
                     .style("display","none");
