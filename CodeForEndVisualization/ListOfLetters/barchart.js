@@ -770,7 +770,7 @@ function daten(data,version){
                         }
                     }
                 }
-                else {
+                else if (dblclickedBar != 0 && !barSelected){
                     dblclickedBar = 0;
                     dblclicked = false;
                     barSelected = false;
@@ -787,9 +787,21 @@ function daten(data,version){
                     newBarData = false;
                     tooltip
                     .style("display","none");
-                }
+                }   
+                else if (dblclickedBar != 0 && barSelected) {
+                    dblclickedBar = 0;
+                    dblclicked = false;
+                    active = 0;
+                    clickedBar = 0;
+                    barchart_data("wunschpunsch", 0);
 
-                
+                    document.getElementById("message_from_bar").innerHTML = d.data.Year;
+                    document.getElementById("report_steps").innerHTML = version;
+                    document.getElementById("message_from_bar").onchange();
+                    
+                    tooltip
+                    .style("display","none");
+                }             
             })
             
         /* --------- x-axis --------- */
