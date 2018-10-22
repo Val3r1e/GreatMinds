@@ -150,17 +150,18 @@ function daten(data,version){
             else if(clickedBar != 0 && clickedPerson == 0 && dblclickedBar != 0) {
                 barSelected = true;
 
+                
                 for (j = 0; j < rectangleClassArray.length; j++) {
-                    d3.select("#id" + dblclickedBar + "-" + rectangleClassArray[j])
+                    d3.select("#id" + clickedBar + "-" + rectangleClassArray[j])
                     .style("stroke", "black")
                     .style("stroke-width", 1.5);
                 }
 
-                active = dblclickedBar;
+                active = clickedBar;
 
                 for(j=0; j<zoomData.length; j++){
                     for(h=0; h<rectangleClassArray.length; h++){
-                        if(zoomData[j]["Year"] != active){
+                        if(zoomData[j]["Year"] != clickedBar){
                             d3.select("#id" + zoomData[j]["Year"] + "-" + rectangleClassArray[h])
                             .style("opacity", 0.5);
                         }
@@ -192,16 +193,16 @@ function daten(data,version){
                 barSelected = true;
 
                 //for (j = 0; j < rectangleClassArray.length; j++) {
-                    d3.select("#id" + dblclickedBar + "-" + clickedPerson)
+                    d3.select("#id" + clickedBar + "-" + clickedPerson)
                     .style("stroke", "black")
                     .style("stroke-width", 1.5);
                 //}
 
-                active = dblclickedBar;
+                active = clickedBar;
 
                 for(j=0; j<zoomData.length; j++){
                     for(h=0; h<rectangleClassArray.length; h++){
-                        if(zoomData[j]["Year"] != active){
+                        if(zoomData[j]["Year"] != clickedBar){
                             d3.select("#id" + zoomData[j]["Year"] + "-" + rectangleClassArray[h])
                             .style("opacity", 0.5);
                         }
@@ -413,26 +414,47 @@ function daten(data,version){
                 }
                 //No Bar and one Person on legend selected and dblclicked and hovering above selected person bar
                 else if(active === "0" && active_link == activeName && dblclickedBar != 0){
-                    d3.select("#id" + wanted + "-" + activeName)
-                    .style("cursor", "pointer")
-                    .style("stroke", "purple")
-                    .style("stroke-width", 1.3);
+                    if(dblclickedBar == wanted || dblclickedBar - 1 == wanted || dblclickedBar - 2 == wanted || dblclickedBar - 3 == wanted || dblclickedBar - 4 == wanted) {
+                        d3.select("#id" + wanted + "-" + activeName)
+                        .style("cursor", "pointer")
+                        .style("stroke", "purple")
+                        .style("stroke-width", 1.3);
 
-                    amount = d[1]-d[0];
+                        amount = d[1]-d[0];
 
-                    tooltip
-                    .style("left", d3.event.pageX - 50 + "px")
-                    .style("top", d3.event.pageY - 70 + "px")
-                    .style("display", "inline-block")
-                    .html(activeName + ": " + amount); 
+                        tooltip
+                        .style("left", d3.event.pageX - 50 + "px")
+                        .style("top", d3.event.pageY - 70 + "px")
+                        .style("display", "inline-block")
+                        .html(activeName + ": " + amount);
+                    }
+                    else {
+                        d3.select("#id" + wanted + "-" + activeName)
+                        .style("cursor", "default");
+
+                        tooltip
+                        .style("display", "none");
+                    } 
                 }
                 //No Bar and one Person on legend selected and dblclicked and hovering above not selected person part
                 else if(active === "0" && active_link != activeName && dblclickedBar != 0){
 
-                    for (j = 0; j < rectangleClassArray.length; j++){
-                        d3.select("#id" + wanted + "-" + rectangleClassArray[j])
-                        .style("cursor", "default");
-                    } 
+                    if(dblclickedBar == wanted || dblclickedBar - 1 == wanted || dblclickedBar - 2 == wanted || dblclickedBar - 3 == wanted || dblclickedBar - 4 == wanted) {
+                        for (j = 0; j < rectangleClassArray.length; j++){
+                            d3.select("#id" + wanted + "-" + rectangleClassArray[j])
+                            .style("cursor", "default");
+                        } 
+                        tooltip
+                        .style("display", "none");
+                    }
+                    else {
+                        d3.select("#id" + wanted + "-" + activeName)
+                        .style("cursor", "default");   
+                        
+                        tooltip
+                        .style("display","none");
+                    }
+                    
                 }
                 //First one Bar and then one Person on legend selected and dblclicked and hovering above selected person part
                 else if(active == d.data.Year && active_link == activeName && dblclickedBar != 0){
@@ -660,22 +682,28 @@ function daten(data,version){
                 //No bar but person on legend is selected, clicking on part of bar of that person and dblclicked
                 else if(active == "0" && active_link == activeName && dblclickedBar != 0){
                     barSelected = true;
-                    d3.select(this)
-                    .style("stroke", "black")
-                    .style("stroke-width", 1.5);
+                    if(wanted == dblclickedBar || wanted == dblclickedBar - 1 || wanted == dblclickedBar - 2 || wanted == dblclickedBar - 3 || wanted == dblclickedBar - 4) {
+                        d3.select(this)
+                        .style("stroke", "black")
+                        .style("stroke-width", 1.5);
 
-                    for (j = 0; j < zoomData.length; j++) {
-                        if(zoomData[j]["Year"] != wanted){
-                            d3.select("#id" + zoomData[j]["Year"] + "-" + activeName)
-                            .style("opacity", 0.5);
+                        for (j = 0; j < zoomData.length; j++) {
+                            if(zoomData[j]["Year"] != wanted){
+                                d3.select("#id" + zoomData[j]["Year"] + "-" + activeName)
+                                .style("opacity", 0.5);
+                            }
                         }
-                    }
-                    active = d.data.Year;
-                    clickedBar = active;
+                        active = d.data.Year;
+                        clickedBar = active;
 
-                    document.getElementById("message_from_bar").innerHTML = d.data.Year;
-                    document.getElementById("report_steps").innerHTML = 1;
-                    document.getElementById("message_from_bar").onchange();
+                        document.getElementById("message_from_bar").innerHTML = d.data.Year;
+                        document.getElementById("report_steps").innerHTML = 1;
+                        document.getElementById("message_from_bar").onchange();
+                    }
+                    else {
+                        console.log("clicked on grayed bar");
+                    }
+                    
                 }
                 //Bar and person on legend is selected, clicking on part of bar of that person and no dblclicked
                 else if(active == d.data.Year && active_link == activeName && dblclickedBar == 0){
@@ -973,7 +1001,7 @@ function daten(data,version){
 
                 for(j=0; j<legendClassArray.length; j++){
                     if(legendClassArray[j] != active_link){
-                        d3.select("#id" + active + "-" + legendClassArray[j])
+                        d3.select("#id" + clickedBar + "-" + legendClassArray[j])
                         .style("cursor", "default")
                         .style("stroke", "pink")
                         .style("stroke-width", 0.2)
@@ -1005,7 +1033,7 @@ function daten(data,version){
 
                 for(j=0; j<legendClassArray.length; j++){
                     if(legendClassArray[j] != active_link){
-                        d3.select("#id" + active + "-" + legendClassArray[j])
+                        d3.select("#id" + clickedBar + "-" + legendClassArray[j])
                         .style("cursor", "default")
                         .style("stroke", "pink")
                         .style("stroke-width", 0.2)
@@ -1063,14 +1091,14 @@ function daten(data,version){
 
                 for(j=0; j<legendClassArray.length; j++){
                     if(legendClassArray[j] != active_link){
-                        d3.select("#id" + active + "-" + legendClassArray[j])
+                        d3.select("#id" + clickedBar + "-" + legendClassArray[j])
                         .style("cursor", "pointer")
                         .style("stroke", "black")         
                         .style("stroke-width", 1.5)
                         .style("opacity", 1);           
                     }
                 }
-                document.getElementById("message_from_legend").onchange();
+                document.getElementById("message_from_bar").onchange(); 
             }
         });
 
@@ -1141,9 +1169,6 @@ function daten(data,version){
                     }
                 }
             }
-            dblclickedBar = 0;
-            dblclicked = false;
-            active = 0;
         }
 
     legend.append("text") // Text of legends 
@@ -1167,13 +1192,26 @@ function daten(data,version){
     } 
 
     function putBack(){
-
-        for(j=0; j < yearArray.length; j++){
-            for (i = 0; i < legendClassArray.length; i++) {
-                d3.select("#id" + yearArray[j] + "-" + legendClassArray[i])   
-                .transition()
-                .duration(1000)          
-                .style("opacity", 1);
+        if(!dblclicked) {
+            for(j=0; j < yearArray.length; j++){
+                for (i = 0; i < legendClassArray.length; i++) {
+                    d3.select("#id" + yearArray[j] + "-" + legendClassArray[i])   
+                    .transition()
+                    .duration(1000)          
+                    .style("opacity", 1);
+                }
+            }
+        }
+        else {
+            for(j = 0; j < zoomData.length; j++) {
+                for(i = 0; i < legendClassArray.length; i++) {
+                    if(zoomData[i]["Year"] == dblclickedBar || zoomData[i]["Year"] == dblclickedBar - 1 || zoomData[i]["Year"] == dblclickedBar - 2 || zoomData[i]["Year"] == dblclickedBar - 3 || zoomData[i]["Year"] == dblclickedBar - 4) {
+                        d3.select("#id" + zoomData[i]["Year"] + "-" + legendClassArray[i])
+                        .transition()
+                        .duration(1000)
+                        .style("opacity", 1);
+                    }
+                }
             }
         }
     }
@@ -1366,15 +1404,16 @@ function deselectFilter(clickedElement){
     deselectWord = true;
     clickedWord = "";
     newBarData = true;
-    if(dblclickedBar == 0) {
+    if(!dblclicked) {
         barchart_data("wunschpunsch", 0);
     }
     else {
         barchart_data("wunschpunsch", dblclickedBar);
-    }    
+    }  
     document.getElementById("herr_made").innerHTML = "wunschpunsch";
     document.getElementById("herr_made").onchange();
-    newBarData = false;
+    newBarData = false; 
+    
 
     // ------- In case all the other stuff shoul be deselectable in the sidebar: -------
     // if(clickedElement == "filteryear"){
@@ -1741,13 +1780,8 @@ function wordcloud_data(word, name, year, steps){
             for(i = 0; i < letters.length; i++){
                 var letterYear = letters[i].split("_")[0];
                 var letterName = letters[i].split("_")[1];
-                if(name == 'whole' && !dblclicked){
+                if(name == 'whole'){
                     if((letterYear >= year - 4)&&(letterYear <=year)){
-                        toGet.push(letters[i]);
-                    }
-                }
-                else if(name == 'whole' && dblclicked) {
-                    if((letterYear >= dblclickedBar - 4) && (letterYear <= dblclickedBar)) {
                         toGet.push(letters[i]);
                     }
                 }
