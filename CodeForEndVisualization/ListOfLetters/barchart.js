@@ -742,13 +742,12 @@ function daten(data,version){
                 }
             })
             .on('dblclick', function(d) {
-                console.log("out", dblclicked);
                 if (!dblclicked && !barSelected) {
                     if (dataVersion == 5) {
                         if (active == "0" && active_link == "0"){
                             
                             dblclicked = true;
-                            console.log("in", dblclicked);
+
                             tooltip
                             .style("display","none");
                             
@@ -766,7 +765,6 @@ function daten(data,version){
                     }
                 }
                 else if (dblclicked && !barSelected){
-                    console.log("other", dblclicked);
                     if(wanted == dblclickedBar || wanted == dblclickedBar - 1 || wanted == dblclickedBar - 2 || wanted == dblclickedBar - 3 || wanted == dblclickedBar - 4) {
                         dblclickedBar = 0;
                         dblclicked = false;
@@ -794,6 +792,7 @@ function daten(data,version){
                     active = 0;
                     clickedBar = 0;
                     newBarData = true;
+                    
                     //barchart_data("wunschpunsch", 0);
                     barchart_data(clickedWord, 0);
 
