@@ -564,9 +564,10 @@ function daten(data,version){
                 }
                 //No Bar or Person on legend is selected but dblclicked
                 else if(active == "0" && active_link == "0" && dblclickedBar != 0) {
-                    barSelected = true;
 
                     if(wanted == dblclickedBar || wanted == dblclickedBar - 1 || wanted == dblclickedBar - 2 || wanted == dblclickedBar - 3 || wanted == dblclickedBar - 4) {
+                        barSelected = true;
+
                         if (wanted == dblclickedBar || wanted == dblclickedBar - 1 || wanted == dblclickedBar - 2 || wanted == dblclickedBar - 3 || wanted == dblclickedBar - 4) {
                             for (j = 0; j < rectangleClassArray.length; j++) {
                                 d3.select("#id" + wanted + "-" + rectangleClassArray[j])
@@ -741,19 +742,21 @@ function daten(data,version){
                 }
             })
             .on('dblclick', function(d) {
-                if (dblclickedBar == 0 && !barSelected) {
+                console.log("out", dblclicked);
+                if (!dblclicked && !barSelected) {
                     if (dataVersion == 5) {
                         if (active == "0" && active_link == "0"){
                             
                             dblclicked = true;
-                            
+                            console.log("in", dblclicked);
                             tooltip
                             .style("display","none");
                             
                             dblclickedBar = d.data.Year;
                             newBarData = true;
+
                             //barchart_data("wunschpunsch", dblclickedBar);
-                            barchart_data(clickedWord, dblclickedBar);
+                            barchart_data(clickedWord, dblclickedBar);                         
 
                             document.getElementById("message_from_bar").innerHTML = dblclickedBar;
                             document.getElementById("report_steps").innerHTML = version;
@@ -762,26 +765,30 @@ function daten(data,version){
                         }
                     }
                 }
-                else if (dblclickedBar != 0 && !barSelected){
-                    dblclickedBar = 0;
-                    dblclicked = false;
-                    barSelected = false;
-                    active = 0;
-                    active_link = 0;
-                    clickedBar = 0;
+                else if (dblclicked && !barSelected){
+                    console.log("other", dblclicked);
+                    if(wanted == dblclickedBar || wanted == dblclickedBar - 1 || wanted == dblclickedBar - 2 || wanted == dblclickedBar - 3 || wanted == dblclickedBar - 4) {
+                        dblclickedBar = 0;
+                        dblclicked = false;
+                        active_link = 0;
+                        
+                        newBarData = true;
+                        document.getElementById("message_from_bar").innerHTML = 1111;
+                        document.getElementById("report_steps").innerHTML = 0;
+                        document.getElementById("message_from_bar").onchange();
                     
-                    newBarData = true;
-                    document.getElementById("message_from_bar").innerHTML = 1111;
-                    document.getElementById("report_steps").innerHTML = 0;
-                    document.getElementById("message_from_bar").onchange();
-                    //barchart_data("wunschpunsch", 0);
-                    barchart_data(clickedWord, 0);
-       
-                    newBarData = false;
-                    tooltip
-                    .style("display","none");
+                        //barchart_data("wunschpunsch", 0);
+                        barchart_data(clickedWord, 0);                
+    
+                        newBarData = false;
+                        tooltip
+                        .style("display","none");
+                    }
+                    else {
+                        console.log("zoomed out");
+                    }
                 }   
-                else if (dblclickedBar != 0 && barSelected) {
+                else if (dblclicked && barSelected) {
                     dblclickedBar = 0;
                     dblclicked = false;
                     active = 0;
@@ -797,7 +804,7 @@ function daten(data,version){
                     
                     tooltip
                     .style("display","none");
-                }             
+                }           
             })
             
         /* --------- x-axis --------- */
