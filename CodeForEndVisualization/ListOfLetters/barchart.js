@@ -1,6 +1,6 @@
 //-------------------------- Global Variables ------------------------------
 var wordClicked = false;
-var clickedWord = "";
+var clickedWord = "wunschpunsch";
 var wordId;
 var myConfig;
 var yearOpen = false;
@@ -29,10 +29,6 @@ var dblclicked = false;
 var columns = ["Year", "FSchiller", "CSchiller", "CStein", "CGoethe"];
 var newBarData = false;
 var zoomData;
-// var keyYears = [];
-//     for(var a = 1776; a < 1821; a++){
-//         keyYears.push(a);
-//     }
 var key5Years = [1780, 1785, 1790, 1795, 1800, 1805, 1810, 1815, 1820];
 
 //-------------------- BARCHART -----------------------
@@ -57,10 +53,6 @@ function bars(data,version){
 function daten(data,version){
 
     dataVersion = version;
-
-    // count_visible_letters();
-    // var csvData = convertArrayOfObjectsToCSV(csvDataList);
-    // console.log(csvData);
 
     var svg = d3.select("svg"),
         margin = {top: 20, right: 20, bottom: 30, left: 85},
@@ -760,7 +752,8 @@ function daten(data,version){
                             
                             dblclickedBar = d.data.Year;
                             newBarData = true;
-                            barchart_data("wunschpunsch", dblclickedBar);
+                            //barchart_data("wunschpunsch", dblclickedBar);
+                            barchart_data(clickedWord, dblclickedBar);
                             
                             newBarData = false;
 
@@ -782,7 +775,8 @@ function daten(data,version){
                     document.getElementById("message_from_bar").innerHTML = 1111;
                     document.getElementById("report_steps").innerHTML = 0;
                     document.getElementById("message_from_bar").onchange();
-                    barchart_data("wunschpunsch", 0);
+                    //barchart_data("wunschpunsch", 0);
+                    barchart_data(clickedWord, 0);
        
                     newBarData = false;
                     tooltip
@@ -793,7 +787,8 @@ function daten(data,version){
                     dblclicked = false;
                     active = 0;
                     clickedBar = 0;
-                    barchart_data("wunschpunsch", 0);
+                    //barchart_data("wunschpunsch", 0);
+                    barchart_data(clickedWord, 0);
 
                     document.getElementById("message_from_bar").innerHTML = d.data.Year;
                     document.getElementById("report_steps").innerHTML = version;
@@ -1414,13 +1409,15 @@ function setFilter(word, name, year, steps){
 function deselectFilter(clickedElement){
     wordClicked = false;
     deselectWord = true;
-    clickedWord = "";
+    clickedWord = "wunschpunsch";
     newBarData = true;
     if(!dblclicked) {
-        barchart_data("wunschpunsch", 0);
+        //barchart_data("wunschpunsch", 0);
+        barchart_data(clickedWord, 0);
     }
     else {
-        barchart_data("wunschpunsch", dblclickedBar);
+        // barchart_data("wunschpunsch", dblclickedBar);
+        barchart_data(clickedWord, dblclickedBar);
     }  
     document.getElementById("herr_made").innerHTML = "wunschpunsch";
     document.getElementById("herr_made").onchange();
@@ -1709,8 +1706,8 @@ function render_selected_wordcloud(cloudData){
             }
             deselectWord = true;
             wordClicked = false;
-            clickedWord = "";
-            document.getElementById("herr_made").innerHTML = "wunschpunsch";
+            clickedWord = "wunschpunsch";
+            document.getElementById("herr_made").innerHTML = clickedWord;
             document.getElementById("herr_made").onchange();
             newBarData = false;
         }
@@ -1725,7 +1722,7 @@ function render_selected_wordcloud(cloudData){
             wordClicked = true;
             deselectWord = false;
             clickedWord = selectedWord;
-            document.getElementById("herr_made").innerHTML = selectedWord ;
+            document.getElementById("herr_made").innerHTML = clickedWord ;
             document.getElementById("herr_made").onchange();
             newBarData = false;
         } 
@@ -1938,6 +1935,7 @@ function barchart_data(word, zoomYear){
                 daten(csvData_1,1);
             }
         }else{
+            //console.log("zooming with: ", word);
             zoomData = [];
             zoomYear = parseInt(zoomYear);
   
