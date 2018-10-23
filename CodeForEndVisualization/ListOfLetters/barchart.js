@@ -742,6 +742,7 @@ function daten(data,version){
                 }
             })
             .on('dblclick', function(d) {
+                //No bar is selected, dblclicking in one bar
                 if (!dblclicked && !barSelected) {
                     if (dataVersion == 5) {
                         if (active == "0" && active_link == "0"){
@@ -754,7 +755,6 @@ function daten(data,version){
                             dblclickedBar = d.data.Year;
                             newBarData = true;
 
-                            //barchart_data("wunschpunsch", dblclickedBar);
                             barchart_data(clickedWord, dblclickedBar);                         
 
                             document.getElementById("message_from_bar").innerHTML = dblclickedBar;
@@ -764,7 +764,8 @@ function daten(data,version){
                         }
                     }
                 }
-                else if (dblclicked && !barSelected){
+                //No bar is selected but dblclicked (zoom in) and dblclicking again (zoom out) - person on lengend can be selected or not
+                else if (dblclicked && !barSelected && (active_link == 0 || active_link != 0)){
                     if(wanted == dblclickedBar || wanted == dblclickedBar - 1 || wanted == dblclickedBar - 2 || wanted == dblclickedBar - 3 || wanted == dblclickedBar - 4) {
                         dblclickedBar = 0;
                         dblclicked = false;
@@ -775,7 +776,6 @@ function daten(data,version){
                         document.getElementById("report_steps").innerHTML = 0;
                         document.getElementById("message_from_bar").onchange();
                     
-                        //barchart_data("wunschpunsch", 0);
                         barchart_data(clickedWord, 0);                
     
                         newBarData = false;
@@ -783,26 +783,33 @@ function daten(data,version){
                         .style("display","none");
                     }
                     else {
-                        console.log("zoomed out");
+                        console.log("dblclicked a grayed bar");
                     }
-                }   
-                else if (dblclicked && barSelected) {
-                    dblclickedBar = 0;
-                    dblclicked = false;
-                    active = 0;
-                    clickedBar = 0;
-                    newBarData = true;
-                    
-                    //barchart_data("wunschpunsch", 0);
-                    barchart_data(clickedWord, 0);
+                } 
+                //Bar selected , dblclicked (zoom in) and dblclicking again (zoom out) - person on lengend can be selected or not 
+                else if (dblclicked && barSelected && (active_link == 0 || active_link != 0)) {
+                    if(wanted == active) {
+                        dblclickedBar = 0;
+                        dblclicked = false;
+                        active = 0;
+                        active_link = 0;
+                        clickedBar = 0;
+                        barSelected = false;
+                        newBarData = true;
+                        
+                        barchart_data(clickedWord, 0);
 
-                    document.getElementById("message_from_bar").innerHTML = d.data.Year;
-                    document.getElementById("report_steps").innerHTML = version;
-                    document.getElementById("message_from_bar").onchange();
-                    newBarData = false;
-                    
-                    tooltip
-                    .style("display","none");
+                        document.getElementById("message_from_bar").innerHTML = 1111;
+                        document.getElementById("report_steps").innerHTML = 0;
+                        document.getElementById("message_from_bar").onchange();
+                        newBarData = false;
+                        
+                        tooltip
+                        .style("display","none");
+                    }
+                    else {
+                        console.log("dblclicked a grayed bar")
+                    }
                 }           
             })
             
