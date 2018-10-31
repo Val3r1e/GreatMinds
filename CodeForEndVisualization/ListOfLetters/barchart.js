@@ -1648,21 +1648,21 @@ function render_wordcloud(cloudData){
                 hoverState: {
                     borderRadius: 10,
                     fontColor: 'grey'
-                },
-                tooltip: {
-                    text: "'%text'\n tf-idf index: %hits \n Click me!",
-                    visible: true,
-                    alpha: 0.8,
-                    backgroundColor: 'lightgrey',
-                    borderColor: 'none',
-                    borderRadius: 6,
-                    fontColor: 'black',
-                    fontFamily: 'Ubuntu Mono',
-                    fontSize:18,
-                    padding: 5,
-                    textAlpha: 1,
-                    wrapText: true
-                }
+                }//,
+                // tooltip: {
+                //     text: "'%text'\n tf-idf index: %hits \n Click me!",
+                //     visible: true,
+                //     alpha: 0.8,
+                //     backgroundColor: 'lightgrey',
+                //     borderColor: 'none',
+                //     borderRadius: 6,
+                //     fontColor: 'black',
+                //     fontFamily: 'Ubuntu Mono',
+                //     fontSize:18,
+                //     padding: 5,
+                //     textAlpha: 1,
+                //     wrapText: true
+                // }
             }
         }
     };
